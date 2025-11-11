@@ -9,6 +9,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Form from "@/components/form/Form";
 import Checkbox from "@/components/form/input/Checkbox";
 import { LoadingIcon } from "@/icons";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface FormState {
   name: string;
@@ -137,9 +138,10 @@ const AddProductComponent: React.FC = () => {
 
   return (
     <>
-      <h3 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-8">
-        Add New Product
-      </h3>
+         <TitleComponent
+          title="Add New Product"
+          className="mb-6 lg:mb-8"
+        />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
 

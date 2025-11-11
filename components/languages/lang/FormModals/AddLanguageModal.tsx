@@ -6,6 +6,8 @@ import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
 import { useCreateLanguage } from "@/hooks/useLanguages";
+import Form from "@/components/form/Form";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface Props {
   isOpen: boolean;
@@ -28,8 +30,8 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
   useEffect(() => {
     if (!isOpen) {
-        setMessage(null);
-        setForm({ code: "", name: "", isDefault: false });
+      setMessage(null);
+      setForm({ code: "", name: "", isDefault: false });
     }
   }, [isOpen]);
 
@@ -37,7 +39,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value });
   };
-  
+
   // Handle change for the checkbox input
   const handleCheckboxChange = (checked: boolean) => {
     setForm(prev => ({ ...prev, isDefault: checked }));
@@ -78,16 +80,16 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       onClose={onClose}
       className="w-full max-w-[500px] p-8 lg:p-10 mx-4 sm:mx-auto"
     >
-      <form onSubmit={handleSubmit}>
-        <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Add Language
-        </h4>
+      <Form onSubmit={handleSubmit}>
+        <TitleComponent
+          title=" Add Language"
+          className="mb-4 font-semibold text-center"
+        />
 
         {message && (
           <p
-            className={`mb-4 text-center font-medium ${
-              message.includes("Error") ? "text-red-600" : "text-green-600"
-            }`}
+            className={`mb-4 text-center font-medium ${message.includes("Error") ? "text-red-600" : "text-green-600"
+              }`}
           >
             {message}
           </p>
@@ -117,7 +119,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               required
             />
           </div>
-          
+
           {/* isDefault */}
           <div className="flex items-center pt-2">
             <input
@@ -137,15 +139,15 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             Close
           </Button>
-          <Button 
-            size="sm" 
-            type="submit" 
+          <Button
+            size="sm"
+            type="submit"
             disabled={isPending || isFormEmpty}
           >
             {isPending ? "Adding..." : "Add"}
           </Button>
         </div>
-      </form>
+      </Form>
     </Modal>
   );
 };

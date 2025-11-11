@@ -8,6 +8,7 @@ import TextArea from "@/components/form/input/TextArea";
 import FileInput from "@/components/form/input/FileInput";
 import Form from "@/components/form/Form";
 import { LoadingIcon } from "@/icons";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface FormState {
   name: string;
@@ -70,12 +71,14 @@ const AddCategoryComponent: React.FC = () => {
       setLoading(false);
     }, 1000);
   };
+  const LABEL_CLASS = "text-md text-gray-800 dark:text-white/90";
 
   return (
     <>
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-        Add New Category
-      </h3>
+         <TitleComponent
+          title="Add New Category"
+          className="mb-6 font-semibold "
+        />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
         {success && (
@@ -91,7 +94,7 @@ const AddCategoryComponent: React.FC = () => {
 
         <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <Label htmlFor="name" className="text-md text-gray-800 dark:text-white/90">
+            <Label htmlFor="name" className={LABEL_CLASS}>
               Category Name <span className="text-error-500">*</span>
             </Label>
             <InputField
@@ -104,7 +107,7 @@ const AddCategoryComponent: React.FC = () => {
           </div>
 
           <div>
-            <Label htmlFor="description" className="text-md text-gray-800 dark:text-white/90">
+            <Label htmlFor="description" className={LABEL_CLASS}>
               Description
             </Label>
             <TextArea
@@ -117,7 +120,7 @@ const AddCategoryComponent: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <Label htmlFor="file" className="text-md text-gray-800 dark:text-white/90">
+              <Label htmlFor="file" className={LABEL_CLASS}>
                 Category Image <span className="text-error-500">*</span>
               </Label>
               <FileInput
@@ -130,7 +133,7 @@ const AddCategoryComponent: React.FC = () => {
             </div>
 
             <div>
-              <Label htmlFor="alt_text" className="text-md text-gray-800 dark:text-white/90">
+              <Label htmlFor="alt_text" className={LABEL_CLASS}>
                 Alt Text
               </Label>
               <InputField

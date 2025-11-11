@@ -135,7 +135,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
       <Form onSubmit={handleSubmit}>
         <TitleComponent
           title="Edit User"
-          className="mb-6 font-semibold text-center"
+          className="mb-6 text-center"
         />
 
         {message && (
@@ -224,7 +224,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 mt-8">
+        <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             Close
           </Button>

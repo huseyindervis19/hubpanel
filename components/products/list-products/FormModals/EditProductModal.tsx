@@ -11,6 +11,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import Select from "@/components/form/Select";
 import { LoadingIcon } from "@/icons";
 import { Product } from "@/types/Product";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface Category {
   id: number;
@@ -167,9 +168,10 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
-        <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Edit Product
-        </h4>
+         <TitleComponent
+          title="Edit Product"
+          className="mb-6 text-center"
+        />
 
         {message && (
           <p
@@ -181,7 +183,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
         )}
 
         <div className="space-y-6">
-          
           <div>
             <Label>Name</Label>
             <InputField
@@ -194,8 +195,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
               disabled={isPending}
             />
           </div>
-
-          
           <div>
             <Label>Description</Label>
             <TextArea
@@ -206,8 +205,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
               disabled={isPending}
             />
           </div>
-
-          
           <div>
             <Label>Category</Label>
             <Select
@@ -219,8 +216,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
               required
             />
           </div>
-
-          
           <div>
             <Label>Stock Quantity</Label>
             <InputField
@@ -233,8 +228,6 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
               disabled={isPending}
             />
           </div>
-
-          
           <div className="flex gap-6">
             <Checkbox
               label="Active Status"

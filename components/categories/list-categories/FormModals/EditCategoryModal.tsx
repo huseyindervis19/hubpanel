@@ -4,11 +4,12 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
-import TextArea from "@/components/form/input/TextArea"; 
-import FileInput from "@/components/form/input/FileInput"; 
+import TextArea from "@/components/form/input/TextArea";
+import FileInput from "@/components/form/input/FileInput";
 import Form from "@/components/form/Form";
 import { Modal } from "@/components/ui/modal";
 import { LoadingIcon } from "@/icons";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface CategoryData {
   name: string;
@@ -25,10 +26,10 @@ interface Props {
 }
 
 interface FormState {
-    name: string;
-    description: string;
-    file: File | null;
-    alt_text: string;
+  name: string;
+  description: string;
+  file: File | null;
+  alt_text: string;
 }
 
 const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, category }) => {
@@ -58,15 +59,15 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
     }
     setPreviewUrl(null);
     return () => {
-        if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
-        }
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
     }
   }, [category, isOpen]);
-  
+
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(false), 4000); 
+      const timer = setTimeout(() => setSuccess(false), 4000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -82,12 +83,12 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    
+
     if (previewUrl) URL.revokeObjectURL(previewUrl);
 
     if (selectedFile) {
       setForm(prev => ({ ...prev, file: selectedFile }));
-      
+
       const newPreviewUrl = URL.createObjectURL(selectedFile);
       setPreviewUrl(newPreviewUrl);
     } else {
@@ -99,32 +100,32 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
   const handleSubmit = (e: FormEvent) => {
     setLoading(true);
     setError(false);
-    
+
     if (form.name.trim() === "") {
-        setError(true);
-        setLoading(false);
-        return;
+      setError(true);
+      setLoading(false);
+      return;
     }
 
     setTimeout(() => {
-        setLoading(false);
-        setSuccess(true);
-        if (onSuccess) onSuccess();
+      setLoading(false);
+      setSuccess(true);
+      if (onSuccess) onSuccess();
     }, 1500);
   };
-  
-  const currentImageUrl = previewUrl || category?.image_url || null;
-  
-  const fileNameDisplay = form.file ? form.file.name : INITIAL_FILE_NAME;
 
+  const currentImageUrl = previewUrl || category?.image_url || null;
+
+  const LABEL_CLASS = "text-md text-gray-800 dark:text-white/90";
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
-        <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Edit Product Category
-        </h4>
-        
+        <TitleComponent
+          title="Edit Product Category"
+          className="text-center mb-6"
+        />
+
         {success && (
           <div className="mb-4 p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
             Category updated successfully!
@@ -139,7 +140,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
         <div className="flex flex-col gap-4">
           {/* Name */}
           <div>
-            <Label htmlFor="name" className="text-md text-gray-800 dark:text-white/90">
+            <Label htmlFor="name" className={LABEL_CLASS}>
               Name
             </Label>
             <InputField
@@ -154,7 +155,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
 
           {/* Description */}
           <div>
-            <Label htmlFor="description" className="text-md text-gray-800 dark:text-white/90">
+            <Label htmlFor="description" className={LABEL_CLASS}>
               Description
             </Label>
             <TextArea
@@ -167,7 +168,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
 
           {/* Image Upload and Preview */}
           <div>
-            <Label className="text-md text-gray-800 dark:text-white/90">
+            <Label className={LABEL_CLASS}>
               Category Image
             </Label>
             <FileInput
@@ -175,9 +176,9 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
               className="w-full"
               accept="image/*"
               placeholder="Choose File"
-              fileName={form.file ? form.file.name : INITIAL_FILE_NAME} 
+              fileName={form.file ? form.file.name : INITIAL_FILE_NAME}
             />
-            
+
             {/* Preview and File Name Display - Adjusted to work with new FileInput setup */}
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-white dark:bg-gray-900 dark:border-gray-700 shadow-sm mt-3">
               {currentImageUrl ? (
@@ -188,33 +189,33 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
                 />
               ) : (
                 <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center text-xs text-gray-500">
-                    No Img
+                  No Img
                 </div>
               )}
               <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
-                      {form.file ? (
-                          <span className="text-brand-500 dark:text-brand-400">
-                              New File Selected ({form.file.name})
-                          </span>
-                      ) : (
-                          <span className="text-gray-500 dark:text-gray-400">
-                              {category?.image_url ? "Current Image Set" : "No Image Set"}
-                          </span>
-                      )}
-                  </span>
-                  {category?.image_url && !form.file && (
-                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                         {category.image_url.split('/').pop()}
-                     </span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                  {form.file ? (
+                    <span className="text-brand-500 dark:text-brand-400">
+                      New File Selected ({form.file.name})
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400">
+                      {category?.image_url ? "Current Image Set" : "No Image Set"}
+                    </span>
                   )}
+                </span>
+                {category?.image_url && !form.file && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {category.image_url.split('/').pop()}
+                  </span>
+                )}
               </div>
             </div>
           </div>
 
           {/* Alt Text */}
           <div>
-            <Label htmlFor="alt_text" className="text-md text-gray-800 dark:text-white/90">
+            <Label htmlFor="alt_text" className={LABEL_CLASS}>
               Alt Text
             </Label>
             <InputField
@@ -233,24 +234,24 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
           <Button size="sm" variant="outline" onClick={onClose} disabled={loading}>
             Close
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             type="submit"
             disabled={loading || success}
             className={loading ? "opacity-75 cursor-not-allowed flex items-center justify-center" : ""}
           >
             {loading ? (
-                <>
-                  <LoadingIcon
-                    width={16}
-                    height={16}
-                    className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
-                  />
-                  Updating...
-                </>
-              ) : (
-                "Update"
-              )}
+              <>
+                <LoadingIcon
+                  width={16}
+                  height={16}
+                  className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
+                />
+                Updating...
+              </>
+            ) : (
+              "Update"
+            )}
           </Button>
         </div>
       </Form>

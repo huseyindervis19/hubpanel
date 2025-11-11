@@ -7,6 +7,12 @@ import Select from "@/components/form/Select";
 import { useTranslations, useUpdateTranslation } from "@/hooks/useTranslations";
 import { useLanguages } from "@/hooks/useLanguages";
 import { Translation } from "@/types/Translation";
+import LoadingComponent from "@/components/ui/LoadingComponent";
+import TitleComponent from "@/components/ui/TitleComponent";
+import SearchBar from "@/components/form/input/SearchBar";
+import Form from "@/components/form/Form";
+import InputField from "@/components/form/input/InputField";
+import Label from "@/components/form/Label";
 
 const TranslationsComponent = () => {
   const { translations = [], isLoading, isError, refetch } = useTranslations();
@@ -67,13 +73,7 @@ const TranslationsComponent = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center py-10">
-        <p className="text-gray-500">Loading translations...</p>
-      </div>
-    );
-
+  if (isLoading) { <LoadingComponent title="translations" /> }
   if (isError)
     return (
       <div className="flex justify-center items-center py-10">
@@ -85,10 +85,7 @@ const TranslationsComponent = () => {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Translations
-        </h3>
-
+        <TitleComponent title="Translations" />
         <div className="flex items-center gap-2">
           {/* Language Select */}
           <Select
@@ -102,13 +99,9 @@ const TranslationsComponent = () => {
 
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-3 py-2 text-sm border rounded-lg bg-white dark:bg-slate-900 dark:text-gray-100 dark:border-white/10 focus:ring-2 focus:ring-primary/40 outline-none"
+            <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
             />
           </div>
         </div>
@@ -116,7 +109,7 @@ const TranslationsComponent = () => {
 
       {/* Translations Form */}
       {selectedLang ? (
-        <form
+        <Form
           onSubmit={(e) => {
             e.preventDefault();
             handleSave();
@@ -139,10 +132,10 @@ const TranslationsComponent = () => {
                   key={item.id}
                   className="flex flex-col p-4 rounded-2xl border border-gray-200 bg-white shadow-sm dark:bg-slate-900 dark:border-white/[0.08]"
                 >
-                  <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                  <Label>
                     {item.TranslationKey?.key}
-                  </label>
-                  <input
+                  </Label>
+                  <InputField
                     type="text"
                     value={editedValues[item.id] ?? item.value}
                     onChange={(e) => handleChangeValue(item.id, e.target.value)}
@@ -167,7 +160,7 @@ const TranslationsComponent = () => {
               {loading ? "Saving..." : "Update"}
             </Button>
           </div>
-        </form>
+        </Form>
       ) : (
         <p className="text-gray-500 dark:text-gray-400">Select a language to view translations.</p>
       )}

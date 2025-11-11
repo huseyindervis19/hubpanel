@@ -9,6 +9,7 @@ import { Role } from "@/types/Role";
 import { useUpdateRole } from "@/hooks/useRoles";
 import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface Props {
   isOpen: boolean;
@@ -19,7 +20,7 @@ interface Props {
 
 const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
   const updateRole = useUpdateRole();
-  
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -28,7 +29,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
   const [message, setMessage] = useState<string | null>(null);
 
   const isPending = updateRole.isPending;
-  const isSuccess = message?.includes("successfully") ?? false; 
+  const isSuccess = message?.includes("successfully") ?? false;
 
   useEffect(() => {
     if (!isOpen) {
@@ -53,7 +54,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
   const isModified = useMemo(() => {
     if (!role) return false;
-    
+
     const nameChanged = form.name.trim() !== (role.name || "");
     const descChanged = form.description.trim() !== (role.description || "");
 
@@ -67,8 +68,8 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
     setMessage(null);
 
     const payload = {
-        name: form.name.trim(),
-        description: form.description.trim(),
+      name: form.name.trim(),
+      description: form.description.trim(),
     };
 
     try {
@@ -96,15 +97,15 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
       className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto"
     >
       <Form onSubmit={handleSubmit}>
-        <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Edit Role
-        </h4>
+        <TitleComponent
+          title="Edit Role"
+          className="mb-6 text-center"
+        />
 
         {message && (
           <p
-            className={`mb-4 text-center font-medium ${
-              message.includes("Error") ? "text-red-600" : "text-green-600"
-            }`}
+            className={`mb-4 text-center font-medium ${message.includes("Error") ? "text-red-600" : "text-green-600"
+              }`}
           >
             {message}
           </p>
@@ -122,7 +123,6 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
               required
             />
           </div>
-
           {/* Description */}
           <div>
             <Label>Description</Label>
@@ -135,13 +135,13 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 mt-8">
+        <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
             Close
           </Button>
-          <Button 
-            size="sm" 
-            type="submit" 
+          <Button
+            size="sm"
+            type="submit"
             disabled={isPending || !isModified || areFieldsEmpty || isSuccess}
             className={
               isPending
@@ -150,17 +150,17 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
             }
           >
             {isPending ? (
-                <>
-                  <LoadingIcon
-                    width={16}
-                    height={16}
-                    className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
-                  />
-                  Updating...
-                </>
-              ) : (
-                "Update"
-              )}
+              <>
+                <LoadingIcon
+                  width={16}
+                  height={16}
+                  className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
+                />
+                Updating...
+              </>
+            ) : (
+              "Update"
+            )}
           </Button>
         </div>
       </Form>

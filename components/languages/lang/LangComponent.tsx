@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow, Td, Th } from "@/components/ui/table";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import Button from "@/components/ui/button/Button";
 import { Search } from "lucide-react";
 import { useLanguages } from "@/hooks/useLanguages";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
-
 import AddLanguageModal from "./FormModals/AddLanguageModal";
 import EditLanguageModal from "./FormModals/EditLanguageModal";
 import DeleteLanguageModal from "./FormModals/DeleteLanguageModal";
+import LoadingComponent from "@/components/ui/LoadingComponent";
+import TitleComponent from "@/components/ui/TitleComponent";
+import SearchBar from "@/components/form/input/SearchBar";
 
 const LanguagesComponent = () => {
   const [selectedLang, setSelectedLang] = useState<any | null>(null);
@@ -47,35 +49,22 @@ const LanguagesComponent = () => {
   const closeEditModal = () => setEditModalOpen(false);
   const closeDeleteModal = () => setDeleteModalOpen(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-10">
-        <p className="text-gray-600 dark:text-gray-300">Loading languages...</p>
-      </div>
-    );
-  }
+  if (isLoading) { <LoadingComponent title="Languages" /> }
 
   return (
     <>
       {/* Header + Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 lg:mb-7">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Languages
-        </h3>
-
+        <TitleComponent title="Languages" />
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Total: {filteredLanguages.length}
             </p>
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search language..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-3 py-2 text-sm border rounded-lg bg-white dark:bg-slate-900 dark:text-gray-100 dark:border-white/10 focus:ring-2 focus:ring-primary/40 outline-none"
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
               />
             </div>
           </div>
@@ -85,9 +74,9 @@ const LanguagesComponent = () => {
               Add
             </Button>
           )} */}
-           <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
-              Add
-            </Button>
+          <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
+            Add
+          </Button>
         </div>
       </div>
 
@@ -97,20 +86,11 @@ const LanguagesComponent = () => {
           <div className="min-w-[600px]">
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-                <TableRow>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Name
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Code
-                  </TableCell>
-                  {/* isDefault */}
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Default
-                  </TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                    Actions
-                  </TableCell>
+                  <TableRow>
+                  <Th> Name </Th>
+                  <Th> Code </Th>
+                  <Th> Default </Th>
+                  <Th> Actions</Th>
                 </TableRow>
               </TableHeader>
 
@@ -118,13 +98,13 @@ const LanguagesComponent = () => {
                 {filteredLanguages.length > 0 ? (
                   filteredLanguages.map((lang) => (
                     <TableRow key={lang.id}>
-                      <TableCell className="px-5 py-4 sm:px-6 text-start text-theme-lg dark:text-gray-100">
+                      <Td>
                         {lang.name}
-                      </TableCell>
-                      <TableCell className="px-5 py-4 sm:px-6 text-start text-theme-lg dark:text-gray-100">
+                      </Td>
+                      <Td>
                         {lang.code}
-                      </TableCell>
-                      <TableCell className="px-5 py-4 sm:px-6 text-start text-theme-lg dark:text-gray-100">
+                      </Td>
+                      <Td>
                         {lang.isDefault ? (
                           <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
                             Yes
@@ -134,21 +114,21 @@ const LanguagesComponent = () => {
                             No
                           </span>
                         )}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-gray-800 dark:text-white">
-                        <div className="flex items-center gap-5">
+                      </Td>
+                      <Td>
+                        <div className="flex items-center">
                           {canEditLang && (
-                            <button onClick={() => openEditModal(lang)} title="Edit">
-                              <PencilIcon />
-                            </button>
+                            <Button  size="icon" variant="ghost" onClick={() => openEditModal(lang)} >
+                            <PencilIcon width={20} height={20} />
+                            </Button>
                           )}
                           {canDeleteLang && (
-                            <button onClick={() => openDeleteModal(lang)} title="Delete">
-                              <TrashBinIcon />
-                            </button>
+                            <Button size="icon" variant="ghost" onClick={() => openDeleteModal(lang)} >
+                            <TrashBinIcon width={20} height={20} />
+                            </Button>
                           )}
                         </div>
-                      </TableCell>
+                      </Td>
                     </TableRow>
                   ))
                 ) : (

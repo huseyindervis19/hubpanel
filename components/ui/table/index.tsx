@@ -64,7 +64,7 @@ const Td: React.FC<TableCellProps> = ({
   children,
   className,
 }) => {
-  return <td className={`px-5 py-4 sm:px-6 text-start text-theme-lg text-gray-600 dark:text-gray-300 ${className}`}>{children}</td>;
+  return <td className={`px-5 py-4 sm:px-6 text-start text-theme-lg text-gray-800 dark:text-gray-300 ${className}`}>{children}</td>;
 };
 
 // TableCell Component

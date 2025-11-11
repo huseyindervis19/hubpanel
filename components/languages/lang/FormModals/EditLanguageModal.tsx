@@ -7,6 +7,8 @@ import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
 import { useUpdateLanguage } from "@/hooks/useLanguages";
 import { Language } from "@/types/Language";
+import Form from "@/components/form/Form";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface Props {
   isOpen: boolean;
@@ -37,7 +39,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
       setForm({
         code: language.code || "",
         name: language.name || "",
-        isDefault: language.isDefault || false, 
+        isDefault: language.isDefault || false,
       });
       setMessage(null);
     }
@@ -46,7 +48,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value });
   };
-  
+
   // Handle change for the checkbox input
   const handleCheckboxChange = (checked: boolean) => {
     setForm(prev => ({ ...prev, isDefault: checked }));
@@ -54,7 +56,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
 
   const isModified = useMemo(() => {
     if (!language) return false;
-    
+
     const codeChanged = form.code.trim() !== (language.code || "");
     const nameChanged = form.name.trim() !== (language.name || "");
     const isDefaultChanged = form.isDefault !== (language.isDefault || false);
@@ -69,9 +71,9 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
     setMessage(null);
 
     const payload = {
-        code: form.code.trim(),
-        name: form.name.trim(),
-        isDefault: form.isDefault,
+      code: form.code.trim(),
+      name: form.name.trim(),
+      isDefault: form.isDefault,
     };
 
     try {
@@ -98,16 +100,16 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
       onClose={onClose}
       className="w-full max-w-[500px] p-8 lg:p-10 mx-4 sm:mx-auto"
     >
-      <form onSubmit={handleSubmit}>
-        <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Edit Language
-        </h4>
+      <Form onSubmit={handleSubmit}>
+        <TitleComponent
+          title="Edit Language"
+          className="mb-6 font-semibold text-center"
+        />
 
         {message && (
           <p
-            className={`mb-4 text-center font-medium ${
-              message.includes("Error") ? "text-red-600" : "text-green-600"
-            }`}
+            className={`mb-4 text-center font-medium ${message.includes("Error") ? "text-red-600" : "text-green-600"
+              }`}
           >
             {message}
           </p>
@@ -137,7 +139,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
               required
             />
           </div>
-          
+
           {/* isDefault */}
           <div className="flex items-center pt-2">
             <input
@@ -158,15 +160,15 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             Close
           </Button>
-          <Button 
-            size="sm" 
-            type="submit" 
+          <Button
+            size="sm"
+            type="submit"
             disabled={isPending || !isModified || areFieldsEmpty}
           >
-            {isPending ? "Saving..." : "Update"}
+            {isPending ? "Updating..." : "Update"}
           </Button>
         </div>
-      </form>
+      </Form>
     </Modal>
   );
 };

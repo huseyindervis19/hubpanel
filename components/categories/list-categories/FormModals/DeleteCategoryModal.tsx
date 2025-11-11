@@ -16,7 +16,6 @@ interface Props {
 const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, category }) => {
 
   const handleDeleteCategory = async (): Promise<void> => {
-    
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (category?.name === "Electronics") {

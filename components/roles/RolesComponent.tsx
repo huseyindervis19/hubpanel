@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow, Td, Th } from "../ui/table";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import Button from "@/components/ui/button/Button";
 import AddRoleModal from "./FormModals/AddRoleModal";
@@ -12,6 +12,8 @@ import { useRoles } from "@/hooks/useRoles";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import { Role } from "@/types/Role";
+import LoadingComponent from "../ui/LoadingComponent";
+import TitleComponent from "../ui/TitleComponent";
 
 const RolesComponent = () => {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -19,13 +21,13 @@ const RolesComponent = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
-  
+
   const { roles = [], isLoading, refetch } = useRoles();
   const canAddRole = useHasPermission(PERMISSIONS.ADD_ROLE);
   const canEditRole = useHasPermission(PERMISSIONS.EDIT_ROLE);
   const canDeleteRole = useHasPermission(PERMISSIONS.DELETE_ROLE);
   const canManagePermissions = useHasPermission(PERMISSIONS.MANAGE_ROLE_PERMISSIONS);
-  
+
   const openEditModal = (role: Role) => {
     setSelectedRole(role);
     setEditModalOpen(true);
@@ -54,18 +56,12 @@ const RolesComponent = () => {
     setSelectedRole(null);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-10">
-        <p className="text-gray-600 dark:text-gray-300">Loading roles...</p>
-      </div>
-    );
-  }
+  if (isLoading) { <LoadingComponent title="Roles" /> }
 
   return (
     <>
       <div className="flex items-center justify-between mb-5 lg:mb-7">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Roles</h3>
+        <TitleComponent title="Roles" />
         <div className="flex justify-end mb-4">
           {canAddRole && (
             <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>Add</Button>
@@ -79,10 +75,10 @@ const RolesComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-sm dark:text-gray-400">Name</TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-sm dark:text-gray-400">Description</TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-sm dark:text-gray-400">Permissions</TableCell>
-                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-sm dark:text-gray-400">Actions</TableCell>
+                  <Th>Name</Th>
+                  <Th>Description</Th>
+                  <Th>Permissions</Th>
+                  <Th>Actions</Th>
                 </TableRow>
               </TableHeader>
 
@@ -90,9 +86,9 @@ const RolesComponent = () => {
                 {roles.length > 0 ? (
                   roles.map((role: Role) => (
                     <TableRow key={role.id}>
-                      <TableCell className="px-5 py-4">{role.name}</TableCell>
-                      <TableCell className="px-5 py-4 ">{role.description || "-"}</TableCell>
-                      <TableCell className="px-5 py-4">
+                      <Td >{role.name}</Td>
+                      <Td>{role.description || "-"}</Td>
+                      <Td >
                         {canManagePermissions && (
                           <Button
                             size="sm"
@@ -102,21 +98,21 @@ const RolesComponent = () => {
                             Manage
                           </Button>
                         )}
-                      </TableCell>
-                      <TableCell className="px-5 py-4">
-                        <div className="flex items-center gap-2">
+                      </Td>
+                      <Td>
+                        <div className="flex items-center ">
                           {canEditRole && (
                             <Button size="icon" variant="ghost" onClick={() => openEditModal(role)}>
-                              <PencilIcon width={16} height={16} />
+                              <PencilIcon width={20} height={20} />
                             </Button>
                           )}
                           {canDeleteRole && (
                             <Button size="icon" variant="ghost" onClick={() => openDeleteModal(role)}>
-                              <TrashBinIcon width={16} height={16} />
+                              <TrashBinIcon width={20} height={20} />
                             </Button>
                           )}
                         </div>
-                      </TableCell>
+                      </Td>
                     </TableRow>
                   ))
                 ) : (

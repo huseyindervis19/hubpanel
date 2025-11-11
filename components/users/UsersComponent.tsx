@@ -71,7 +71,7 @@ const UsersComponent = () => {
             </div>
           </div>
           {canAddUser && (
-            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
+            <Button className="h-8.5 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
               Add
             </Button>
           )}

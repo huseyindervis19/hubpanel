@@ -8,6 +8,7 @@ import InputField from "@/components/form/input/InputField";
 import { useCreateRole } from "@/hooks/useRoles";
 import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 interface Props {
   isOpen: boolean;
@@ -76,9 +77,10 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto"
     >
       <Form onSubmit={handleSubmit}>
-        <h4 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-          Add Role
-        </h4>
+         <TitleComponent
+          title="Add Role"
+          className="mb-4 font-semibold text-center"
+        />
 
         {message && (
           <p
@@ -103,7 +105,6 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               />
             </div>
           </div>
-
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>Description</Label>

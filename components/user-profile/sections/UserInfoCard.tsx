@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { PencilIcon } from "@/icons";
+import TitleComponent from "@/components/ui/TitleComponent";
 
 type Props = {
   user: {
@@ -36,7 +37,7 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
   const infoFields = [
     { label: "Username", value: user.username },
     { label: "Email", value: user.email },
-    { label: "Roles", element: RolesDisplay }, 
+    { label: "Roles", element: RolesDisplay },
     { label: "Language", value: user.language?.name || "-" },
   ];
 
@@ -44,14 +45,15 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Personal Info
-          </h4>
+          <TitleComponent
+            title="Personal Info"
+            className="lg:mb-6"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
             {infoFields.map((field) => (
               <div key={field.label}>
                 <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">{field.label}</p>
-                
+
                 {/* Render the element if it exists, otherwise render the plain value */}
                 {field.element ? (
                   field.element

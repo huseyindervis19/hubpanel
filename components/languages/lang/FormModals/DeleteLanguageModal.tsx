@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { useDeleteLanguage } from "@/hooks/useLanguages";
+import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 
 interface Props {
   isOpen: boolean;
@@ -46,41 +47,18 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-6">
-      <div className="pt-4 pb-4 text-center">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-          Delete Language
-        </h4>
-
-        {message && (
-          <p
-            className={`mb-4 font-medium ${
-              message.includes("Error") ? "text-red-600" : "text-green-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
-
-        <p className="text-sm leading-6 text-gray-600 dark:text-gray-300">
-          Are you sure you want to delete the language "{language?.name}"? This action cannot be undone.
-        </p>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-3">
-        <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-          Cancel
-        </Button>
-        <Button
-          size="sm"
-          className="bg-red-600 hover:bg-red-700 text-white"
-          onClick={handleDelete}
-          disabled={isPending}
-        >
-          {isPending ? "Deleting..." : "Delete"}
-        </Button>
-      </div>
-    </Modal>
+    <DeleteConfirmModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={handleDelete}
+      title="Confirm language Deletion"
+      message={
+        <>
+          Are you sure you want to delete <strong>"{language?.name}"</strong>? This action cannot be undone.
+        </>
+      }
+      errorMessage="Error deleting language. This user might be in use or protected."
+    />
   );
 };
 
