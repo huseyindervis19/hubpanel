@@ -5,6 +5,7 @@ import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { useDeleteLanguage } from "@/hooks/useLanguages";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, language }) => {
+  const { messages } = useLocale();
   const [message, setMessage] = useState<string | null>(null);
   const deleteLanguage = useDeleteLanguage();
   const isPending = deleteLanguage.isPending; 
@@ -34,7 +36,7 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
 
     try {
       await deleteLanguage.mutateAsync(language.id);
-      setMessage("Language deleted successfully!");
+      setMessage(messages["delete_success"]?.replace("Deleted", "Language deleted") || "Language deleted successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -42,7 +44,7 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
       onSuccess();
     } catch (err) {
       console.error(err);
-      setMessage("Error deleting language. Please try again.");
+      setMessage(messages["error"] || "Error deleting language. Please try again.");
     }
   };
 
@@ -51,13 +53,16 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDelete}
-      title="Confirm language Deletion"
+      title={messages["confirm_delete"] || "Confirm language Deletion"}
       message={
         <>
-          Are you sure you want to delete <strong>"{language?.name}"</strong>? This action cannot be undone.
+          {messages["delete_warning"] 
+            ? messages["delete_warning"].replace("{name}", language?.name || "")
+            : <>Are you sure you want to delete <strong>"{language?.name}"</strong>? This action cannot be undone.</>
+          }
         </>
       }
-      errorMessage="Error deleting language. This user might be in use or protected."
+      errorMessage={messages["delete_failed"] || "Error deleting language. This language might be in use or protected."}
     />
   );
 };

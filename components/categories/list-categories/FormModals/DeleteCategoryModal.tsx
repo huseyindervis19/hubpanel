@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal"; 
+import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
+import { useLocale } from "@/context/LocaleContext"; 
 
 interface Props {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, category }) => {
+  const { messages } = useLocale();
 
   const handleDeleteCategory = async (): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -35,13 +37,16 @@ const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, cate
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDeleteCategory}
-      title="Confirm Category Deletion"
+      title={messages["confirm_delete"] || "Confirm Category Deletion"}
       message={
         <>
-          Are you sure you want to delete <strong>"{category?.name}"</strong>? This action cannot be undone.
+          {messages["delete_warning"] 
+            ? messages["delete_warning"].replace("{name}", category?.name || "")
+            : <>Are you sure you want to delete <strong>"{category?.name}"</strong>? This action cannot be undone.</>
+          }
         </>
       }
-      errorMessage="Error deleting category. This category might be in use or protected."
+      errorMessage={messages["delete_failed"] || "Error deleting category. This category might be in use or protected."}
     />
   );
 };

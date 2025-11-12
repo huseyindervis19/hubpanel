@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import { PencilIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 type Props = {
   user: {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 const UserInfoCard = ({ user, onEdit }: Props) => {
+  const { messages } = useLocale();
   const RolesDisplay = useMemo(() => {
     if (!user.userRoles || user.userRoles.length === 0) {
       return <p className="text-sm font-medium text-gray-800 dark:text-white/90">-</p>;
@@ -35,9 +37,9 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
   }, [user.userRoles]);
 
   const infoFields = [
-    { label: "Username", value: user.username },
-    { label: "Email", value: user.email },
-    { label: "Roles", element: RolesDisplay },
+    { label: messages["username"] || "Username", value: user.username },
+    { label: messages["email"] || "Email", value: user.email },
+    { label: messages["nav_roles"] || "Roles", element: RolesDisplay },
     { label: "Language", value: user.language?.name || "-" },
   ];
 
@@ -46,7 +48,7 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <TitleComponent
-            title="Personal Info"
+            title={messages["personal_info"] || "Personal Info"}
             className="lg:mb-6"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-7 2xl:gap-x-32">
@@ -72,7 +74,7 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
           onClick={onEdit}
         >
           <PencilIcon />
-          Edit
+          {messages["edit"] || "Edit"}
         </button>
       </div>
     </div>

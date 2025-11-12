@@ -14,6 +14,7 @@ import { useLanguages } from "@/hooks/useLanguages";
 import { User } from "@/types/User";
 import { useUpdateUser } from "@/hooks/useUsers";
 import { LoadingIcon } from "@/icons";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) => {
+  const { messages } = useLocale();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -97,7 +99,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     if (!user || !user.id) return;
 
     if (form.roleIds.length === 0) {
-      setMessage("Please select at least one role.");
+      setMessage(messages["select_at_least_one_role"] || "Please select at least one role.");
       return;
     }
 
@@ -114,7 +116,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     try {
       await updateUser.mutateAsync({ id: user.id, data: payload });
 
-      setMessage("User updated successfully!");
+      setMessage(messages["user_updated_successfully"] || "User updated successfully!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
@@ -122,7 +124,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
     } catch (err) {
       console.error(err);
-      setMessage("Error updating user. Please try again.");
+      setMessage(messages["error"] || "Error updating user. Please try again.");
     }
   };
 
@@ -134,7 +136,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title="Edit User"
+          title={messages["edit_user"] || "Edit User"}
           className="mb-6 text-center"
         />
 
@@ -150,22 +152,22 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Username</Label>
+              <Label>{messages["username"] || "Username"}</Label>
               <InputField
                 type="text"
                 value={form.username}
                 onChange={(e) => handleChange("username", e.target.value)}
-                placeholder="Enter username"
+                placeholder={messages["username_placeholder"] || "Enter username"}
                 required
               />
             </div>
             <div className="flex-1">
-              <Label>Email</Label>
+              <Label>{messages["email"] || "Email"}</Label>
               <InputField
                 type="email"
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                placeholder="Enter email"
+                placeholder={messages["email_placeholder"] || "Enter email"}
                 required
               />
             </div>
@@ -173,7 +175,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Roles</Label>
+              <Label>{messages["roles"] || "Roles"}</Label>
               <MultiSelect
                 options={roles.map((role) => ({
                   value: role.id.toString(),
@@ -185,13 +187,13 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   "roleIds",
                   selected.map((v) => parseInt(v))
                 )}
-                placeholder={rolesLoading ? "Loading roles..." : "Select Role"}
+                placeholder={rolesLoading ? (messages["loading"] || "Loading roles...") : (messages["select_roles"] || "Select Role")}
                 disabled={rolesLoading || isPending}
               />
             </div>
 
             <div className="flex-1">
-              <Label>Language</Label>
+              <Label>{messages["language"] || "Language"}</Label>
               <Select
                 value={form.languageId?.toString() || ""}
                 onChange={(value) => handleChange("languageId", parseInt(value))}
@@ -199,7 +201,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   value: String(l.id),
                   label: l.name,
                 }))}
-                placeholder={langsLoading ? "Loading languages..." : "Select Language"}
+                placeholder={langsLoading ? (messages["loading"] || "Loading languages...") : (messages["select_language"] || "Select Language")}
                 disabled={langsLoading || isPending}
                 required
               />
@@ -208,15 +210,15 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Status</Label>
+              <Label>{messages["status"] || "Status"}</Label>
               <Select
                 value={form.status}
                 onChange={(value) => handleChange("status", value)}
                 options={[
-                  { value: "active", label: "Active" },
-                  { value: "inactive", label: "Inactive" },
+                  { value: "active", label: messages["active"] || "Active" },
+                  { value: "inactive", label: messages["inactive"] || "Inactive" },
                 ]}
-                placeholder="Select Status"
+                placeholder={messages["select_status"] || "Select Status"}
                 required
                 disabled={isPending}
               />
@@ -226,7 +228,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
@@ -240,10 +242,10 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                Updating...
+                {messages["edit_profile_modal_loading"]?.replace("profile", "user") || "Updating..."}
               </>
             ) : (
-              "Update"
+              messages["update"] || "Update"
             )}
           </Button>
         </div>

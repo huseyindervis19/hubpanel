@@ -12,6 +12,7 @@ import Select from "@/components/form/Select";
 import { LoadingIcon } from "@/icons";
 import { Product } from "@/types/Product";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Category {
   id: number;
@@ -54,6 +55,7 @@ interface FormState {
 }
 
 const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product }) => {
+  const { messages } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
     description: "",
@@ -125,17 +127,17 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     if (!product || !product.id) return;
 
     if (form.name.trim() === "") {
-        setMessage("Product Name is required.");
+        setMessage(messages["name_required"] || "Product Name is required.");
         return;
     }
     
     if (form.category_id.trim() === "") {
-      setMessage("Please select a category.");
+      setMessage(messages["category_name_required"] || "Please select a category.");
       return;
     }
 
     if (form.stock_quantity < 0) {
-        setMessage("Stock quantity cannot be negative.");
+        setMessage(messages["stock_quantity_required"] || "Stock quantity cannot be negative.");
         return;
     }
 
@@ -153,7 +155,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     try {
       await updateProduct.mutateAsync({ id: product.id, data: payload });
 
-      setMessage("Product updated successfully!");
+      setMessage(messages["product_updated_successfully"] || "Product updated successfully!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
@@ -161,7 +163,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
     } catch (err) {
       console.error(err);
-      setMessage("Error updating product. Please try again.");
+      setMessage(messages["error"] || "Error updating product. Please try again.");
     }
   };
 
@@ -169,7 +171,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
          <TitleComponent
-          title="Edit Product"
+          title={messages["edit_product"] || "Edit Product"}
           className="mb-6 text-center"
         />
 
@@ -184,59 +186,59 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
         <div className="space-y-6">
           <div>
-            <Label>Name</Label>
+            <Label>{messages["name"] || "Name"}</Label>
             <InputField
               type="text"
               name="name"
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Enter product name"
+              placeholder={messages["product_name_placeholder"] || "Enter product name"}
               required
               disabled={isPending}
             />
           </div>
           <div>
-            <Label>Description</Label>
+            <Label>{messages["description"] || "Description"}</Label>
             <TextArea
               value={form.description}
               onChange={(value) => handleChange("description", value)}
-              placeholder="Enter product description"
+              placeholder={messages["product_description_placeholder"] || "Enter product description"}
               rows={4}
               disabled={isPending}
             />
           </div>
           <div>
-            <Label>Category</Label>
+            <Label>{messages["product_category_label"]?.replace(":", "") || "Category"}</Label>
             <Select
               value={form.category_id}
               onChange={(value) => handleChange("category_id", value)}
               options={categoryOptions}
-              placeholder={categoriesLoading ? "Loading categories..." : "Select Category"}
+              placeholder={categoriesLoading ? (messages["loading"] || "Loading categories...") : (messages["select_category"] || "Select Category")}
               disabled={categoriesLoading || isPending}
               required
             />
           </div>
           <div>
-            <Label>Stock Quantity</Label>
+            <Label>{messages["stock_quantity_label"] || "Stock Quantity"}</Label>
             <InputField
               type="number"
               name="stock_quantity"
               value={form.stock_quantity.toString()}
               onChange={(e) => handleChange("stock_quantity", Number(e.target.value))}
-              placeholder="Enter stock quantity"
+              placeholder={messages["stock_quantity_placeholder"] || "Enter stock quantity"}
               min="0"
               disabled={isPending}
             />
           </div>
           <div className="flex gap-6">
             <Checkbox
-              label="Active Status"
+              label={messages["is_active_label"] || "Active Status"}
               checked={form.is_active}
               onChange={(checked) => handleChange("is_active", checked)}
               disabled={isPending}
             />
             <Checkbox
-              label="Featured Product"
+              label={messages["is_featured_label"] || "Featured Product"}
               checked={form.is_featured}
               onChange={(checked) => handleChange("is_featured", checked)}
               disabled={isPending}
@@ -247,7 +249,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
         
         <div className="flex items-center justify-end w-full gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
@@ -262,10 +264,10 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                Updating...
+                {messages["edit_profile_modal_loading"]?.replace("profile", "product") || "Updating..."}
               </>
             ) : (
-              "Update"
+              messages["update"] || "Update"
             )}
           </Button>
         </div>

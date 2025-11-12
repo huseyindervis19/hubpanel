@@ -10,6 +10,7 @@ import DeleteProductModal from "./FormModals/DeleteProductModal";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 const mockProducts = [
   {
@@ -48,6 +49,7 @@ const mockProducts = [
 ];
 
 const ProductsComponent: React.FC = () => {
+  const { messages } = useLocale();
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -72,11 +74,11 @@ const ProductsComponent: React.FC = () => {
   return (
     <>
       <div className="mb-5 flex items-center justify-between lg:mb-7">
-        <TitleComponent title="Products List" />
+        <TitleComponent title={messages["nav_product_list"] || "Products List"} />
 
         {canAddProduct && (
           <Link href="/products/add-product">
-            <Button className="h-9 px-4 text-sm">Add Product</Button>
+            <Button className="h-9 px-4 text-sm">{messages["nav_add_product"] || "Add Product"}</Button>
           </Link>
         )}
       </div>
@@ -87,14 +89,14 @@ const ProductsComponent: React.FC = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th> Main Image </Th>
-                  <Th> Category </Th>
-                  <Th> Name </Th>
-                  <Th> Description</Th>
-                  <Th> Stock</Th>
-                  <Th> Status</Th>
-                  <Th> Featured</Th>
-                  <Th> Action</Th>
+                  <Th> {messages["product_main_image"] || "Main Image"} </Th>
+                  <Th> {messages["category_name_in_table"] || "Category"} </Th>
+                  <Th> {messages["name"] || "Name"} </Th>
+                  <Th> {messages["description"] || "Description"}</Th>
+                  <Th> {messages["stock_quantity_in_table"] || "Stock"}</Th>
+                  <Th> {messages["is_active_in_table"] || "Status"}</Th>
+                  <Th> {messages["is_featured"] || "Featured"}</Th>
+                  <Th> {messages["action"] || "Action"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -113,10 +115,10 @@ const ProductsComponent: React.FC = () => {
                     <Td>{product.description}</Td>
                     <Td>{product.stock_quantity}</Td>
                     <Td className={`px-6 py-4 font-medium ${product.is_active ? "text-green-600" : "text-red-600"}`}>
-                      {product.is_active ? "Active" : "Inactive"}
+                      {product.is_active ? (messages["active"] || "Active") : (messages["inactive"] || "Inactive")}
                     </Td>
                     <Td className={`px-6 py-4 font-medium ${product.is_featured ? "text-green-600" : "text-red-600"}`}>
-                      {product.is_featured ? "Yes" : "No"}
+                      {product.is_featured ? (messages["yes"] || "Yes") : (messages["no"] || "No")}
                     </Td>
 
                     {/* Action buttons */}

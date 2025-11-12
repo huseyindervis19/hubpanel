@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useDeleteUser } from "@/hooks/useUsers";
+import { useLocale } from "@/context/LocaleContext";
 
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
   } | null;
 }
 const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) => {
+  const { messages } = useLocale();
   const deleteUser = useDeleteUser();
 
   const handleDelete = async () => {
@@ -36,13 +38,16 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDelete}
-      title="Confirm User Deletion"
+      title={messages["confirm_delete"] || "Confirm User Deletion"}
       message={
         <>
-          Are you sure you want to delete <strong>"{user?.username}"</strong>? This action cannot be undone.
+          {messages["delete_warning"] 
+            ? messages["delete_warning"].replace("{name}", user?.username || "")
+            : <>Are you sure you want to delete <strong>"{user?.username}"</strong>? This action cannot be undone.</>
+          }
         </>
       }
-      errorMessage="Error deleting user. This user might be in use or protected."
+      errorMessage={messages["delete_failed"] || "Error deleting user. This user might be in use or protected."}
     />
   );
 };

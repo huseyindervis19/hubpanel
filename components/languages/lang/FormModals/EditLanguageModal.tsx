@@ -9,6 +9,7 @@ import { useUpdateLanguage } from "@/hooks/useLanguages";
 import { Language } from "@/types/Language";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, language }) => {
+  const { messages } = useLocale();
   const updateLanguage = useUpdateLanguage();
   const [form, setForm] = useState({
     code: "",
@@ -78,7 +80,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
 
     try {
       await updateLanguage.mutateAsync({ id: language.id, data: payload });
-      setMessage("Language updated successfully!");
+      setMessage(messages["user_updated_successfully"]?.replace("User", "Language") || "Language updated successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -86,7 +88,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
       onSuccess();
     } catch (err) {
       console.error(err);
-      setMessage("Error updating language. Please try again.");
+      setMessage(messages["error"] || "Error updating language. Please try again.");
     }
   };
 
@@ -102,7 +104,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title="Edit Language"
+          title={messages["edit_language"] || "Edit Language"}
           className="mb-6 font-semibold text-center"
         />
 
@@ -118,24 +120,24 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
         <div className="space-y-5">
           {/* Code */}
           <div>
-            <Label>Language Code</Label>
+            <Label>{messages["code"] || "Language Code"}</Label>
             <InputField
               type="text"
               value={form.code}
               onChange={(e) => handleChange("code", e.target.value)}
-              placeholder="Enter code (e.g. en, ar)"
+              placeholder={messages["code_placeholder"] || "Enter code (e.g. en, ar)"}
               required
             />
           </div>
 
           {/* Name */}
           <div>
-            <Label>Language Name</Label>
+            <Label>{messages["name"] || "Language Name"}</Label>
             <InputField
               type="text"
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Enter name (e.g. English, Arabic)"
+              placeholder={messages["name_placeholder"] || "Enter name (e.g. English, Arabic)"}
               required
             />
           </div>
@@ -150,7 +152,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
               className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
             />
             <Label htmlFor="isDefaultEdit" className="ml-2 mb-0 cursor-pointer">
-              Set as Default Language
+              {messages["set_as_default"] || "Set as Default Language"}
             </Label>
           </div>
         </div>
@@ -158,14 +160,14 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
             type="submit"
             disabled={isPending || !isModified || areFieldsEmpty}
           >
-            {isPending ? "Updating..." : "Update"}
+            {isPending ? (messages["edit_profile_modal_loading"]?.replace("profile", "language") || "Updating...") : (messages["update"] || "Update")}
           </Button>
         </div>
       </Form>

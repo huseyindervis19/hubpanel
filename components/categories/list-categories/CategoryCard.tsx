@@ -35,7 +35,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onViewProducts,
 }) => {
   const isDropdownOpen = openDropdownId === category.id;
-  const { locale } = useLocale();
+  const { locale, messages } = useLocale();
   const isRtl = locale === "ar";
 
   return (
@@ -62,7 +62,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {category.description}
               </p>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
-                Product Count: {category.productsCount}
+                {messages["product_count"] || "Product Count"}: {category.productsCount}
               </p>
             </div>
 
@@ -85,7 +85,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     onItemClick={onViewProducts}
                     className="text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    View Products
+                    {messages["view_products"] || "View Products"}
                   </DropdownItem>
                 )}
                 {onEdit && (
@@ -93,7 +93,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     onItemClick={onEdit} 
                     className="text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    Edit
+                    {messages["edit"] || "Edit"}
                   </DropdownItem>
                 )}
                 {onDelete && (
@@ -101,7 +101,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     onItemClick={onDelete} 
                     className="text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    Delete
+                    {messages["delete"] || "Delete"}
                   </DropdownItem>
                 )}
               </Dropdown>

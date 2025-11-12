@@ -80,7 +80,7 @@ export default function SignInForm() {
             </Label>
             <Input
               type="email"
-              placeholder="info@gmail.com"
+              placeholder={messages["email_placeholder"] || "info@gmail.com"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -110,7 +110,7 @@ export default function SignInForm() {
                 className={`absolute top-1/2 -translate-y-1/2 z-10 ${
                   isRtl ? "left-4" : "right-4"
                 }`}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? (messages["hide_password"] || "Hide password") : (messages["show_password"] || "Show password")}
               >
                 {showPassword ? (
                   <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
@@ -153,7 +153,7 @@ export default function SignInForm() {
             {/* Error message */}
             {errorMessage && (
               <p className="mt-2 text-sm text-red-500 text-center">
-                {errorMessage === "Invalid credentials"
+                {errorMessage === "Invalid credentials" || errorMessage.includes("Invalid")
                   ? messages["signin_error_invalid"] ||
                     "Invalid email or password"
                   : errorMessage}

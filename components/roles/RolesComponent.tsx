@@ -14,8 +14,10 @@ import { PERMISSIONS } from "@/types/Permissions";
 import { Role } from "@/types/Role";
 import LoadingComponent from "../ui/LoadingComponent";
 import TitleComponent from "../ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 const RolesComponent = () => {
+  const { messages } = useLocale();
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -56,15 +58,15 @@ const RolesComponent = () => {
     setSelectedRole(null);
   };
 
-  if (isLoading) { <LoadingComponent title="Roles" /> }
+  if (isLoading) { <LoadingComponent title={messages["message"] || "Roles"} /> }
 
   return (
     <>
       <div className="flex items-center justify-between mb-5 lg:mb-7">
-        <TitleComponent title="Roles" />
+        <TitleComponent title={messages["nav_roles"] || "Roles"} />
         <div className="flex justify-end mb-4">
           {canAddRole && (
-            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>Add</Button>
+            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>{messages["add"] || "Add"}</Button>
           )}
         </div>
       </div>
@@ -75,10 +77,10 @@ const RolesComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th>Name</Th>
-                  <Th>Description</Th>
-                  <Th>Permissions</Th>
-                  <Th>Actions</Th>
+                  <Th>{messages["name"] || "Name"}</Th>
+                  <Th>{messages["description"] || "Description"}</Th>
+                  <Th>{messages["nav_permissions"] || "Permissions"}</Th>
+                  <Th>{messages["action"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -95,7 +97,7 @@ const RolesComponent = () => {
                             variant="outline"
                             onClick={() => openPermissionsModal(role)}
                           >
-                            Manage
+                            {messages["manage"] || "Manage"}
                           </Button>
                         )}
                       </Td>
@@ -121,7 +123,7 @@ const RolesComponent = () => {
                       colSpan={4}
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
-                      No roles found.
+                      {messages["no_data"] || "No roles found."}
                     </td>
                   </TableRow>
                 )}

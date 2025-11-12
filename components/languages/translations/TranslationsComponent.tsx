@@ -13,8 +13,10 @@ import SearchBar from "@/components/form/input/SearchBar";
 import Form from "@/components/form/Form";
 import InputField from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
+import { useLocale } from "@/context/LocaleContext";
 
 const TranslationsComponent = () => {
+  const { messages } = useLocale();
   const { translations = [], isLoading, isError, refetch } = useTranslations();
   const updateMutation = useUpdateTranslation();
   const { languages = [], isLoading: langsLoading } = useLanguages();
@@ -63,21 +65,21 @@ const TranslationsComponent = () => {
 
       setEditedValues({});
       refetch();
-      setMessage("Translations updated successfully!");
+      setMessage(messages["updated_successfully"]?.replace("Updated", "Translations updated") || "Translations updated successfully!");
       setTimeout(() => setMessage(null), 1000);
     } catch (error) {
       console.error("Update failed:", error);
-      setMessage("Error updating translations. Please try again.");
+      setMessage(messages["error"] || "Error updating translations. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (isLoading) { <LoadingComponent title="translations" /> }
+  if (isLoading) { <LoadingComponent title={messages["message"] || "translations"} /> }
   if (isError)
     return (
       <div className="flex justify-center items-center py-10">
-        <p className="text-red-500">Failed to load translations.</p>
+        <p className="text-red-500">{messages["error"] || "Failed to load translations."}</p>
       </div>
     );
 
@@ -85,14 +87,14 @@ const TranslationsComponent = () => {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <TitleComponent title="Translations" />
+        <TitleComponent title={messages["message"] || "Translations"} />
         <div className="flex items-center gap-2">
           {/* Language Select */}
           <Select
             value={selectedLang?.toString() || ""}
             onChange={(value) => setSelectedLang(value ? Number(value) : null)}
             options={languages.map((l) => ({ value: String(l.id), label: l.name }))}
-            placeholder={langsLoading ? "Loading..." : "Language"}
+            placeholder={langsLoading ? (messages["loading"] || "Loading...") : "Language"}
             disabled={langsLoading}
             className="w-36 h-10 text-sm"
           />
@@ -146,7 +148,7 @@ const TranslationsComponent = () => {
             </div>
           ) : (
             <p className="text-gray-500 dark:text-gray-400">
-              No translations found for this language.
+              {messages["no_data"] || "No translations found for this language."}
             </p>
           )}
 
@@ -157,12 +159,12 @@ const TranslationsComponent = () => {
               type="submit"
               disabled={loading || Object.keys(editedValues).length === 0}
             >
-              {loading ? "Saving..." : "Update"}
+              {loading ? (messages["saving"] || "Saving...") : (messages["update"] || "Update")}
             </Button>
           </div>
         </Form>
       ) : (
-        <p className="text-gray-500 dark:text-gray-400">Select a language to view translations.</p>
+        <p className="text-gray-500 dark:text-gray-400">{messages["select_language_message"] || "Select a language to view translations."}</p>
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import React from "react";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal"; 
 import { useDeleteRole } from "@/hooks/useRoles";
 import { Role } from "@/types/Role";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
+  const { messages } = useLocale();
   const deleteRole = useDeleteRole();
 
   const handleDeleteRole = async (): Promise<void> => {
@@ -38,13 +40,16 @@ const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) 
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDeleteRole} 
-      title="Confirm Role Deletion"
+      title={messages["confirm_delete"] || "Confirm Role Deletion"}
       message={
         <>
-          Are you sure you want to delete the role <strong>"{role?.name}"</strong>? This action cannot be undone.
+          {messages["delete_warning"] 
+            ? messages["delete_warning"].replace("{name}", role?.name || "")
+            : <>Are you sure you want to delete the role <strong>"{role?.name}"</strong>? This action cannot be undone.</>
+          }
         </>
       }
-      errorMessage="Error deleting role. This role might be in use or protected."
+      errorMessage={messages["delete_failed"] || "Error deleting role. This role might be in use or protected."}
     />
   );
 };

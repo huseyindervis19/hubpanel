@@ -12,6 +12,7 @@ import Form from "@/components/form/Form";
 import { useRoles } from "@/hooks/useRoles";
 import { useLanguages } from "@/hooks/useLanguages";
 import { useCreateUser } from "@/hooks/useUsers";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+  const { messages } = useLocale();
   const { roles = [] } = useRoles();
   const { languages = [] } = useLanguages();
   const createUser = useCreateUser();
@@ -59,7 +61,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     setMessage(null);
 
     if (form.roleIds.length === 0) {
-      setMessage("Please select at least one role.");
+      setMessage(messages["select_at_least_one_role"] || "Please select at least one role.");
       return;
     }
 
@@ -74,7 +76,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       await createUser.mutateAsync(payload);
-      setMessage("User created successfully!");
+      setMessage(messages["user_created_successfully"] || "User created successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -83,7 +85,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage("Error creating user. Please try again.");
+      setMessage(messages["error"] || "Error creating user. Please try again.");
     }
   };
 
@@ -105,7 +107,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title="Add User"
+          title={messages["u_add_user"] || "Add User"}
           className="mb-6 font-semibold text-center"
         />
 
@@ -122,23 +124,23 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Username</Label>
+              <Label>{messages["username"] || "Username"}</Label>
               <InputField
                 type="text"
                 value={form.username}
                 onChange={(e) => handleChange("username", e.target.value)}
-                placeholder="Enter username"
+                placeholder={messages["username_placeholder"] || "Enter username"}
                 required
               />
             </div>
 
             <div className="flex-1">
-              <Label>Email</Label>
+              <Label>{messages["email"] || "Email"}</Label>
               <InputField
                 type="email"
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                placeholder="Enter email"
+                placeholder={messages["email_placeholder"] || "Enter email"}
                 required
               />
             </div>
@@ -146,18 +148,18 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Password</Label>
+              <Label>{messages["user_password"] || "Password"}</Label>
               <InputField
                 type="password"
                 value={form.password}
                 onChange={(e) => handleChange("password", e.target.value)}
-                placeholder="Enter password"
+                placeholder={messages["password_placeholder"] || "Enter password"}
                 required
               />
             </div>
 
             <div className="flex-1">
-              <Label>Roles</Label>
+              <Label>{messages["roles"] || "Roles"}</Label>
               <MultiSelect
                 options={roles.map((role) => ({
                   value: role.id.toString(),
@@ -172,14 +174,14 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                   );
                 }}
                 disabled={roles.length === 0 || isPending}
-                placeholder="Select Roles"
+                placeholder={messages["select_roles"] || "Select Roles"}
               />
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Language</Label>
+              <Label>{messages["language"] || "Language"}</Label>
               <Select
                 value={form.languageId?.toString() || ""}
                 onChange={(value) => handleChange("languageId", parseInt(value))}
@@ -187,21 +189,21 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                   value: lang.id.toString(),
                   label: lang.name,
                 }))}
-                placeholder="Select Language"
+                placeholder={messages["select_language"] || "Select Language"}
                 required
               />
             </div>
 
             <div className="flex-1">
-              <Label>Status</Label>
+              <Label>{messages["status"] || "Status"}</Label>
               <Select
                 value={form.status}
                 onChange={(value) => handleChange("status", value)}
                 options={[
-                  { value: "active", label: "Active" },
-                  { value: "inactive", label: "Inactive" },
+                  { value: "active", label: messages["active"] || "Active" },
+                  { value: "inactive", label: messages["inactive"] || "Inactive" },
                 ]}
-                placeholder="Select Status"
+                placeholder={messages["select_status"] || "Select Status"}
                 required
               />
             </div>
@@ -210,14 +212,14 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button 
             size="sm" 
             type="submit" 
             disabled={isPending || isFormInvalid}
           >
-            {isPending ? "Adding..." : "Add"}
+            {isPending ? (messages["adding"] || "Adding...") : (messages["add"] || "Add")}
           </Button>
         </div>
       </Form>

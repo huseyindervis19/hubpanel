@@ -90,10 +90,10 @@ const CategoriesComponent: React.FC = () => {
     <>
       {/* Header */}
       <div className="mb-5 flex items-center justify-between lg:mb-7">
-        <TitleComponent title={messages["categories"] || "Categories"} />
+        <TitleComponent title={messages["nav_products_categories"] || "Categories"} />
         {canAddCategory && (
           <Link href="/categories/add-category">
-            <Button className="h-9 px-4 text-sm">Add Category</Button>
+            <Button className="h-9 px-4 text-sm">{messages["add"] || "Create"}</Button>
           </Link>
         )}
       </div>

@@ -8,6 +8,7 @@ import { useRolePermissions, useUpdateRolePermissions } from "@/hooks/useRolePer
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
 import { LoadingIcon } from "@/icons";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
+  const { messages } = useLocale();
   const { permissions = [], isLoading: isPermissionsLoading } = usePermissions();
 
   const { permissionIds = [], isLoading: isRolePermissionsLoading } = useRolePermissions(role?.id ?? 0);
@@ -55,7 +57,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
     try {
       await updateRolePermissions.mutateAsync({ roleId: role.id, permissionIds: selectedPermissions });
       
-      setMessage("Permissions updated successfully!");
+      setMessage(messages["updated_successfully"]?.replace("Updated", "Permissions updated") || "Permissions updated successfully!");
 
       onSuccess();
 
@@ -64,7 +66,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       }, 1000);
     } catch (err) {
       console.error(err);
-      setMessage("Error updating permissions.");
+      setMessage(messages["error"] || "Error updating permissions.");
     }
   };
 
@@ -77,7 +79,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       className="max-w-xl p-8"
     >
       <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-        Manage Permissions for {role?.name}
+        {messages["manage"] || "Manage"} {messages["nav_permissions"] || "Permissions"} for {role?.name}
       </h4>
 
       {message && (
@@ -87,7 +89,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       )}
 
       {isLoading && !permissions.length ? (
-        <p>Loading permissions...</p>
+        <p>{messages["loading"] || "Loading permissions..."}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {permissions.map(permission => (
@@ -105,7 +107,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
 
       <div className="flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
         </Button>
         <Button
           size="sm"
@@ -120,10 +122,10 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                Updating...
+                {messages["edit_profile_modal_loading"]?.replace("profile", "permissions") || "Updating..."}
               </>
           ) : (
-            "Update"
+            messages["update"] || "Update"
           )}
         </Button>
       </div>

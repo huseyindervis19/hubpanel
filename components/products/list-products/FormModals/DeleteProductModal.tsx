@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal"; 
+import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
+import { useLocale } from "@/context/LocaleContext"; 
 
 interface Props {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const DeleteProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product }) => {
+  const { messages } = useLocale();
 
   const handleDeleteProduct = async (): Promise<void> => {
     
@@ -36,13 +38,16 @@ const DeleteProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, produ
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDeleteProduct}
-      title="Confirm Product Deletion"
+      title={messages["confirm_delete"] || "Confirm Product Deletion"}
       message={
         <>
-          Are you sure you want to delete <strong>"{product?.name}"</strong>? This action cannot be undone.
+          {messages["delete_warning"] 
+            ? messages["delete_warning"].replace("{name}", product?.name || "")
+            : <>Are you sure you want to delete <strong>"{product?.name}"</strong>? This action cannot be undone.</>
+          }
         </>
       }
-      errorMessage="Error deleting product. The product may be linked to active orders."
+      errorMessage={messages["delete_failed"] || "Error deleting product. The product may be linked to active orders."}
     />
   );
 };

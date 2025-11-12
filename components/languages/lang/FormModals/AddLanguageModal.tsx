@@ -8,6 +8,7 @@ import InputField from "@/components/form/input/InputField";
 import { useCreateLanguage } from "@/hooks/useLanguages";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+  const { messages } = useLocale();
   const createLanguage = useCreateLanguage();
 
   const [form, setForm] = useState({
@@ -58,7 +60,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       await createLanguage.mutateAsync(payload);
-      setMessage("Language added successfully!");
+      setMessage(messages["user_created_successfully"]?.replace("User", "Language") || "Language added successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -67,7 +69,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage("Error adding language. Please try again.");
+      setMessage(messages["error"] || "Error adding language. Please try again.");
     }
   };
 
@@ -82,7 +84,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title=" Add Language"
+          title={messages["add_language"] || "Add Language"}
           className="mb-4 font-semibold text-center"
         />
 
@@ -98,24 +100,24 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         <div className="space-y-4">
           {/* Code */}
           <div>
-            <Label>Language Code</Label>
+            <Label>{messages["code"] || "Language Code"}</Label>
             <InputField
               type="text"
               value={form.code}
               onChange={(e) => handleChange("code", e.target.value)}
-              placeholder="Enter language code (e.g. en, ar)"
+              placeholder={messages["code_placeholder"] || "Enter language code (e.g. en, ar)"}
               required
             />
           </div>
 
           {/* Name */}
           <div>
-            <Label>Language Name</Label>
+            <Label>{messages["name"] || "Language Name"}</Label>
             <InputField
               type="text"
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Enter language name (e.g. English, Arabic)"
+              placeholder={messages["name_placeholder"] || "Enter language name (e.g. English, Arabic)"}
               required
             />
           </div>
@@ -130,21 +132,21 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600"
             />
             <Label htmlFor="isDefault" className="ml-2 mb-0 cursor-pointer">
-              Set as Default Language
+              {messages["set_as_default"] || "Set as Default Language"}
             </Label>
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
             type="submit"
             disabled={isPending || isFormEmpty}
           >
-            {isPending ? "Adding..." : "Add"}
+            {isPending ? (messages["adding"] || "Adding...") : (messages["add"] || "Add")}
           </Button>
         </div>
       </Form>

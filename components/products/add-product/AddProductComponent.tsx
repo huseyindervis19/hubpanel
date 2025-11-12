@@ -10,6 +10,7 @@ import Form from "@/components/form/Form";
 import Checkbox from "@/components/form/input/Checkbox";
 import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface FormState {
   name: string;
@@ -21,6 +22,7 @@ interface FormState {
 }
 
 const AddProductComponent: React.FC = () => {
+  const { messages } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
     description: "",
@@ -139,7 +141,7 @@ const AddProductComponent: React.FC = () => {
   return (
     <>
          <TitleComponent
-          title="Add New Product"
+          title={messages["product_form_title"] || "Add New Product"}
           className="mb-6 lg:mb-8"
         />
 
@@ -147,12 +149,12 @@ const AddProductComponent: React.FC = () => {
 
         {success && (
           <div className="p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
-            Product created successfully!
+            {messages["product_created_successfully"] || "Product created successfully!"}
           </div>
         )}
         {error && (
           <div className="p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300">
-            Please fill in all required fields correctly.
+            {messages["required_fields_error"] || "Please fill in all required fields correctly."}
           </div>
         )}
 
@@ -163,13 +165,13 @@ const AddProductComponent: React.FC = () => {
             <Label
               className="text-md text-gray-800 dark:text-white/90"
             >
-              Category <span className="text-red-600">*</span>
+              {messages["product_category_label"]?.replace(":", "") || "Category"} <span className="text-red-600">*</span>
             </Label>
             <Select
               value={form.category_id}
               onChange={(value) => handleChange(value, "category_id")} 
               options={categoryOptions}
-              placeholder="Select Category"
+              placeholder={messages["select_category"] || "Select Category"}
               required
               disabled={loading}
             />
@@ -179,8 +181,8 @@ const AddProductComponent: React.FC = () => {
           <InputField
             id="name"
             name="name"
-            label="Product Name"
-            placeholder="Enter product name"
+            label={messages["product_name_label"]?.replace(":", "") || "Product Name"}
+            placeholder={messages["product_name_placeholder"] || "Enter product name"}
             value={form.name}
             onChange={handleChange}
             required
@@ -193,13 +195,13 @@ const AddProductComponent: React.FC = () => {
               htmlFor="description"
               className="text-md text-gray-800 dark:text-white/90"
             >
-              Product Description
+              {messages["product_description_label"]?.replace(":", "") || "Product Description"}
             </Label>
             <TextArea
               value={form.description}
               onChange={(value) => handleTextAreaChange(value, "description")}
               rows={4}
-              placeholder="Enter product description"
+              placeholder={messages["product_description_placeholder"] || "Enter product description"}
               disabled={loading}
             />
           </div>
@@ -209,8 +211,8 @@ const AddProductComponent: React.FC = () => {
             id="stock_quantity"
             name="stock_quantity"
             type="number"
-            label="Stock Quantity"
-            placeholder="Enter available stock"
+            label={messages["stock_quantity_label"] || "Stock Quantity"}
+            placeholder={messages["stock_quantity_placeholder"] || "Enter available stock"}
             value={form.stock_quantity.toString()} 
             onChange={handleChange}
             min={0}
@@ -222,7 +224,7 @@ const AddProductComponent: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0">
             <Checkbox
               id="is_active"
-              label="Active"
+              label={messages["is_active_label"] || "Active"}
               checked={form.is_active}
               onChange={(checked) => handleCheckboxChange(checked, "is_active")}
               disabled={loading}
@@ -230,7 +232,7 @@ const AddProductComponent: React.FC = () => {
 
             <Checkbox
               id="is_featured"
-              label="Featured"
+              label={messages["is_featured_label"] || "Featured"}
               checked={form.is_featured}
               onChange={(checked) => handleCheckboxChange(checked, "is_featured")}
               disabled={loading}
@@ -252,10 +254,10 @@ const AddProductComponent: React.FC = () => {
                     height={16}
                     className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                   />
-                  Creating...
+                  {messages["adding"] || "Creating..."}
                 </>
               ) : (
-                "Create"
+                messages["add"] || "Create"
               )}
             </Button>
           </div>

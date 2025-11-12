@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { PencilIcon } from "@/icons";
+import { useLocale } from "@/context/LocaleContext";
 
 type Props = {
   user: {
@@ -12,6 +13,7 @@ type Props = {
 };
 
 const UserMetaCard = ({ user, onEdit }: Props) => {
+  const { messages } = useLocale();
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
@@ -57,7 +59,7 @@ const UserMetaCard = ({ user, onEdit }: Props) => {
           onClick={onEdit}
         >
           <PencilIcon />
-          Edit
+          {messages["edit"] || "Edit"}
         </button>
       </div>
     </div>

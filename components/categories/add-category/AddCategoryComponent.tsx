@@ -9,6 +9,7 @@ import FileInput from "@/components/form/input/FileInput";
 import Form from "@/components/form/Form";
 import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface FormState {
   name: string;
@@ -17,6 +18,7 @@ interface FormState {
 }
 
 const AddCategoryComponent: React.FC = () => {
+  const { messages } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
     description: "",
@@ -76,72 +78,72 @@ const AddCategoryComponent: React.FC = () => {
   return (
     <>
          <TitleComponent
-          title="Add New Category"
+          title={messages["add_new_category"] || "Add New Category"}
           className="mb-6 font-semibold "
         />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
         {success && (
           <div className="p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
-            Category created successfully!
+            {messages["categories_created_successfully"] || "Category created successfully!"}
           </div>
         )}
         {error && (
           <div className="p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300">
-            Please fill in required fields.
+            {messages["required_fields_error"] || "Please fill in required fields."}
           </div>
         )}
 
         <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <Label htmlFor="name" className={LABEL_CLASS}>
-              Category Name <span className="text-error-500">*</span>
+              {messages["category_name"] || "Category Name"} <span className="text-error-500">*</span>
             </Label>
             <InputField
               id="name"
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="Enter category name"
+              placeholder={messages["product_category_name_placeholder"] || "Enter category name"}
             />
           </div>
 
           <div>
             <Label htmlFor="description" className={LABEL_CLASS}>
-              Description
+              {messages["description"] || "Description"}
             </Label>
             <TextArea
               value={form.description}
               onChange={(value) => handleTextAreaChange(value, "description")}
               rows={4}
-              placeholder="Enter description"
+              placeholder={messages["description_placeholder"] || "Enter description"}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <Label htmlFor="file" className={LABEL_CLASS}>
-                Category Image <span className="text-error-500">*</span>
+                {messages["category_image"] || "Category Image"} <span className="text-error-500">*</span>
               </Label>
               <FileInput
                 onChange={handleFileChange}
                 className="w-full"
                 accept="image/*"
-                placeholder="Choose File"
+                placeholder={messages["choose_file"] || "Choose File"}
                 fileName={fileName}
               />
             </div>
 
             <div>
               <Label htmlFor="alt_text" className={LABEL_CLASS}>
-                Alt Text
+                {messages["alt_text"] || "Alt Text"}
               </Label>
               <InputField
                 id="alt_text"
                 name="alt_text"
                 value={form.alt_text}
                 onChange={handleChange}
-                placeholder="Enter alt text"
+                placeholder={messages["alt_text_placeholder_simple"] || "Enter alt text"}
               />
             </div>
           </div>
@@ -161,10 +163,10 @@ const AddCategoryComponent: React.FC = () => {
                     height={16}
                     className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                   />
-                  Creating...
+                  {messages["adding"] || "Creating..."}
                 </>
               ) : (
-                "Create"
+                messages["create"] || "Create"
               )}
             </Button>
           </div>

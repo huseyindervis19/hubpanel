@@ -14,8 +14,10 @@ import { useUsers } from "@/hooks/useUsers";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import { User } from "@/types/User";
+import { useLocale } from "@/context/LocaleContext";
 
 const UsersComponent = () => {
+  const { messages } = useLocale();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -52,16 +54,17 @@ const UsersComponent = () => {
   const closeEditModal = () => setEditModalOpen(false);
   const closeDeleteModal = () => setDeleteModalOpen(false);
 
-  if (isLoading) { <LoadingComponent title="Users" /> }
+  if (isLoading) { <LoadingComponent title={messages["message"] || "Users"} /> }
+
 
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 lg:mb-7">
-        <TitleComponent title="Users" />
+        <TitleComponent title={messages["nav_users"] || "Users"} />
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Total: {filteredUsers.length}
+              {messages["dashboard_total_categories"]?.replace("Categories", "Users") || "Total"}: {filteredUsers.length}
             </p>
             <div className="relative">
               <SearchBar
@@ -72,7 +75,7 @@ const UsersComponent = () => {
           </div>
           {canAddUser && (
             <Button className="h-8.5 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
-              Add
+              {messages["add"] || "Add"}
             </Button>
           )}
         </div>
@@ -85,12 +88,12 @@ const UsersComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th> Name </Th>
-                  <Th> Email </Th>
-                  <Th> Role </Th>
-                  <Th> Language</Th>
-                  <Th> Status</Th>
-                  <Th> Action</Th>
+                  <Th> {messages["name"] || "Name"} </Th>
+                  <Th> {messages["email"] || "Email"} </Th>
+                  <Th> {messages["role"] || "Role"} </Th>
+                  <Th> {messages["language"] || "Language"}</Th>
+                  <Th> {messages["status"] || "Status"}</Th>
+                  <Th> {messages["action"] || "Action"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -133,12 +136,12 @@ const UsersComponent = () => {
                       <Td>
                         <div className="flex items-center gap-5">
                           {canEditUser && (
-                            <button onClick={() => openEditModal(user)} title="Edit User">
+                            <button onClick={() => openEditModal(user)} title={messages["edit_user"] || "Edit User"}>
                               <PencilIcon />
                             </button>
                           )}
                           {canDeleteUser && (
-                            <button onClick={() => openDeleteModal(user)} title="Delete User">
+                            <button onClick={() => openDeleteModal(user)} title={messages["delete"] + " " + (messages["nav_users"] || "User") || "Delete User"}>
                               <TrashBinIcon />
                             </button>
                           )}
@@ -152,7 +155,7 @@ const UsersComponent = () => {
                       colSpan={6}
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
-                      No users found.
+                      {messages["no_data"] || "No users found."}
                     </td>
                   </TableRow>
                 )}

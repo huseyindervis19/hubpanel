@@ -9,6 +9,7 @@ import { useCreateRole } from "@/hooks/useRoles";
 import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+  const { messages } = useLocale();
   const createRole = useCreateRole();
 
   const [form, setForm] = useState({
@@ -55,7 +57,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     try {
       await createRole.mutateAsync(payload);
 
-      setMessage("Role created successfully!");
+      setMessage(messages["user_created_successfully"]?.replace("User", "Role") || "Role created successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -64,7 +66,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage("Error creating role. Please try again.");
+      setMessage(messages["error"] || "Error creating role. Please try again.");
     }
   };
 
@@ -78,7 +80,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
          <TitleComponent
-          title="Add Role"
+          title={`${messages["add"] || "Add"} ${messages["nav_roles"] || "Role"}`}
           className="mb-4 font-semibold text-center"
         />
 
@@ -95,24 +97,24 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Name</Label>
+              <Label>{messages["name"] || "Name"}</Label>
               <InputField
                 type="text"
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="Enter role name"
+                placeholder={messages["role_name_placeholder"] || "Enter role name"}
                 required
               />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>Description</Label>
+              <Label>{messages["description"] || "Description"}</Label>
               <InputField
                 type="text"
                 value={form.description}
                 onChange={(e) => handleChange("description", e.target.value)}
-                placeholder="Enter role description"
+                placeholder={messages["role_description_placeholder"] || "Enter role description"}
               />
             </div>
           </div>
@@ -120,7 +122,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button 
             size="sm" 
@@ -139,10 +141,10 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     height={16}
                     className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                   />
-                  Adding...
+                  {messages["adding"] || "Adding..."}
                 </>
               ) : (
-                "Add"
+                messages["add"] || "Add"
               )}
           </Button>
         </div>

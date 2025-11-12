@@ -14,8 +14,10 @@ import DeleteLanguageModal from "./FormModals/DeleteLanguageModal";
 import LoadingComponent from "@/components/ui/LoadingComponent";
 import TitleComponent from "@/components/ui/TitleComponent";
 import SearchBar from "@/components/form/input/SearchBar";
+import { useLocale } from "@/context/LocaleContext";
 
 const LanguagesComponent = () => {
+  const { messages } = useLocale();
   const [selectedLang, setSelectedLang] = useState<any | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -59,7 +61,7 @@ const LanguagesComponent = () => {
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Total: {filteredLanguages.length}
+              {messages["dashboard_total_categories"]?.replace("Categories", "Languages") || "Total"}: {filteredLanguages.length}
             </p>
             <div className="relative">
               <SearchBar
@@ -71,11 +73,11 @@ const LanguagesComponent = () => {
 
           {/* {canAddLang && (
             <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
-              Add
+              {messages["add"] || "Add"}
             </Button>
           )} */}
           <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
-            Add
+            {messages["add"] || "Add"}
           </Button>
         </div>
       </div>
@@ -87,10 +89,10 @@ const LanguagesComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                   <TableRow>
-                  <Th> Name </Th>
-                  <Th> Code </Th>
-                  <Th> Default </Th>
-                  <Th> Actions</Th>
+                  <Th> {messages["name"] || "Name"} </Th>
+                  <Th> {messages["code"] || "Code"} </Th>
+                  <Th> {messages["default"] || "Default"} </Th>
+                  <Th> {messages["action"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -107,11 +109,11 @@ const LanguagesComponent = () => {
                       <Td>
                         {lang.isDefault ? (
                           <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                            Yes
+                            {messages["yes"] || "Yes"}
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800/30 dark:text-gray-500">
-                            No
+                            {messages["no"] || "No"}
                           </span>
                         )}
                       </Td>
@@ -137,7 +139,7 @@ const LanguagesComponent = () => {
                       colSpan={4}
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
-                      No languages found.
+                      {messages["no_data"] || "No languages found."}
                     </td>
                   </TableRow>
                 )}

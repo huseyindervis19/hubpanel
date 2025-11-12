@@ -7,17 +7,19 @@ import { useCurrentUser } from "@/hooks/useAuth";
 import EditUserModal from "@/components/users/FormModals/EditUserModal";
 import TitleComponent from "../ui/TitleComponent";
 import LoadingComponent from "../ui/LoadingComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 const ProfileComponent = () => {
+  const { messages } = useLocale();
   const { data: currentUser, isLoading, refetch } = useCurrentUser();
   const [editModalOpen, setEditModalOpen] = useState(false);
 
   if (isLoading) { <LoadingComponent title="." /> }
-  if (!currentUser) return <p>User not found</p>;
+  if (!currentUser) return <p>{messages["user_not_found"] || "User not found"}</p>;
 
   return (
     <>
-      <TitleComponent title="Profile"/>
+      <TitleComponent title={messages["nav_profile"] || "Profile"}/>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6 space-y-6">
         <UserMetaCard user={currentUser} onEdit={() => setEditModalOpen(true)} />

@@ -5,7 +5,7 @@ import { useLocale } from "@/context/LocaleContext";
 import { useLanguages } from "@/hooks/useLanguages";
 
 export default function LanguageDropdown() {
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale, messages } = useLocale();
   const { languages: languagesData = [], isLoading } = useLanguages();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -49,7 +49,7 @@ export default function LanguageDropdown() {
         aria-expanded={isOpen}
         disabled={isLoading}
       >
-        <span>{isLoading ? "Loading..." : currentLangLabel}</span>
+        <span>{isLoading ? (messages["loading"] || "Loading...") : currentLangLabel}</span>
         <svg
           className={`ml-2 h-5 w-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
             }`}
@@ -72,9 +72,9 @@ export default function LanguageDropdown() {
         >
           <ul >
             {isLoading ? (
-              <li className="px-4 py-2 text-sm dark:text-white">Loading...</li>
+              <li className="px-4 py-2 text-sm dark:text-white">{messages["loading"] || "Loading..."}</li>
             ) : languages.length === 0 ? (
-              <li className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">No languages</li>
+              <li className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{messages["no_data"] || "No languages"}</li>
             ) : (
               languages.map(({ code, name }) => (
                 <li key={code}>

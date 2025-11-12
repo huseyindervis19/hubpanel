@@ -10,6 +10,7 @@ import { useUpdateRole } from "@/hooks/useRoles";
 import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
+  const { messages } = useLocale();
   const updateRole = useUpdateRole();
 
   const [form, setForm] = useState({
@@ -74,7 +76,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
     try {
       await updateRole.mutateAsync({ id: role.id, data: payload });
-      setMessage("Role updated successfully!");
+      setMessage(messages["user_updated_successfully"]?.replace("User", "Role") || "Role updated successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -83,7 +85,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
     } catch (err) {
       console.error(err);
-      setMessage("Error updating role. Please try again.");
+      setMessage(messages["error"] || "Error updating role. Please try again.");
     }
   };
 
@@ -98,7 +100,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title="Edit Role"
+          title={`${messages["edit"] || "Edit"} ${messages["nav_roles"] || "Role"}`}
           className="mb-6 text-center"
         />
 
@@ -114,30 +116,30 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
         <div className="space-y-6">
           {/* Name */}
           <div>
-            <Label>Name</Label>
+            <Label>{messages["name"] || "Name"}</Label>
             <InputField
               type="text"
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Enter role name"
+              placeholder={messages["role_name_placeholder"] || "Enter role name"}
               required
             />
           </div>
           {/* Description */}
           <div>
-            <Label>Description</Label>
+            <Label>{messages["description"] || "Description"}</Label>
             <InputField
               type="text"
               value={form.description}
               onChange={(e) => handleChange("description", e.target.value)}
-              placeholder="Enter role description"
+              placeholder={messages["role_description_placeholder"] || "Enter role description"}
             />
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
@@ -156,10 +158,10 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                Updating...
+                {messages["edit_profile_modal_loading"]?.replace("profile", "role") || "Updating..."}
               </>
             ) : (
-              "Update"
+              messages["update"] || "Update"
             )}
           </Button>
         </div>

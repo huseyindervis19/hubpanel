@@ -10,6 +10,7 @@ import Form from "@/components/form/Form";
 import { Modal } from "@/components/ui/modal";
 import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface CategoryData {
   name: string;
@@ -33,6 +34,7 @@ interface FormState {
 }
 
 const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, category }) => {
+  const { messages } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
     description: "",
@@ -122,18 +124,18 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title="Edit Product Category"
+          title={messages["edit_product_category"] || "Edit Product Category"}
           className="text-center mb-6"
         />
 
         {success && (
           <div className="mb-4 p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
-            Category updated successfully!
+            {messages["categories_updated_successfully"] || "Category updated successfully!"}
           </div>
         )}
         {error && (
           <div className="mb-4 p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300">
-            Please ensure all required fields are filled.
+            {messages["required_fields_error"] || "Please ensure all required fields are filled."}
           </div>
         )}
 
@@ -141,7 +143,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
           {/* Name */}
           <div>
             <Label htmlFor="name" className={LABEL_CLASS}>
-              Name
+              {messages["name"] || "Name"}
             </Label>
             <InputField
               id="name"
@@ -149,33 +151,33 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
               type="text"
               value={form.name}
               onChange={handleChange}
-              placeholder="Enter category name"
+              placeholder={messages["product_category_name_placeholder"] || "Enter category name"}
             />
           </div>
 
           {/* Description */}
           <div>
             <Label htmlFor="description" className={LABEL_CLASS}>
-              Description
+              {messages["description"] || "Description"}
             </Label>
             <TextArea
               value={form.description}
               onChange={(value) => handleTextAreaChange(value, "description")}
               rows={5}
-              placeholder="Enter category description"
+              placeholder={messages["product_category_description_placeholder"] || "Enter category description"}
             />
           </div>
 
           {/* Image Upload and Preview */}
           <div>
             <Label className={LABEL_CLASS}>
-              Category Image
+              {messages["category_image_label"]?.replace(":", "") || "Category Image"}
             </Label>
             <FileInput
               onChange={handleFileChange}
               className="w-full"
               accept="image/*"
-              placeholder="Choose File"
+              placeholder={messages["select_image"] || "Choose File"}
               fileName={form.file ? form.file.name : INITIAL_FILE_NAME}
             />
 
@@ -189,18 +191,18 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
                 />
               ) : (
                 <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center text-xs text-gray-500">
-                  No Img
+                  {messages["no_image"]?.split(".")[0] || "No Img"}
                 </div>
               )}
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
                   {form.file ? (
                     <span className="text-brand-500 dark:text-brand-400">
-                      New File Selected ({form.file.name})
+                      {`New File Selected (${form.file.name})`}
                     </span>
                   ) : (
                     <span className="text-gray-500 dark:text-gray-400">
-                      {category?.image_url ? "Current Image Set" : "No Image Set"}
+                      {category?.image_url ? (messages["product_main_image"] || "Current Image Set") : (messages["no_image"]?.split(".")[0] || "No Image Set")}
                     </span>
                   )}
                 </span>
@@ -216,7 +218,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
           {/* Alt Text */}
           <div>
             <Label htmlFor="alt_text" className={LABEL_CLASS}>
-              Alt Text
+              {messages["alt_text"] || "Alt Text"}
             </Label>
             <InputField
               id="alt_text"
@@ -224,7 +226,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
               type="text"
               value={form.alt_text}
               onChange={handleChange}
-              placeholder="Enter alt text for image"
+              placeholder={messages["alt_text_placeholder"] || "Enter alt text for image"}
             />
           </div>
         </div>
@@ -232,7 +234,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
         {/* Buttons */}
         <div className="flex items-center justify-end w-full gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={loading}>
-            Close
+            {messages["close"] || "Close"}
           </Button>
           <Button
             size="sm"
@@ -247,10 +249,10 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                Updating...
+                {messages["edit_profile_modal_loading"]?.replace("profile", "category") || "Updating..."}
               </>
             ) : (
-              "Update"
+              messages["update"] || "Update"
             )}
           </Button>
         </div>
