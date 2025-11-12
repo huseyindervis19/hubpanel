@@ -3,8 +3,10 @@
 import { useQuery, useQueryClient, useMutation, UseMutationResult } from "@tanstack/react-query";
 import { getTranslations, updateTranslation } from "@/services/translationService";
 import { Translation } from "@/types/Translation";
+import { getTranslationsByLanguage } from "@/services/translationService";
+import { TranslationResponse } from "@/types/TranslationResponse";
 
-// جلب جميع الترجمات
+// fetch all translations
 export const useTranslations = () => {
   const { data = [], isLoading, isError, refetch } = useQuery<Translation[], Error>({
     queryKey: ["translations"],
@@ -21,7 +23,25 @@ export const useTranslations = () => {
   };
 };
 
-// تحديث ترجمة واحدة
+// fetch translations by language ID
+export const useTranslationsByLanguage = (languageId?: number) => {
+  const { data, isLoading, isError, refetch } = useQuery<TranslationResponse, Error>({
+    queryKey: ["translationsByLanguage", languageId],
+    queryFn: () => getTranslationsByLanguage(languageId!),
+    enabled: !!languageId,
+    staleTime: 1000 * 60 * 5, 
+    retry: 2,
+  });
+
+  return {
+    translationsByLanguage: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+};
+
+// update translation
 export const useUpdateTranslation = (): UseMutationResult<
   Translation,
   Error,

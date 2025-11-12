@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import * as languageService from "@/services/languageService";
+import { getTranslationsByLanguage } from "@/services/translationService";
 import { Language } from "@/types/Language";
 
 type LocaleContextType = {
@@ -12,6 +13,15 @@ type LocaleContextType = {
 };
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
+
+const clearOldTranslations = () => {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("translations_")) {
+      localStorage.removeItem(key);
+    }
+  }
+};
 
 export const LocaleProvider = ({
   children,
@@ -24,13 +34,27 @@ export const LocaleProvider = ({
   const [messages, setMessages] = useState<Record<string, string>>({});
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const loadMessages = useCallback(async (lang: string) => {
+  const loadMessages = useCallback(async (langId: number, langCode: string) => {
     try {
-      const mod = await import(`@/locales/${lang}.json`);
-      setMessages(mod.default);
+      clearOldTranslations();
+      
+      const cached = localStorage.getItem(`translations_${langId}`);
+      if (cached) {
+        setMessages(JSON.parse(cached));
+      } else {
+        const { translations } = await getTranslationsByLanguage(langId);
+        setMessages(translations);
+        localStorage.setItem(`translations_${langId}`, JSON.stringify(translations));
+      }
+      setLocale(langCode);
+      localStorage.setItem("locale", langCode);
     } catch (error) {
-      const fallback = await import("@/locales/en.json");
-      setMessages(fallback.default);
+      console.error("Failed to load translations:", error);
+      if (langCode !== "en") {
+        const languages: Language[] = await languageService.getLanguages();
+        const enLang = languages.find(l => l.code === "en");
+        if (enLang) await loadMessages(enLang.id, "en");
+      }
     }
   }, []);
 
@@ -38,34 +62,24 @@ export const LocaleProvider = ({
     const initLocale = async () => {
       try {
         const languages: Language[] = await languageService.getLanguages();
-        let defaultLocale: string;
+        let defaultLang: Language | undefined;
 
         if (userLang) {
-          defaultLocale = userLang;
-        } else {
-          const stored = localStorage.getItem("locale");
-          if (stored) {
-            defaultLocale = stored;
-          } else if (languages.length > 0) {
-            
-            const defaultLanguage = languages.find(lang => lang.isDefault);
-            
-            if (defaultLanguage) {
-              defaultLocale = defaultLanguage.code;
-            } else {
-              defaultLocale = languages[0].code;
-            }
-
-          } else {
-            defaultLocale = "en";
-          }
+          defaultLang = languages.find(l => l.code === userLang);
         }
 
-        setLocale(defaultLocale);
-        await loadMessages(defaultLocale);
+        if (!defaultLang) {
+          const storedCode = localStorage.getItem("locale");
+          defaultLang = languages.find(l => l.code === storedCode) || languages.find(l => l.isDefault);
+        }
+
+        if (!defaultLang && languages.length > 0) defaultLang = languages[0];
+
+        if (defaultLang) {
+          await loadMessages(defaultLang.id, defaultLang.code);
+        }
       } catch (error) {
-        setLocale("en");
-        await loadMessages("en");
+        console.error("Failed to init locale:", error);
       } finally {
         setIsHydrated(true);
       }
@@ -74,9 +88,30 @@ export const LocaleProvider = ({
     initLocale();
   }, [userLang, loadMessages]);
 
-  useEffect(() => {
-    if (isHydrated) localStorage.setItem("locale", locale);
-  }, [locale, isHydrated]);
+useEffect(() => {
+  if (!isHydrated) return;
+
+  const updateTranslations = async () => {
+    clearOldTranslations();
+
+    const languages: Language[] = await languageService.getLanguages();
+    const lang = languages.find(l => l.code === locale);
+    if (lang) {
+      const langId = lang.id;
+      const cached = localStorage.getItem(`translations_${langId}`);
+      if (cached) {
+        setMessages(JSON.parse(cached));
+      } else {
+        const { translations } = await getTranslationsByLanguage(langId);
+        setMessages(translations);
+        localStorage.setItem(`translations_${langId}`, JSON.stringify(translations));
+      }
+    }
+    localStorage.setItem("locale", locale);
+  };
+
+  updateTranslations();
+}, [locale, isHydrated]);
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale, messages, isHydrated }}>

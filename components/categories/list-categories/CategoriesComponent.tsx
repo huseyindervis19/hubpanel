@@ -9,6 +9,7 @@ import DeleteCategoryModal from "./FormModals/DeleteCategoryModal";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import TitleComponent from "@/components/ui/TitleComponent";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Category {
   id: number;
@@ -62,6 +63,7 @@ const CategoriesComponent: React.FC = () => {
   const canAddCategory = useHasPermission(PERMISSIONS.ADD_CATEGORY);
   const canEditCategory = useHasPermission(PERMISSIONS.EDIT_CATEGORY);
   const canDeleteCategory = useHasPermission(PERMISSIONS.DELETE_CATEGORY);
+  const { messages } = useLocale();
 
   const handleDropdownToggle = (categoryId: number) => {
     setOpenDropdownId(prev => (prev === categoryId ? null : categoryId));
@@ -88,7 +90,7 @@ const CategoriesComponent: React.FC = () => {
     <>
       {/* Header */}
       <div className="mb-5 flex items-center justify-between lg:mb-7">
-        <TitleComponent title="Categories" />
+        <TitleComponent title={messages["categories"] || "Categories"} />
         {canAddCategory && (
           <Link href="/categories/add-category">
             <Button className="h-9 px-4 text-sm">Add Category</Button>
