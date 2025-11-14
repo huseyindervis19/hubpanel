@@ -38,7 +38,7 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDelete}
-      title={messages["confirm_delete"] || "Confirm User Deletion"}
+      title={messages["confirm_delete"] || "An error occurred while deleting."}
       message={
         <>
           {messages["delete_warning"] 
@@ -47,7 +47,7 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
           }
         </>
       }
-      errorMessage={messages["delete_failed"] || "Error deleting user. This user might be in use or protected."}
+      errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
     />
   );
 };

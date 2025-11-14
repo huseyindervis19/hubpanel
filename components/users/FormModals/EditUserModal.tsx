@@ -116,7 +116,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     try {
       await updateUser.mutateAsync({ id: user.id, data: payload });
 
-      setMessage(messages["user_updated_successfully"] || "User updated successfully!");
+      setMessage(messages["updated_successfully"] || "Updated successfully!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
@@ -124,7 +124,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error updating user. Please try again.");
+      setMessage(messages["update_failed"] || "An error occurred while updating.");
     }
   };
 
@@ -187,7 +187,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   "roleIds",
                   selected.map((v) => parseInt(v))
                 )}
-                placeholder={rolesLoading ? (messages["loading"] || "Loading roles...") : (messages["select_roles"] || "Select Role")}
+                placeholder={rolesLoading ? (messages["loading"] || "Loading ...") : (messages["select_roles"] || "Select Role")}
                 disabled={rolesLoading || isPending}
               />
             </div>
@@ -201,7 +201,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   value: String(l.id),
                   label: l.name,
                 }))}
-                placeholder={langsLoading ? (messages["loading"] || "Loading languages...") : (messages["select_language"] || "Select Language")}
+                placeholder={langsLoading ? (messages["loading"] || "Loading...") : (messages["select_language"] || "Select Language")}
                 disabled={langsLoading || isPending}
                 required
               />
@@ -242,7 +242,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                {messages["edit_profile_modal_loading"]?.replace("profile", "user") || "Updating..."}
+                {messages["updating"] || "Updating..."}
               </>
             ) : (
               messages["update"] || "Update"

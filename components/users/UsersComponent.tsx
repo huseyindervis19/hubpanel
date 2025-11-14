@@ -54,17 +54,17 @@ const UsersComponent = () => {
   const closeEditModal = () => setEditModalOpen(false);
   const closeDeleteModal = () => setDeleteModalOpen(false);
 
-  if (isLoading) { <LoadingComponent title={messages["message"] || "Users"} /> }
+  if (isLoading) { <LoadingComponent title={messages["users"] || "Users"} /> }
 
 
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 lg:mb-7">
-        <TitleComponent title={messages["nav_users"] || "Users"} />
+        <TitleComponent title={messages["users"] || "Users"} />
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {messages["dashboard_total_categories"]?.replace("Categories", "Users") || "Total"}: {filteredUsers.length}
+              {messages["total"] || "Total"}: {filteredUsers.length}
             </p>
             <div className="relative">
               <SearchBar
@@ -75,7 +75,7 @@ const UsersComponent = () => {
           </div>
           {canAddUser && (
             <Button className="h-8.5 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
-              {messages["add"] || "Add"}
+              {messages["create"] || "Create"}
             </Button>
           )}
         </div>
@@ -155,7 +155,7 @@ const UsersComponent = () => {
                       colSpan={6}
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
-                      {messages["no_data"] || "No users found."}
+                      {messages["no_data_found"] || "No Data Found!"}
                     </td>
                   </TableRow>
                 )}

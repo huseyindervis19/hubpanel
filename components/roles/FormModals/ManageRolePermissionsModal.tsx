@@ -56,8 +56,8 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
     setMessage(null);
     try {
       await updateRolePermissions.mutateAsync({ roleId: role.id, permissionIds: selectedPermissions });
-      
-      setMessage(messages["updated_successfully"]?.replace("Updated", "Permissions updated") || "Permissions updated successfully!");
+
+      setMessage(messages["updated_successfully"] || "Updated successfully!");
 
       onSuccess();
 
@@ -66,7 +66,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       }, 1000);
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error updating permissions.");
+      setMessage(messages["update_failed"] || "An error occurred while updating.");
     }
   };
 
@@ -75,12 +75,14 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
   return (
     <Modal
       isOpen={isOpen}
-      onClose={isPending ? () => {} : onClose}
+      onClose={isPending ? () => { } : onClose}
       className="max-w-xl p-8"
     >
       <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
-        {messages["manage"] || "Manage"} {messages["nav_permissions"] || "Permissions"} for {role?.name}
+        {(messages["manage_permissions_for"] || "Manage Permissions for {role}")
+          .replace("{role}", role?.name || "")}
       </h4>
+
 
       {message && (
         <p className={`mb-4 text-center ${message.includes("Error") ? "text-red-600" : "text-green-600"}`}>
@@ -89,7 +91,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       )}
 
       {isLoading && !permissions.length ? (
-        <p>{messages["loading"] || "Loading permissions..."}</p>
+        <p>{messages["loading"] || "Loading ..."}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {permissions.map(permission => (
@@ -107,7 +109,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
 
       <div className="flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            {messages["close"] || "Close"}
+          {messages["close"] || "Close"}
         </Button>
         <Button
           size="sm"
@@ -116,14 +118,14 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
           className={isPending ? "opacity-75 cursor-not-allowed flex items-center justify-center text-white" : "text-white"}
         >
           {isPending ? (
-             <>
-                <LoadingIcon
-                  width={16}
-                  height={16}
-                  className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
-                />
-                {messages["edit_profile_modal_loading"]?.replace("profile", "permissions") || "Updating..."}
-              </>
+            <>
+              <LoadingIcon
+                width={16}
+                height={16}
+                className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
+              />
+              {messages["updating"]|| "Updating..."}
+            </>
           ) : (
             messages["update"] || "Update"
           )}

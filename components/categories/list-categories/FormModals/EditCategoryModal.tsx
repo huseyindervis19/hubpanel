@@ -151,7 +151,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
               type="text"
               value={form.name}
               onChange={handleChange}
-              placeholder={messages["product_category_name_placeholder"] || "Enter category name"}
+              placeholder={messages["category_name_placeholder"] || "Enter category name"}
             />
           </div>
 
@@ -171,7 +171,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
           {/* Image Upload and Preview */}
           <div>
             <Label className={LABEL_CLASS}>
-              {messages["category_image"]?.replace(":", "") || "Category Image"}
+              {messages["category_image"] || "Category Image"}
             </Label>
             <FileInput
               onChange={handleFileChange}
@@ -249,7 +249,7 @@ const EditCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, catego
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                {messages["edit_profile_modal_loading"]?.replace("profile", "category") || "Updating..."}
+                {messages["updating"] || "Updating..."}
               </>
             ) : (
               messages["update"] || "Update"

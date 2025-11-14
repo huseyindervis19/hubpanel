@@ -40,7 +40,7 @@ const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) 
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDeleteRole} 
-      title={messages["confirm_delete"] || "Confirm Role Deletion"}
+      title={messages["confirm_delete"] || "An error occurred while deleting."}
       message={
         <>
           {messages["delete_warning"] 
@@ -49,7 +49,7 @@ const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) 
           }
         </>
       }
-      errorMessage={messages["delete_failed"] || "Error deleting role. This role might be in use or protected."}
+      errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
     />
   );
 };

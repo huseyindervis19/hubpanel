@@ -74,11 +74,11 @@ const ProductsComponent: React.FC = () => {
   return (
     <>
       <div className="mb-5 flex items-center justify-between lg:mb-7">
-        <TitleComponent title={messages["nav_product_list"] || "Products List"} />
+        <TitleComponent title={messages["product_list"] || "Products List"} />
 
         {canAddProduct && (
           <Link href="/products/add-product">
-            <Button className="h-9 px-4 text-sm">{messages["nav_add_product"] || "Add Product"}</Button>
+            <Button className="h-9 px-4 text-sm">{messages["create"] || "Create"}</Button>
           </Link>
         )}
       </div>
@@ -90,10 +90,10 @@ const ProductsComponent: React.FC = () => {
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   <Th> {messages["product_main_image"] || "Main Image"} </Th>
-                  <Th> {messages["category_name_in_table"] || "Category"} </Th>
+                  <Th> {messages["product_category_name_in_table"] || "Category"} </Th>
                   <Th> {messages["name"] || "Name"} </Th>
                   <Th> {messages["description"] || "Description"}</Th>
-                  <Th> {messages["stock_quantity_in_table"] || "Stock"}</Th>
+                  <Th> {messages["stock_quantity_in_table"] || "Stock Quantity"}</Th>
                   <Th> {messages["is_active_in_table"] || "Status"}</Th>
                   <Th> {messages["is_featured"] || "Featured"}</Th>
                   <Th> {messages["action"] || "Action"}</Th>

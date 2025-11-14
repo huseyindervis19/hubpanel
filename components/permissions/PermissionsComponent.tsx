@@ -33,12 +33,12 @@ const PermissionsComponent = () => {
     <>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 lg:mb-7">
-        <TitleComponent title={messages["nav_permissions"] || "Permissions"} />
+        <TitleComponent title={messages["permissions"] || "Permissions"} />
         <div className="flex flex-wrap items-center gap-3">
           {/* Search + Total */}
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {messages["dashboard_total_categories"]?.replace("Categories", "Permissions") || "Total"}: {filteredPermissions.length}
+              {messages["total"]|| "Total"}: {filteredPermissions.length}
             </p>
             <SearchBar
               searchTerm={searchTerm}
@@ -57,9 +57,9 @@ const PermissionsComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th> {messages["name"] || "Name"} </Th>
-                  <Th> {messages["endpoint"] || "Endpoint"} </Th>
-                  <Th> {messages["date"] || "Created At"} </Th>
+                  <Th> {messages["permission_name"] || "Name"} </Th>
+                  <Th> {messages["permission_endpoint"] || "Endpoint"} </Th>
+                  <Th> {messages["permission_date"] || "Created At"} </Th>
                 </TableRow>
               </TableHeader>
 
@@ -82,8 +82,8 @@ const PermissionsComponent = () => {
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
                       {hasPermissions
-                        ? (messages["no_results_found"]?.replace("{term}", searchTerm) || `No results found for "${searchTerm}".`)
-                        : (messages["no_data"] || "No permissions available.")
+                        ? (messages["no_results_found"] || "no results found")
+                        : (messages["no_data_found"] || "No Data Found!")
                       }
                     </td>
                   </TableRow>

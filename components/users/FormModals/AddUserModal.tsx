@@ -76,7 +76,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       await createUser.mutateAsync(payload);
-      setMessage(messages["user_created_successfully"] || "User created successfully!");
+      setMessage(messages["created_successfully"] || "Created successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -85,7 +85,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error creating user. Please try again.");
+      setMessage(messages["error"] || "An error occurred while creating.");
     }
   };
 
@@ -107,7 +107,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title={messages["u_add_user"] || "Add User"}
+          title={messages["add_new_user"] || "Add User"}
           className="mb-6 font-semibold text-center"
         />
 
@@ -219,7 +219,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
             type="submit" 
             disabled={isPending || isFormInvalid}
           >
-            {isPending ? (messages["adding"] || "Adding...") : (messages["add"] || "Add")}
+            {isPending ? (messages["creating"] || "Creating...") : (messages["create"] || "Create")}
           </Button>
         </div>
       </Form>

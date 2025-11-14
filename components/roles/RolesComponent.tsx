@@ -58,15 +58,15 @@ const RolesComponent = () => {
     setSelectedRole(null);
   };
 
-  if (isLoading) { <LoadingComponent title={messages["message"] || "Roles"} /> }
+  if (isLoading) { <LoadingComponent title={messages["roles"] || "Roles"} /> }
 
   return (
     <>
       <div className="flex items-center justify-between mb-5 lg:mb-7">
-        <TitleComponent title={messages["nav_roles"] || "Roles"} />
+        <TitleComponent title={messages["roles"] || "Roles"} />
         <div className="flex justify-end mb-4">
           {canAddRole && (
-            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>{messages["add"] || "Add"}</Button>
+            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>{messages["create"] || "Create"}</Button>
           )}
         </div>
       </div>
@@ -79,8 +79,8 @@ const RolesComponent = () => {
                 <TableRow>
                   <Th>{messages["name"] || "Name"}</Th>
                   <Th>{messages["description"] || "Description"}</Th>
-                  <Th>{messages["nav_permissions"] || "Permissions"}</Th>
-                  <Th>{messages["action"] || "Actions"}</Th>
+                  <Th>{messages["permissions"] || "Permissions"}</Th>
+                  <Th>{messages["action"] || "Action"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -123,7 +123,7 @@ const RolesComponent = () => {
                       colSpan={4}
                       className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
                     >
-                      {messages["no_data"] || "No roles found."}
+                      {messages["no_data_found"] || "No Data Found!"}
                     </td>
                   </TableRow>
                 )}

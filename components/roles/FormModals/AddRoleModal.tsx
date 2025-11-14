@@ -57,7 +57,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     try {
       await createRole.mutateAsync(payload);
 
-      setMessage(messages["user_created_successfully"]?.replace("User", "Role") || "Role created successfully!");
+      setMessage(messages["created_successfully"] || "Created Successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -66,7 +66,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error creating role. Please try again.");
+      setMessage(messages["error"] || "An error occurred while creating.");
     }
   };
 
@@ -80,7 +80,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
          <TitleComponent
-          title={`${messages["add"] || "Add"} ${messages["nav_roles"] || "Role"}`}
+          title={messages["add_roles"] || "Add Roles"}
           className="mb-4 font-semibold text-center"
         />
 
@@ -141,10 +141,10 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                     height={16}
                     className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                   />
-                  {messages["adding"] || "Adding..."}
+                  {messages["creating"] || "Creating..."}
                 </>
               ) : (
-                messages["add"] || "Add"
+                messages["create"] || "Create"
               )}
           </Button>
         </div>

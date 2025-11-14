@@ -60,7 +60,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       await createLanguage.mutateAsync(payload);
-      setMessage(messages["created_successfully"]?.replace("User", "Language") || "Created Successfully!");
+      setMessage(messages["created_successfully"] || "Created Successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 

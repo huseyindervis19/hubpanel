@@ -38,7 +38,7 @@ const getNavItems = (
   const navItems: NavItem[] = [
     {
       icon: <DashboardIcon />,
-      name: messages["nav_dashboard"] || "Dashboard",
+      name: messages["dashboard"] || "Dashboard",
       path: "/",
     },
   ];
@@ -47,14 +47,14 @@ const getNavItems = (
   if (canViewCategories || canAddCategory) {
     // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
     const categorySubItems: SubItem[] = [
-      canViewCategories && { name: messages["nav_original_product"] || "Products", path: "/categories/list-categories" },
-      canAddCategory && { name: messages["nav_product_categories"] || "Product Categories", path: "/categories/add-category" },
+      canViewCategories && { name: messages["products_categories"] || "Products Categories", path: "/categories/list-categories" },
+      canAddCategory && { name: messages["add_product_categories"] || "Add Categories", path: "/categories/add-category" },
     ].filter(Boolean) as SubItem[];
 
     if (categorySubItems.length > 0) {
       navItems.push({
         icon: <CategoriesIcon />,
-        name: messages["nav_products_categories"] || "Products Categories",
+        name: messages["products_categories"] || "Products Categories",
         subItems: categorySubItems,
       });
     }
@@ -64,14 +64,14 @@ const getNavItems = (
   if (canViewProducts || canAddProduct) {
     // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
     const productSubItems: SubItem[] = [
-      canViewProducts && { name: messages["nav_product_list"] || "List Product", path: "/products/list-products" },
-      canAddProduct && { name: messages["nav_add_product"] || "Add Product", path: "/products/add-product" },
+      canViewProducts && { name: messages["product_list"] || "List Product", path: "/products/list-products" },
+      canAddProduct && { name: messages["add_product"] || "Add Product", path: "/products/add-product" },
     ].filter(Boolean) as SubItem[];
 
     if (productSubItems.length > 0) {
       navItems.push({
         icon: <ProductsIcon />,
-        name: messages["nav_products"] || "Products",
+        name: messages["products_list"] || "List Products",
         subItems: productSubItems,
       });
     }
@@ -79,7 +79,6 @@ const getNavItems = (
 
   return navItems;
 };
-
 const getOtherItems = (
   messages: Record<string, string>,
   canViewUsers: boolean,
@@ -92,24 +91,24 @@ const getOtherItems = (
   if (canViewRoles) {
     items.push({
       icon: <LockIcon />,
-      name: messages["nav_roles_permissions"] || "Roles && Permissions",
+      name: messages["roles_permissions"] || "Roles && Permissions",
       subItems: [
-        { name: messages["nav_permissions"] || "Permissions", path: "/permissions" },
-        { name: messages["nav_roles"] || "Roles", path: "/roles" },
+        { name: messages["permissions"] || "Permissions", path: "/permissions" },
+        { name: messages["roles"] || "Roles", path: "/roles" },
       ],
     });
   }
 
   if (canViewLanguages || canViewLanguageKeys) {
     const languageSubItems: SubItem[] = [
-      canViewLanguages && { name: messages["nav_languages_list"] || "Languages", path: "/languages/lang" },
-      canViewLanguageKeys && { name: messages["nav_languages_keys"] || "Language Keys", path: "/languages/translations" },
+      canViewLanguages && { name: messages["languages_list"] || "Languages", path: "/languages/lang" },
+      canViewLanguageKeys && { name: messages["languages_keys"] || "Language Keys", path: "/languages/translations" },
     ].filter(Boolean) as SubItem[];
 
     if (languageSubItems.length > 0) {
       items.push({
         icon: <LanguageIcon />,
-        name: messages["nav_languages"] || "Languages",
+        name: messages["languages"] || "Languages",
         subItems: languageSubItems,
       });
     }
@@ -118,14 +117,14 @@ const getOtherItems = (
   if (canViewUsers) {
     items.push({
       icon: <UserIcon />,
-      name: messages["nav_users"] || "Users",
+      name: messages["users"] || "Users",
       path: "/users",
     });
   }
 
   items.push({
     icon: <UserCircleIcon />,
-    name: messages["nav_profile"] || "User Profile",
+    name: messages["profile"] || "User Profile",
     path: "/profile",
   });
 

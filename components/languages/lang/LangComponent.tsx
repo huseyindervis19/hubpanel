@@ -89,7 +89,7 @@ const LanguagesComponent = () => {
                   <Th> {messages["language_name"] || "Language Name"} </Th>
                   <Th> {messages["language_code"] || "Language Code"} </Th>
                   <Th> {messages["language_default"] || "Default Language"} </Th>
-                  <Th> {messages["actions"] || "Actions"}</Th>
+                  <Th> {messages["action"] || "Action"}</Th>
                 </TableRow>
               </TableHeader>
 

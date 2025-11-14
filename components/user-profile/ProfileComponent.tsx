@@ -19,7 +19,7 @@ const ProfileComponent = () => {
 
   return (
     <>
-      <TitleComponent title={messages["nav_profile"] || "Profile"}/>
+      <TitleComponent title={messages["profile"] || "Profile"}/>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6 space-y-6">
         <UserMetaCard user={currentUser} onEdit={() => setEditModalOpen(true)} />

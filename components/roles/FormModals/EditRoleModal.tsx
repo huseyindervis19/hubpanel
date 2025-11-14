@@ -76,7 +76,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
     try {
       await updateRole.mutateAsync({ id: role.id, data: payload });
-      setMessage(messages["user_updated_successfully"]?.replace("User", "Role") || "Role updated successfully!");
+      setMessage(messages["updated_successfully"] || "Updated successfully!");
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -85,7 +85,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error updating role. Please try again.");
+      setMessage(messages["update_failed"] || "An error occurred while updating.");
     }
   };
 
@@ -100,7 +100,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
     >
       <Form onSubmit={handleSubmit}>
         <TitleComponent
-          title={`${messages["edit"] || "Edit"} ${messages["nav_roles"] || "Role"}`}
+          title={messages["edit_role"] || "Edit Role"}
           className="mb-6 text-center"
         />
 
@@ -158,7 +158,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                {messages["edit_profile_modal_loading"]?.replace("profile", "role") || "Updating..."}
+                {messages["updating"] || "Updating..."}
               </>
             ) : (
               messages["update"] || "Update"

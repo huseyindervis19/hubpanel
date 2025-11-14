@@ -30,19 +30,19 @@ const useCategories = () => {
 };
 
 const useUpdateProduct = () => {
-    return {
-        mutateAsync: async (data: { id: number, data: any }) => {
-            return new Promise((resolve) => setTimeout(resolve, 500));
-        },
-        isPending: false,
-    };
+  return {
+    mutateAsync: async (data: { id: number, data: any }) => {
+      return new Promise((resolve) => setTimeout(resolve, 500));
+    },
+    isPending: false,
+  };
 };
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  product?: Product; 
+  product?: Product;
 }
 
 interface FormState {
@@ -65,7 +65,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     is_featured: false,
   });
   const [message, setMessage] = useState<string | null>(null);
-  
+
   const { categories = [], isLoading: categoriesLoading } = useCategories();
   const updateProduct = useUpdateProduct();
 
@@ -85,7 +85,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
       setForm({
         name: product.name || "",
         description: product.description || "",
-        category_id: product.category_id ? product.category_id.toString() : "", 
+        category_id: product.category_id ? product.category_id.toString() : "",
         stock_quantity: product.stock_quantity || 0,
         is_active: product.is_active || false,
         is_featured: product.is_featured || false,
@@ -127,35 +127,35 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     if (!product || !product.id) return;
 
     if (form.name.trim() === "") {
-        setMessage(messages["name_required"] || "Product Name is required.");
-        return;
+      setMessage(messages["name_required"] || "name required.");
+      return;
     }
-    
+
     if (form.category_id.trim() === "") {
-      setMessage(messages["category_name_required"] || "Please select a category.");
+      setMessage(messages["category_name_required"] || "Category name required.");
       return;
     }
 
     if (form.stock_quantity < 0) {
-        setMessage(messages["stock_quantity_required"] || "Stock quantity cannot be negative.");
-        return;
+      setMessage(messages["stock_quantity_required"] || "stock quantity required");
+      return;
     }
 
     setMessage(null);
-    
+
     const payload = {
-        name: form.name.trim(),
-        description: form.description.trim(),
-        category_id: Number(form.category_id),
-        stock_quantity: form.stock_quantity,
-        is_active: form.is_active,
-        is_featured: form.is_featured,
+      name: form.name.trim(),
+      description: form.description.trim(),
+      category_id: Number(form.category_id),
+      stock_quantity: form.stock_quantity,
+      is_active: form.is_active,
+      is_featured: form.is_featured,
     };
 
     try {
       await updateProduct.mutateAsync({ id: product.id, data: payload });
 
-      setMessage(messages["product_updated_successfully"] || "Product updated successfully!");
+      setMessage(messages["updated_successfully"] || "updated successfully!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
@@ -163,21 +163,21 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "Error updating product. Please try again.");
+      setMessage(messages["update_failed"] || "An error occurred while updating.");
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
-         <TitleComponent
+        <TitleComponent
           title={messages["edit_product"] || "Edit Product"}
           className="mb-6 text-center"
         />
 
         {message && (
           <p
-            className={`mb-4 text-center font-medium ${message.includes("Error") || message.includes("required") || message.includes("select") || message.includes("negative") ? "text-red-600" : "text-green-600"
+            className={`mb-4 text-center font-medium ${message.includes("Error") ? "text-red-600" : "text-green-600"
               }`}
           >
             {message}
@@ -186,7 +186,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
         <div className="space-y-6">
           <div>
-            <Label>{messages["name"] || "Name"}</Label>
+            <Label>{messages["product_name"] || "Product Name"}</Label>
             <InputField
               type="text"
               name="name"
@@ -198,7 +198,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
             />
           </div>
           <div>
-            <Label>{messages["description"] || "Description"}</Label>
+            <Label>{messages["product_description"] || "Product Description"}</Label>
             <TextArea
               value={form.description}
               onChange={(value) => handleChange("description", value)}
@@ -208,37 +208,37 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
             />
           </div>
           <div>
-            <Label>{messages["product_category_label"]?.replace(":", "") || "Category"}</Label>
+            <Label>{messages["product_category_name"] || "Category Name"}</Label>
             <Select
               value={form.category_id}
               onChange={(value) => handleChange("category_id", value)}
               options={categoryOptions}
-              placeholder={categoriesLoading ? (messages["loading"] || "Loading categories...") : (messages["select_category"] || "Select Category")}
+              placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")}
               disabled={categoriesLoading || isPending}
               required
             />
           </div>
           <div>
-            <Label>{messages["stock_quantity_label"] || "Stock Quantity"}</Label>
+            <Label>{messages["product_stock_quantity"] || "Stock Quantity"}</Label>
             <InputField
               type="number"
               name="stock_quantity"
               value={form.stock_quantity.toString()}
               onChange={(e) => handleChange("stock_quantity", Number(e.target.value))}
-              placeholder={messages["stock_quantity_placeholder"] || "Enter stock quantity"}
+              placeholder={messages["product_stock_quantity_placeholder"] || "Enter available stock"}
               min="0"
               disabled={isPending}
             />
           </div>
           <div className="flex gap-6">
             <Checkbox
-              label={messages["is_active_label"] || "Active Status"}
+              label={messages["is_active"] || "Active"}
               checked={form.is_active}
               onChange={(checked) => handleChange("is_active", checked)}
               disabled={isPending}
             />
             <Checkbox
-              label={messages["is_featured_label"] || "Featured Product"}
+              label={messages["is_featured"] || "Featured"}
               checked={form.is_featured}
               onChange={(checked) => handleChange("is_featured", checked)}
               disabled={isPending}
@@ -246,7 +246,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
           </div>
         </div>
 
-        
+
         <div className="flex items-center justify-end w-full gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             {messages["close"] || "Close"}
@@ -264,7 +264,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
                   height={16}
                   className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
                 />
-                {messages["edit_profile_modal_loading"]?.replace("profile", "product") || "Updating..."}
+                {messages["updating"] || "Updating..."}
               </>
             ) : (
               messages["update"] || "Update"
