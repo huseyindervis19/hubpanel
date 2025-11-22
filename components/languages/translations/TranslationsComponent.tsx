@@ -29,21 +29,21 @@ const TranslationsComponent = () => {
 
   useEffect(() => {
     const storedLocale = localStorage.getItem("locale");
-    if (storedLocale && languages.length > 0) {
+    if (storedLocale && languages.length > 0) { // check languages loaded,storage
       const foundLang = languages.find((lang) => lang.code === storedLocale);
-      if (foundLang) setSelectedLang(foundLang.id);
+      if (foundLang) setSelectedLang(foundLang.id);//تعيين اللغة المختارة
     }
   }, [languages]);
 
   const filteredTranslations = useMemo(() => {
-    if (!selectedLang) return [];
+    if (!selectedLang) return []; //if no language selected, return empty array
     return translations
-      .filter((t) => t.languageId === selectedLang)
+      .filter((t) => t.languageId === selectedLang) //filter by selected language
       .filter(
         (t) =>
           t.TranslationKey?.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
           t.value.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      ); //filter by search term
   }, [translations, searchTerm, selectedLang]);
 
   const handleChangeValue = (id: number, newValue: string) => {

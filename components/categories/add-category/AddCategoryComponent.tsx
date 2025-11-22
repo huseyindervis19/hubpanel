@@ -10,87 +10,107 @@ import Form from "@/components/form/Form";
 import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
+import { useCreateCategory } from "@/hooks/useCategory";
+import { useRouter } from "next/navigation";
 
 interface FormState {
   name: string;
   description: string;
-  alt_text: string;
+  isFeatured: boolean;
 }
 
 const AddCategoryComponent: React.FC = () => {
   const { messages } = useLocale();
+  const router = useRouter();
+  const createCategoryMutation = useCreateCategory();
+
   const [form, setForm] = useState<FormState>({
     name: "",
     description: "",
-    alt_text: "",
+    isFeatured: false,
   });
-
-  const INITIAL_FILE_NAME = "No file chosen";
-
-  const [fileName, setFileName] = useState(INITIAL_FILE_NAME);
-  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState("No file chosen");
+  const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setSuccess(false);
-      }, 4000);
-
-      return () => clearTimeout(timer);
+    if (!success) {
+      setForm({ name: "", description: "", isFeatured: false });
+      setFile(null);
+      setFileName("No file chosen");
+      setMessage(null);
     }
   }, [success]);
 
+  // Handlers
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, type, checked, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleTextAreaChange = (value: string) => {
+    setForm(prev => ({ ...prev, description: value }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileName(e.target.files?.[0]?.name || INITIAL_FILE_NAME);
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    setFileName(selectedFile?.name || "No file chosen");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
 
-  const handleTextAreaChange = (value: string, name: keyof FormState) => {
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = () => {
-    setLoading(true);
-    setError(false);
-    setSuccess(false);
-
-    if (form.name.trim() === "" || fileName === INITIAL_FILE_NAME) {
-      setError(true);
-      setLoading(false);
+    if (!file) {
+      setMessage(messages["required_fields_error"] || "Please choose an image.");
       return;
     }
 
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name.trim());
+      formData.append("description", form.description.trim());
+      formData.append("isFeatured", String(form.isFeatured));
+      formData.append("imageUrl", file); // ← تم تعديل اسم الحقل
+
+      await createCategoryMutation.mutateAsync(formData);
+
+      setMessage(messages["created_successfully"] || "Created Successfully!");
       setSuccess(true);
-      setForm({ name: "", description: "", alt_text: "" });
-      setFileName(INITIAL_FILE_NAME);
-      setLoading(false);
-    }, 1000);
+
+      setTimeout(() => {
+        setMessage(null);
+        router.push("/categories/list-categories");
+      }, 1500);
+
+    } catch (err) {
+      console.error(err);
+      setMessage(messages["error"] || "An error occurred while creating.");
+    }
   };
+
   const LABEL_CLASS = "text-md text-gray-800 dark:text-white/90";
 
   return (
     <>
-         <TitleComponent
-          title={messages["add_new_category"] || "Add New Category"}
-          className="mb-6 font-semibold "
-        />
+      <TitleComponent
+        title={messages["add_new_category"] || "Add New Category"}
+        className="mb-6 font-semibold"
+      />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
-        {success && (
-          <div className="p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
-            {messages["created_successfully"] || "Created Successfully!"}
-          </div>
-        )}
-        {error && (
-          <div className="p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300">
-            {messages["required_fields_error"] || "Please ensure all required fields are filled."}
+        {message && (
+          <div className={`p-4 rounded-xl border transition-opacity duration-300 ${
+            message.includes("successfully") || message.includes("Successfully")
+              ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
+              : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
+          }`}>
+            {message}
           </div>
         )}
 
@@ -104,7 +124,8 @@ const AddCategoryComponent: React.FC = () => {
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder={messages["category_name_placeholder"] || "enter category name"}
+              placeholder={messages["category_name_placeholder"] || "Enter category name"}
+              required
             />
           </div>
 
@@ -114,7 +135,7 @@ const AddCategoryComponent: React.FC = () => {
             </Label>
             <TextArea
               value={form.description}
-              onChange={(value) => handleTextAreaChange(value, "description")}
+              onChange={handleTextAreaChange}
               rows={4}
               placeholder={messages["category_description_placeholder"] || "Enter description"}
             />
@@ -126,6 +147,7 @@ const AddCategoryComponent: React.FC = () => {
                 {messages["category_image"] || "Category Image"} <span className="text-error-500">*</span>
               </Label>
               <FileInput
+                id="file"
                 onChange={handleFileChange}
                 className="w-full"
                 accept="image/*"
@@ -134,16 +156,17 @@ const AddCategoryComponent: React.FC = () => {
               />
             </div>
 
-            <div>
-              <Label htmlFor="alt_text" className={LABEL_CLASS}>
-                {messages["alt_text"] || "Alt Text"}
+            <div className="flex flex-col justify-between">
+              <Label htmlFor="isFeatured" className={LABEL_CLASS}>
+                {messages["is_featured"] || "Is Featured"}
               </Label>
-              <InputField
-                id="alt_text"
-                name="alt_text"
-                value={form.alt_text}
+              <input
+                type="checkbox"
+                id="isFeatured"
+                name="isFeatured"
+                checked={form.isFeatured}
                 onChange={handleChange}
-                placeholder={messages["alt_text_placeholder"] || "enter alt text"}
+                className="w-5 h-5"
               />
             </div>
           </div>
@@ -153,10 +176,10 @@ const AddCategoryComponent: React.FC = () => {
               type="submit"
               variant="primary"
               size="sm"
-              disabled={loading || success}
-              className={loading ? "opacity-75 cursor-not-allowed flex items-center justify-center" : "text-white"}
+              disabled={createCategoryMutation.isPending || success}
+              className={createCategoryMutation.isPending ? "opacity-75 cursor-not-allowed flex items-center justify-center" : "text-white"}
             >
-              {loading ? (
+              {createCategoryMutation.isPending ? (
                 <>
                   <LoadingIcon
                     width={16}
