@@ -10,49 +10,8 @@ import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
-
-interface Category {
-  id: number;
-  name: string;
-  description: string;
-  image_url: string;
-  productsCount: number;
-}
-
-const mockCategories: Category[] = [
-  {
-    id: 1,
-    name: "Electronics",
-    description: "Latest gadgets and devices",
-    image_url:
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=400&q=80",
-    productsCount: 12,
-  },
-  {
-    id: 2,
-    name: "Clothing",
-    description: "Fashionable apparel",
-    image_url:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80",
-    productsCount: 8,
-  },
-  {
-    id: 3,
-    name: "Books",
-    description: "All kinds of books",
-    image_url:
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=400&q=80",
-    productsCount: 25,
-  },
-  {
-    id: 4,
-    name: "Home & Kitchen",
-    description: "Essentials for home",
-    image_url:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80",
-    productsCount: 15,
-  },
-];
+import { useAllCategories } from "@/hooks/useCategory"; // استخدم hook الجديد
+import { Category } from "@/types/Category";
 
 const CategoriesComponent: React.FC = () => {
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
@@ -60,11 +19,15 @@ const CategoriesComponent: React.FC = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  const { messages, locale } = useLocale();
   const canAddCategory = useHasPermission(PERMISSIONS.ADD_CATEGORY);
   const canEditCategory = useHasPermission(PERMISSIONS.EDIT_CATEGORY);
   const canDeleteCategory = useHasPermission(PERMISSIONS.DELETE_CATEGORY);
-  const { messages } = useLocale();
 
+  const { data: categoriesResponse, isLoading, refetch } = useAllCategories(locale);
+  const categories = categoriesResponse?.data || [];
+
+  // ---------------- Handlers ----------------
   const handleDropdownToggle = (categoryId: number) => {
     setOpenDropdownId(prev => (prev === categoryId ? null : categoryId));
   };
@@ -100,7 +63,7 @@ const CategoriesComponent: React.FC = () => {
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {mockCategories.map(category => (
+        {categories.map(category => (
           <CategoryCard
             key={category.id}
             category={category}
@@ -122,7 +85,7 @@ const CategoriesComponent: React.FC = () => {
               category={selectedCategory}
               isOpen={editModalOpen}
               onClose={closeEditModal}
-              onSuccess={() => { }}
+              onSuccess={() => refetch()}
             />
           )}
           {canDeleteCategory && (
@@ -130,7 +93,7 @@ const CategoriesComponent: React.FC = () => {
               category={selectedCategory}
               isOpen={deleteModalOpen}
               onClose={closeDeleteModal}
-              onSuccess={() => { }}
+              onSuccess={() => refetch()}
             />
           )}
         </>

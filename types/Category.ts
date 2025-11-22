@@ -1,8 +1,21 @@
+export interface CategoryTranslated {
+  name: string;
+  description: string;
+}
+
+export interface CategoryLinks {
+  self: string;
+  edit: string;
+  delete: string;
+}
+
 export interface Category {
   id: number;
   name: string;
-  description?: string;
-  image_url: string;
-  alt_text?: string;
-  productsCount: number;
+  description: string;
+  imageUrl?: string | null;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  translated?: CategoryTranslated;
 }
