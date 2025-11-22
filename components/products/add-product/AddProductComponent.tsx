@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
@@ -11,9 +12,12 @@ import Checkbox from "@/components/form/input/Checkbox";
 import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
+import { useCreateProduct } from "@/hooks/useProduct";
+import { useAllCategories } from "@/hooks/useCategory";
 
 interface FormState {
   name: string;
+  slug: string;
   description: string;
   stock_quantity: number;
   is_active: boolean;
@@ -22,39 +26,37 @@ interface FormState {
 }
 
 const AddProductComponent: React.FC = () => {
-  const { messages } = useLocale();
+  const router = useRouter();
+  const { messages, locale } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
+    slug: "",
     description: "",
     stock_quantity: 0,
     is_active: true,
     is_featured: false,
     category_id: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const categories = [
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Clothing" },
-    { id: 3, name: "Books" },
-    { id: 4, name: "Home & Kitchen" },
-  ];
+  const { data: categoriesResponse, isLoading: categoriesLoading } = useAllCategories(locale);
+  const categories = categoriesResponse?.data || [];
+  const createProduct = useCreateProduct();
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
-    label: cat.name,
+    label: cat.translated?.name || cat.name || "",
   }));
 
   useEffect(() => {
-    if (success) {
+    if (successMessage) {
       const timer = setTimeout(() => {
-        setSuccess(false);
+        setSuccessMessage(null);
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [success]);
+  }, [successMessage]);
 
   const handleTextAreaChange = (value: string, name: keyof FormState) => {
     setForm(prev => ({ ...prev, [name]: value }));
@@ -112,6 +114,7 @@ const AddProductComponent: React.FC = () => {
   const resetForm = () => {
     setForm({
       name: "",
+      slug: "",
       description: "",
       stock_quantity: 0,
       is_active: true,
@@ -120,22 +123,48 @@ const AddProductComponent: React.FC = () => {
     });
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    setLoading(true);
-    setError(false);
-    setSuccess(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
-    if (form.name.trim() === "" || form.category_id === "" || form.stock_quantity < 0) {
-      setError(true);
-      setLoading(false);
+    if (form.name.trim() === "") {
+      setErrorMessage(messages["name_required"] || "Name is required");
       return;
     }
 
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
+    if (form.category_id === "") {
+      setErrorMessage(messages["category_name_required"] || "Category is required");
+      return;
+    }
+
+    if (form.stock_quantity < 0) {
+      setErrorMessage(messages["stock_quantity_required"] || "Stock quantity must be 0 or greater");
+      return;
+    }
+
+    try {
+      await createProduct.mutateAsync({
+        name: form.name.trim(),
+        slug: form.slug.trim(), 
+        description: form.description.trim() || undefined,
+        stockQuantity: form.stock_quantity,
+        isActive: form.is_active,
+        isFeatured: form.is_featured,
+        categoryId: form.category_id ? Number(form.category_id) : undefined,
+      });
+
+      setSuccessMessage(messages["created_successfully"] || "Product created successfully!");
       resetForm();
-    }, 1500);
+
+      // Redirect to products list after 1.5 seconds
+      setTimeout(() => {
+        router.push("/products/list-products");
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error creating product:", error);
+      setErrorMessage(error?.response?.data?.message || messages["create_failed"] || "Failed to create product");
+    }
   };
 
   return (
@@ -147,14 +176,14 @@ const AddProductComponent: React.FC = () => {
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
 
-        {success && (
+        {successMessage && (
           <div className="p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300">
-            {messages["created_successfully"] || "Created Successfully!"}
+            {successMessage}
           </div>
         )}
-        {error && (
+        {errorMessage && (
           <div className="p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300">
-            {messages["required_fields_error"] || "Please ensure all required fields are filled."}
+            {errorMessage}
           </div>
         )}
 
@@ -171,9 +200,9 @@ const AddProductComponent: React.FC = () => {
               value={form.category_id}
               onChange={(value) => handleChange(value, "category_id")}
               options={categoryOptions}
-              placeholder={messages["product_category_name_placeholder"] || "Select Category"}
+              placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")}
               required
-              disabled={loading}
+              disabled={categoriesLoading || createProduct.isPending}
             />
           </div>
 
@@ -186,7 +215,18 @@ const AddProductComponent: React.FC = () => {
             value={form.name}
             onChange={handleChange}
             required
-            disabled={loading}
+            disabled={createProduct.isPending}
+          />
+          {/* Slug */}
+          <InputField
+            id="slug"
+            name="slug"
+            label={messages["slug"] || "Slug"}
+            placeholder={messages["slug_placeholder"] || "Enter product slug"}
+            value={form.slug}
+            onChange={handleChange}
+            required
+            disabled={createProduct.isPending}
           />
 
           {/* Description */}
@@ -202,7 +242,7 @@ const AddProductComponent: React.FC = () => {
               onChange={(value) => handleTextAreaChange(value, "description")}
               rows={4}
               placeholder={messages["product_description_placeholder"] || "Enter product description"}
-              disabled={loading}
+              disabled={createProduct.isPending}
             />
           </div>
 
@@ -217,7 +257,7 @@ const AddProductComponent: React.FC = () => {
             onChange={handleChange}
             min={0}
             required
-            disabled={loading}
+            disabled={createProduct.isPending}
           />
 
           {/* Checkboxes */}
@@ -227,7 +267,7 @@ const AddProductComponent: React.FC = () => {
               label={messages["is_active"] || "Active"}
               checked={form.is_active}
               onChange={(checked) => handleCheckboxChange(checked, "is_active")}
-              disabled={loading}
+              disabled={createProduct.isPending}
             />
 
             <Checkbox
@@ -235,7 +275,7 @@ const AddProductComponent: React.FC = () => {
               label={messages["is_featured"] || "Featured"}
               checked={form.is_featured}
               onChange={(checked) => handleCheckboxChange(checked, "is_featured")}
-              disabled={loading}
+              disabled={createProduct.isPending}
             />
           </div>
 
@@ -244,10 +284,10 @@ const AddProductComponent: React.FC = () => {
             <Button
               type="submit"
               size="sm"
-              disabled={loading || success}
-              className={loading ? "opacity-75 cursor-not-allowed flex items-center justify-center text-white" : "text-white"}
+              disabled={createProduct.isPending || !!successMessage}
+              className={createProduct.isPending ? "opacity-75 cursor-not-allowed flex items-center justify-center text-white" : "text-white"}
             >
-              {loading ? (
+              {createProduct.isPending ? (
                 <>
                   <LoadingIcon
                     width={16}

@@ -13,30 +13,8 @@ import { LoadingIcon } from "@/icons";
 import { Product } from "@/types/Product";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-const useCategories = () => {
-  const CATEGORIES: Category[] = [
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Clothing" },
-    { id: 3, name: "Books" },
-    { id: 4, name: "Home & Kitchen" },
-  ];
-  return { categories: CATEGORIES, isLoading: false };
-};
-
-const useUpdateProduct = () => {
-  return {
-    mutateAsync: async (data: { id: number, data: any }) => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    },
-    isPending: false,
-  };
-};
+import { useUpdateProduct } from "@/hooks/useProduct";
+import { useAllCategories } from "@/hooks/useCategory";
 
 interface Props {
   isOpen: boolean;
@@ -47,6 +25,7 @@ interface Props {
 
 interface FormState {
   name: string;
+  slug: string;
   description: string;
   category_id: string;
   stock_quantity: number;
@@ -55,9 +34,10 @@ interface FormState {
 }
 
 const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product }) => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
+    slug: "",
     description: "",
     category_id: "",
     stock_quantity: 0,
@@ -66,14 +46,15 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
   });
   const [message, setMessage] = useState<string | null>(null);
 
-  const { categories = [], isLoading: categoriesLoading } = useCategories();
-  const updateProduct = useUpdateProduct();
+  const { data: categoriesResponse, isLoading: categoriesLoading } = useAllCategories(locale);
+  const categories = categoriesResponse?.data || [];
+  const updateProductMutation = useUpdateProduct();
 
-  const isPending = updateProduct.isPending;
+  const isPending = updateProductMutation.isPending;
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
-    label: cat.name,
+    label: cat.translated?.name || cat.name || "",
   }));
 
   useEffect(() => {
@@ -82,13 +63,23 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
   useEffect(() => {
     if (product && !categoriesLoading) {
+      // Support both new Product type and legacy format
+      const productName = 'translated' in product ? product.translated?.name : (product as any).name || "";
+      const productDescription = 'translated' in product ? product.translated?.description : (product as any).description || "";
+      const productSlug = 'translated' in product ? product.translated?.slug : (product as any).slug || "";
+      const productCategoryId = 'categoryId' in product ? product.categoryId : (product as any).category_id;
+      const productStockQuantity = 'stockQuantity' in product ? product.stockQuantity : (product as any).stock_quantity || 0;
+      const productIsActive = 'isActive' in product ? product.isActive : (product as any).is_active || false;
+      const productIsFeatured = 'isFeatured' in product ? product.isFeatured : (product as any).is_featured || false;
+
       setForm({
-        name: product.name || "",
-        description: product.description || "",
-        category_id: product.category_id ? product.category_id.toString() : "",
-        stock_quantity: product.stock_quantity || 0,
-        is_active: product.is_active || false,
-        is_featured: product.is_featured || false,
+        name: productName,
+          slug: productSlug,
+        description: productDescription,
+        category_id: productCategoryId ? productCategoryId.toString() : "",
+        stock_quantity: productStockQuantity,
+        is_active: productIsActive,
+        is_featured: productIsFeatured,
       });
       setMessage(null);
     }
@@ -101,17 +92,26 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
   const isModified = useMemo(() => {
     if (!product) return false;
 
-    const initialCategoryId = product.category_id ? product.category_id.toString() : "";
+    // Support both new Product type and legacy format
+    const productName = 'translated' in product ? product.translated?.name : (product as any).name || "";
+    const productDescription = 'translated' in product ? product.translated?.description : (product as any).description || "";
+    const productSlug = 'translated' in product ? product.translated?.slug : (product as any).slug || "";
+    const productCategoryId = 'categoryId' in product ? product.categoryId : (product as any).category_id;
+    const productStockQuantity = 'stockQuantity' in product ? product.stockQuantity : (product as any).stock_quantity || 0;
+    const productIsActive = 'isActive' in product ? product.isActive : (product as any).is_active || false;
+    const productIsFeatured = 'isFeatured' in product ? product.isFeatured : (product as any).is_featured || false;
+
+    const initialCategoryId = productCategoryId ? productCategoryId.toString() : "";
     const categoryIdChanged = form.category_id !== initialCategoryId;
 
-    const nameChanged = form.name.trim() !== (product.name || "");
-    const descriptionChanged = form.description.trim() !== (product.description || "");
-    const stockQuantityChanged = form.stock_quantity !== (product.stock_quantity || 0);
-    const isActiveChanged = form.is_active !== (product.is_active || false);
-    const isFeaturedChanged = form.is_featured !== (product.is_featured || false);
+    const nameChanged = form.name.trim() !== productName;
+    const slugChanged = form.slug.trim() !== productSlug;
+    const descriptionChanged = form.description.trim() !== productDescription;
+    const stockQuantityChanged = form.stock_quantity !== productStockQuantity;
+    const isActiveChanged = form.is_active !== productIsActive;
+    const isFeaturedChanged = form.is_featured !== productIsFeatured;
 
-
-    return nameChanged || descriptionChanged || categoryIdChanged || stockQuantityChanged || isActiveChanged || isFeaturedChanged;
+    return nameChanged || slugChanged || descriptionChanged || categoryIdChanged || stockQuantityChanged || isActiveChanged || isFeaturedChanged;
   }, [form, product]);
 
   const isFormInvalid = useMemo(() => {
@@ -145,25 +145,30 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
     const payload = {
       name: form.name.trim(),
-      description: form.description.trim(),
-      category_id: Number(form.category_id),
-      stock_quantity: form.stock_quantity,
-      is_active: form.is_active,
-      is_featured: form.is_featured,
+      slug: form.slug.trim() || undefined,
+      description: form.description.trim() || undefined,
+      stockQuantity: form.stock_quantity,
+      isActive: form.is_active,
+      isFeatured: form.is_featured,
+      categoryId: form.category_id ? Number(form.category_id) : undefined,
     };
 
     try {
-      await updateProduct.mutateAsync({ id: product.id, data: payload });
+      await updateProductMutation.mutateAsync({ 
+        id: product.id, 
+        data: payload,
+        lang: locale,
+      });
 
-      setMessage(messages["updated_successfully"] || "updated successfully!");
+      setMessage(messages["updated_successfully"] || "Product updated successfully!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
       onSuccess();
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setMessage(messages["update_failed"] || "An error occurred while updating.");
+      setMessage(err?.response?.data?.message || messages["update_failed"] || "An error occurred while updating.");
     }
   };
 
@@ -194,6 +199,17 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
               onChange={(e) => handleChange("name", e.target.value)}
               placeholder={messages["product_name_placeholder"] || "Enter product name"}
               required
+              disabled={isPending}
+            />
+          </div>
+          <div>
+            <Label>{messages["product_slug"] || "Slug"}</Label>
+            <InputField
+              type="text"
+              name="slug"
+              value={form.slug}
+              onChange={(e) => handleChange("slug", e.target.value)}
+              placeholder={messages["product_slug_placeholder"] || "Enter slug (optional)"}
               disabled={isPending}
             />
           </div>

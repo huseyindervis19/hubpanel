@@ -7,6 +7,7 @@ import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import { useLocale } from "@/context/LocaleContext";
 import { Category } from "@/types/Category";
+import { useProductsByCategoryId } from "@/hooks/useCategory";
 
 interface CategoryCardProps {
   category: Category;
@@ -33,7 +34,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
   const t = category.translated;
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const imageUrl = category.imageUrl ;
+  const imageUrl = category.imageUrl;
+
+  // Get product count for this category
+  const { data: productsResponse } = useProductsByCategoryId(category.id, locale);
+  const productCount = productsResponse?.data?.length || 0;
 
   return (
     <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
@@ -61,7 +66,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {t?.description || category.description}
               </p>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
-                {messages["product_count"] || "Product Count"}: 0
+                {messages["product_count"] || "Product Count"}: {productCount}
               </p>
             </div>
 

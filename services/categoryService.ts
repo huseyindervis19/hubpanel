@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { Category } from "@/types/Category";
+import { Product } from "@/types/Product";
 
 
 // fetch categories by language ID
@@ -18,6 +19,7 @@ export const createCategory = async (formData: FormData): Promise<Category> => {
   });
   return response.data;
 };
+
 
 export const updateCategory = async (
   id: number,
@@ -46,4 +48,26 @@ export const updateCategory = async (
 
 export const deleteCategory = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/categories/${id}`);
+};
+
+// fetch products by category ID
+export const productsByCategoryId = async (
+  categoryId: number,
+  lang: string
+): Promise<ApiResponse<Product[]>> => {
+  const response = await axiosInstance.get<ApiResponse<Product[]>>(
+    `/categories/${categoryId}/products?lang=${lang}`
+  );
+  return response.data;
+};
+
+// fetch category by ID
+export const fetchCategoryById = async (
+  id: number,
+  lang: string
+): Promise<ApiResponse<Category>> => {
+  const response = await axiosInstance.get<ApiResponse<Category>>(
+    `/categories/${id}?lang=${lang}`
+  );
+  return response.data;
 };

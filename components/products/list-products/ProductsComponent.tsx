@@ -11,65 +11,68 @@ import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
-
-const mockProducts = [
-  {
-    id: 1,
-    name: "Smartphone",
-    description: "Latest model smartphone",
-    category_id: 1,
-    category: { id: 1, name: "Electronics" },
-    stock_quantity: 20,
-    is_active: true,
-    is_featured: true,
-    image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 2,
-    name: "T-Shirt",
-    description: "Cotton casual t-shirt",
-    category_id: 2,
-    category: { id: 2, name: "Clothing" },
-    stock_quantity: 50,
-    is_active: true,
-    is_featured: false,
-    image_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 3,
-    name: "Cooking Book",
-    description: "Learn new recipes",
-    category_id: 3,
-    category: { id: 3, name: "Books" },
-    stock_quantity: 15,
-    is_active: false,
-    is_featured: false,
-    image_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80",
-  },
-];
+import { useAllProducts } from "@/hooks/useProduct";
+import { Product } from "@/types/Product";
+import { useRouter } from "next/navigation";
+import { useAllCategories } from "@/hooks/useCategory";
 
 const ProductsComponent: React.FC = () => {
-  const { messages } = useLocale();
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const router = useRouter();
+  const { messages, locale } = useLocale();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+
+  const { data: productsResponse, isLoading, error, refetch } = useAllProducts(locale);
+  const products = productsResponse?.data || [];
+
+  const { data: categoriesResponse } = useAllCategories(locale);
+  const categories = categoriesResponse?.data || [];
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Helper function to get category name
+  const getCategoryName = (categoryId: number | null) => {
+    if (!categoryId) return "-";
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category?.translated?.name || category?.name || `Category ${categoryId}`;
+  };
+
+  const handleViewImages = (product: Product) => {
+    router.push(`/products/${product.id}/images?name=${encodeURIComponent(product.translated.name)}`);
+  };
+
 
   const canAddProduct = useHasPermission(PERMISSIONS.ADD_PRODUCT);
   const canEditProduct = useHasPermission(PERMISSIONS.EDIT_PRODUCT);
   const canDeleteProduct = useHasPermission(PERMISSIONS.DELETE_PRODUCT);
 
-  const openEditModal = (product: any) => {
+  const openEditModal = (product: Product) => {
     setSelectedProduct(product);
     setEditModalOpen(true);
   };
 
-  const openDeleteModal = (product: any) => {
+  const openDeleteModal = (product: Product) => {
     setSelectedProduct(product);
     setDeleteModalOpen(true);
   };
 
   const closeEditModal = () => setEditModalOpen(false);
   const closeDeleteModal = () => setDeleteModalOpen(false);
+
+  const handleEditSuccess = async () => {
+    setEditModalOpen(false);
+    await refetch();
+  };
+
+  const handleDeleteSuccess = async () => {
+    setDeleteModalOpen(false);
+    await refetch();
+  };
+
+  if (isLoading) return <p className="text-center py-8">{messages["loading"] || "Loading..."}</p>;
+  if (error) return <p className="text-center py-8 text-red-600">{messages["error"] || "Error loading products"}</p>;
 
   return (
     <>
@@ -92,52 +95,98 @@ const ProductsComponent: React.FC = () => {
                   <Th> {messages["product_main_image"] || "Main Image"} </Th>
                   <Th> {messages["product_category_name_in_table"] || "Category"} </Th>
                   <Th> {messages["name"] || "Name"} </Th>
+                  <Th> {messages["slug"] || "Slug"} </Th>
                   <Th> {messages["description"] || "Description"}</Th>
                   <Th> {messages["stock_quantity_in_table"] || "Stock Quantity"}</Th>
                   <Th> {messages["is_active_in_table"] || "Status"}</Th>
                   <Th> {messages["is_featured"] || "Featured"}</Th>
+                  <Th> {messages["product_images"] || "Product Images"}</Th>
                   <Th> {messages["action"] || "Action"}</Th>
                 </TableRow>
               </TableHeader>
 
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {mockProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <Td className="px-6 py-4">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                    </Td>
-                    <Td>{product.category?.name || "-"}</Td>
-                    <Td>{product.name}</Td>
-                    <Td>{product.description}</Td>
-                    <Td>{product.stock_quantity}</Td>
-                    <Td className={`px-6 py-4 font-medium ${product.is_active ? "text-green-600" : "text-red-600"}`}>
-                      {product.is_active ? (messages["active"] || "Active") : (messages["inactive"] || "Inactive")}
-                    </Td>
-                    <Td className={`px-6 py-4 font-medium ${product.is_featured ? "text-green-600" : "text-red-600"}`}>
-                      {product.is_featured ? (messages["yes"] || "Yes") : (messages["no"] || "No")}
-                    </Td>
+                {products.length > 0 ? (
+                  products.map((product) => {
+                    const imageUrl = product.mainImage || product.Images?.[0]?.url;
+                    return (
+                      <TableRow key={product.id}>
+                        <Td className="px-6 py-4">
+                          <div className="flex flex-col items-center group relative">
+                            <img
+                              src={imageUrl ? `${baseUrl}${imageUrl}` : "/images/no_image.png"}
+                              alt={product.translated.name}
+                              title={imageUrl ? product.translated.name : ""}
+                              className="w-12 h-12 object-cover rounded cursor-pointer"
+                              onClick={() => {
+                                if (imageUrl) {
+                                  handleViewImages(product);
+                                }
+                              }}
+                            />
+                            {!imageUrl && (
+                              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-40 text-center bg-white text-red-600 text-xs font-semibold leading-tight rounded p-1">
+                                {messages["no_image"] || "No Image"}
+                              </div>
+                            )}
+                          </div>
+                        </Td>
+                        <Td className="px-6 py-4 text-gray-800 dark:text-white">
+                          {getCategoryName(product.categoryId)}
+                        </Td>
+                        <Td className="px-6 py-4 text-gray-800 dark:text-white">
+                          {product.translated.name}
+                        </Td>
+                        <Td className="px-6 py-4 text-gray-800 dark:text-white">
+                          {product.translated.slug}
+                        </Td>
 
-                    {/* Action buttons */}
-                    <Td>
-                      <div className="-mx-[5px] flex items-center">
-                        {canEditProduct && (
-                          <Button size="icon" variant="ghost" onClick={() => openEditModal(product)}>
-                            <PencilIcon width={20} height={20} />
-                          </Button>
-                        )}
-                        {canDeleteProduct && (
-                          <Button size="icon" variant="ghost" onClick={() => openDeleteModal(product)}>
-                            <TrashBinIcon width={20} height={20} />
-                          </Button>
-                        )}
-                      </div>
-                    </Td>
+                        <Td className="px-6 py-4 text-gray-800 dark:text-white">
+                          {product.translated.description}
+                        </Td>
+                        <Td className="px-6 py-4 text-gray-800 dark:text-white">
+                          {product.stockQuantity}
+                        </Td>
+                        <Td className={`px-6 py-4 font-medium ${product.isActive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                          {product.isActive ? (messages["active"] || "Active") : (messages["inactive"] || "Inactive")}
+                        </Td>
+                        <Td className={`px-6 py-4 font-medium ${product.isFeatured ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                          {product.isFeatured ? (messages["yes"] || "Yes") : (messages["no"] || "No")}
+                        </Td>
+
+                        {/* Action buttons */}
+                        <Td>
+                          <button
+                            onClick={() => handleViewImages(product)}
+                            className="px-3 py-1 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-lg transition"
+                          >
+                            {messages["view_images"] || "View Images"}
+                          </button>
+                        </Td>
+                        <Td>
+                          <div className="-mx-[5px] flex items-center gap-2">
+                            {canEditProduct && (
+                              <Button size="icon" variant="ghost" onClick={() => openEditModal(product)}>
+                                <PencilIcon width={20} height={20} />
+                              </Button>
+                            )}
+                            {canDeleteProduct && (
+                              <Button size="icon" variant="ghost" onClick={() => openDeleteModal(product)}>
+                                <TrashBinIcon width={20} height={20} />
+                              </Button>
+                            )}
+                          </div>
+                        </Td>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      {messages["no_products"] || "No products found"}
+                    </td>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
@@ -145,20 +194,33 @@ const ProductsComponent: React.FC = () => {
       </div>
 
       {/* Edit Product Modal */}
-      <EditProductModal
-        isOpen={editModalOpen}
-        onClose={closeEditModal}
-        onSuccess={() => { }}
-        product={selectedProduct}
-      />
+      {selectedProduct && (
+        <EditProductModal
+          isOpen={editModalOpen}
+          onClose={closeEditModal}
+          onSuccess={handleEditSuccess}
+          product={selectedProduct}
+        />
+      )}
 
       {/* Delete Product Modal */}
-      <DeleteProductModal
-        isOpen={deleteModalOpen}
-        onClose={closeDeleteModal}
-        onSuccess={() => { }}
-        product={selectedProduct}
-      />
+      {selectedProduct && (
+        <DeleteProductModal
+          isOpen={deleteModalOpen}
+          onClose={closeDeleteModal}
+          onSuccess={handleDeleteSuccess}
+          product={selectedProduct}
+        />
+      )}
+      {/* {viewImagesProduct && (
+        <div className="mt-6">
+          <ProductImages
+            productId={viewImagesProduct.id}
+            productName={viewImagesProduct.name}
+          />
+        </div>
+      )} */}
+
     </>
   );
 };
