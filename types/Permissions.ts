@@ -44,6 +44,16 @@ export const PERMISSIONS = {
   // Profile
   VIEW_PROFILE: "view-profile",
   EDIT_PROFILE: "edit-profile",
+
+  // About Us
+  VIEW_ABOUT_US: "/about-us",
+  EDIT_ABOUT_US: "/about-us/update",
+  DELETE_ABOUT_US: "/about-us/delete",
+
+  // Contact Requests
+  VIEW_CONTACT_REQUESTS: "/contact-requests",
+  UPDATE_CONTACT_REQUEST: "/contact-requests/update",
+  DELETE_CONTACT_REQUEST: "/contact-requests/delete",
 } as const;
 
 export type PermissionKey = keyof typeof PERMISSIONS;

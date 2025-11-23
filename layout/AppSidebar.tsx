@@ -13,7 +13,9 @@ import {
   ProductsIcon,
   DashboardIcon,
   LockIcon,
-  LanguageIcon
+  LanguageIcon,
+  PageIcon,
+  EnvelopeIcon
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useHasPermission } from "@/hooks/useAuth";
@@ -33,7 +35,9 @@ const getNavItems = (
   canViewProducts: boolean,
   canAddProduct: boolean,
   canViewCategories: boolean,
-  canAddCategory: boolean
+  canAddCategory: boolean,
+  canViewAboutUs: boolean = true, // temporary: default to true
+  canViewContactRequests: boolean = true // temporary: default to true
 ): NavItem[] => {
   const navItems: NavItem[] = [
     {
@@ -76,6 +80,20 @@ const getNavItems = (
       });
     }
   }
+
+  // 3. About Us (temporary: no permission check)
+  navItems.push({
+    icon: <PageIcon />,
+    name: messages["nav_about_us"] || "About Us",
+    path: "/about-us",
+  });
+
+  // 4. Contact Requests (temporary: no permission check)
+  navItems.push({
+    icon: <EnvelopeIcon />,
+    name: messages["nav_contact_requests"] || "Contact Requests",
+    path: "/contact-requests",
+  });
 
   return navItems;
 };
@@ -145,6 +163,9 @@ const AppSidebar: React.FC = () => {
   const canViewRoles = useHasPermission(PERMISSIONS.VIEW_ROLES);
   const canViewLanguages = useHasPermission(PERMISSIONS.VIEW_LANGUAGES);
   const canViewLanguageKeys = useHasPermission(PERMISSIONS.VIEW_LANGUAGE_KEYS);
+  // Temporary: removed permission checks for About Us and Contact Requests
+  // const canViewAboutUs = useHasPermission(PERMISSIONS.VIEW_ABOUT_US);
+  // const canViewContactRequests = useHasPermission(PERMISSIONS.VIEW_CONTACT_REQUESTS);
 
   const navItems = useMemo(
     () => getNavItems(
@@ -152,7 +173,9 @@ const AppSidebar: React.FC = () => {
       canViewProducts,
       canAddProduct,
       canViewCategories,
-      canAddCategory
+      canAddCategory,
+      true, // canViewAboutUs - temporary: always true
+      true  // canViewContactRequests - temporary: always true
     ),
     [messages, canViewProducts, canAddProduct, canViewCategories, canAddCategory]
   );
