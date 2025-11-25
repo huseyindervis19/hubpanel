@@ -1,4 +1,4 @@
-import { AboutUsComponent } from "@/components/about-us/AboutUsComponent";
+import { AboutUsComponent } from "@/components/setting/about-us/AboutUsComponent";
 import { Metadata } from "next";
 
 export default function AboutUs() {

@@ -15,7 +15,9 @@ import {
   LockIcon,
   LanguageIcon,
   PageIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
+  MailIcon,
+  PlugInIcon,
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useHasPermission } from "@/hooks/useAuth";
@@ -85,13 +87,27 @@ const getNavItems = (
   navItems.push({
     icon: <PageIcon />,
     name: messages["nav_about_us"] || "About Us",
-    path: "/about-us",
+    path: "/setting/about-us",
   });
 
-  // 4. Contact Requests (temporary: no permission check)
+  // 4. Contact Information (temporary: no permission check)
+  navItems.push({
+    icon: <MailIcon />,
+    name: messages["contact_information"] || "Contact Information",
+    path: "/setting/contact-information",
+  });
+
+  // 5. Social Links (temporary: no permission check)
+  navItems.push({
+    icon: <PlugInIcon />,
+    name: messages["social_links"] || "Social Links",
+    path: "/setting/social-links",
+  });
+
+  // 6. Contact Requests (temporary: no permission check)
   navItems.push({
     icon: <EnvelopeIcon />,
-    name: messages["nav_contact_requests"] || "Contact Requests",
+    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "Contact Requests",
     path: "/contact-requests",
   });
 

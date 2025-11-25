@@ -36,4 +36,3 @@ export const updateAboutUs = async (
 export const deleteAboutUs = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/about-us/${id}`);
 };
-
