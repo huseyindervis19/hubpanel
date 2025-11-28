@@ -110,6 +110,17 @@ const getNavItems = (
     name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "Contact Requests",
     path: "/contact-requests",
   });
+  // for testing only
+   navItems.push({
+    icon: <EnvelopeIcon />,
+    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "home slider",
+    path: "/home-slider/list-slider",
+  });
+    navItems.push({
+    icon: <EnvelopeIcon />,
+    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "add slider",
+    path: "/home-slider/add-slider",
+  });
 
   return navItems;
 };
