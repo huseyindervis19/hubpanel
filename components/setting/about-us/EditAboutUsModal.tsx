@@ -66,7 +66,7 @@ export const EditAboutUsModal = ({
 
     try {
       await update(data.id, payload, locale);
-      setSuccessMessage(messages["about_us_updated_successfully"] || "Updated successfully");
+      setSuccessMessage(messages["updated_successfully"] || "Updated successfully");
       setTimeout(() => {
         setSuccessMessage(null);
         onClose();
@@ -97,46 +97,42 @@ export const EditAboutUsModal = ({
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-1">
                 <Label className="text-lg font-medium text-gray-800">
-                  {messages["story"] || "Story"}
+                  {messages["about_us_story"] || "Our Story"}
                 </Label>
                 <Textarea
                   className="w-full min-h-[110px] text-gray-800"
                   value={form.story}
                   onChange={(value) => handleChange("story", value)}
-                  placeholder={messages["story_placeholder"] || "Enter story"}
                 />
               </div>
               <div className="space-y-1">
                 <Label className="text-lg font-medium text-gray-800">
-                  {messages["mission"] || "Mission"}
+                  {messages["about_us_mission"] || "Our Mission"}
                 </Label>
                 <Textarea
                   className="w-full min-h-[110px] text-gray-800"
                   value={form.mission}
                   onChange={(value) => handleChange("mission", value)}
-                  placeholder={messages["mission_placeholder"] || "Enter mission statement"}
                 />
               </div>
               <div className="space-y-1">
                 <Label className="text-lg font-medium text-gray-800">
-                  {messages["vision"] || "Vision"}
+                  {messages["about_us_vision"] || "Our Vision"}
                 </Label>
                 <Textarea
                   className="w-full min-h-[110px] text-gray-800"
                   value={form.vision}
                   onChange={(value) => handleChange("vision", value)}
-                  placeholder={messages["vision_placeholder"] || "Enter vision statement"}
                 />
               </div>
               <div className="space-y-1">
                 <Label className="text-lg font-medium text-gray-800">
-                  {messages["values"] || "Values"}
+                  {messages["about_us_values"] || "Our Values"}
                 </Label>
                 <Textarea
                   className="w-full min-h-[110px] text-gray-800"
                   value={form.values}
                   onChange={(value) => handleChange("values", value)}
-                  placeholder={messages["values_placeholder"] || "Enter values"}
                 />
               </div>
             </div>
@@ -156,8 +152,8 @@ export const EditAboutUsModal = ({
               className="bg-primary-500 hover:bg-primary-600 text-white"
             >
               {updating
-                ? messages["submitting"] || "Submitting..."
-                : messages["save"] || "Save"}
+                ? messages["updating"] || "Updating..."
+                : messages["update"] || "Update"}
             </Button>
           </div>
         </form>

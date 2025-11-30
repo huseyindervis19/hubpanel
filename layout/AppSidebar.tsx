@@ -70,7 +70,7 @@ const getNavItems = (
   if (canViewProducts || canAddProduct) {
     // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
     const productSubItems: SubItem[] = [
-      canViewProducts && { name: messages["product_list"] || "List Product", path: "/products/list-products" },
+      canViewProducts && { name: messages["products_list"] || "List Product", path: "/products/list-products" },
       canAddProduct && { name: messages["add_product"] || "Add Product", path: "/products/add-product" },
     ].filter(Boolean) as SubItem[];
 
@@ -83,43 +83,10 @@ const getNavItems = (
     }
   }
 
-  // 3. About Us (temporary: no permission check)
-  navItems.push({
-    icon: <PageIcon />,
-    name: messages["nav_about_us"] || "About Us",
-    path: "/setting/about-us",
-  });
-
-  // 4. Contact Information (temporary: no permission check)
-  navItems.push({
-    icon: <MailIcon />,
-    name: messages["contact_information"] || "Contact Information",
-    path: "/setting/contact-information",
-  });
-
-  // 5. Social Links (temporary: no permission check)
-  navItems.push({
-    icon: <PlugInIcon />,
-    name: messages["social_links"] || "Social Links",
-    path: "/setting/social-links",
-  });
-
-  // 6. Contact Requests (temporary: no permission check)
   navItems.push({
     icon: <EnvelopeIcon />,
-    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "Contact Requests",
+    name: messages["contact_requests"] || "Contact Requests",
     path: "/contact-requests",
-  });
-  // for testing only
-   navItems.push({
-    icon: <EnvelopeIcon />,
-    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "home slider",
-    path: "/home-slider/list-slider",
-  });
-    navItems.push({
-    icon: <EnvelopeIcon />,
-    name: messages["nav_contact_requests"] || messages["nav_communication_requests"] || "add slider",
-    path: "/home-slider/add-slider",
   });
 
   return navItems;
@@ -144,20 +111,20 @@ const getOtherItems = (
     });
   }
 
-  if (canViewLanguages || canViewLanguageKeys) {
-    const languageSubItems: SubItem[] = [
-      canViewLanguages && { name: messages["languages_list"] || "Languages", path: "/languages/lang" },
-      canViewLanguageKeys && { name: messages["languages_keys"] || "Language Keys", path: "/languages/translations" },
-    ].filter(Boolean) as SubItem[];
+  // if (canViewLanguages || canViewLanguageKeys) {
+  //   const languageSubItems: SubItem[] = [
+  //     canViewLanguages && { name: messages["languages_list"] || "Languages", path: "/languages/lang" },
+  //     canViewLanguageKeys && { name: messages["languages_keys"] || "Language Keys", path: "/languages/translations" },
+  //   ].filter(Boolean) as SubItem[];
 
-    if (languageSubItems.length > 0) {
-      items.push({
-        icon: <LanguageIcon />,
-        name: messages["languages"] || "Languages",
-        subItems: languageSubItems,
-      });
-    }
-  }
+  //   if (languageSubItems.length > 0) {
+  //     items.push({
+  //       icon: <LanguageIcon />,
+  //       name: messages["languages"] || "Languages",
+  //       subItems: languageSubItems,
+  //     });
+  //   }
+  // }
 
   if (canViewUsers) {
     items.push({
@@ -171,6 +138,26 @@ const getOtherItems = (
     icon: <UserCircleIcon />,
     name: messages["profile"] || "User Profile",
     path: "/profile",
+  });
+
+  items.push({
+    icon: <EnvelopeIcon />,
+    name: messages["home_slider"] || "Home Slider",
+    subItems: [
+      { name: messages["home_slider"] || "Home Slider", path: "/home-slider/list-slider" },
+      { name: messages["add_home_slider"] || "Add", path: "/home-slider/add-slider" },
+    ],
+  });
+
+  items.push({
+    icon: <EnvelopeIcon />,
+    name: messages["setting"] || "Setting",
+    subItems: [
+      { name: messages["about_us"] || "About Us", path: "/setting/about-us" },
+      { name: messages["contact_informations"] || "Contact Information", path: "/setting/contact-information" },
+      { name: messages["social_links"] || "Social Links", path: "/setting/social-links" },
+
+    ],
   });
 
   return items;
@@ -373,14 +360,14 @@ const AppSidebar: React.FC = () => {
         <nav className="mb-6 space-y-8">
           <section>
             <h2 className="mb-4 text-xs uppercase leading-5 text-gray-400">
-              {messages["nav_menu"] || "Menu"}
+              {messages["menu"] || "Menu"}
             </h2>
             {renderMenuItems(navItems, "main")}
           </section>
 
           <section>
             <h2 className="mb-4 text-xs uppercase leading-5 text-gray-400">
-              {messages["nav_others"] || "Others"}
+              {messages["others"] || "Others"}
             </h2>
             {renderMenuItems(othersItems, "others")}
           </section>

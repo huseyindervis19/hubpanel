@@ -88,12 +88,12 @@ const UsersComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th> {messages["name"] || "Name"} </Th>
-                  <Th> {messages["email"] || "Email"} </Th>
+                  <Th> {messages["user_name"] || "Name"} </Th>
+                  <Th> {messages["user_email"] || "Email"} </Th>
                   <Th> {messages["role"] || "Role"} </Th>
                   <Th> {messages["language"] || "Language"}</Th>
                   <Th> {messages["status"] || "Status"}</Th>
-                  <Th> {messages["action"] || "Action"}</Th>
+                  <Th> {messages["actions"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -141,7 +141,7 @@ const UsersComponent = () => {
                             </button>
                           )}
                           {canDeleteUser && (
-                            <button onClick={() => openDeleteModal(user)} title={messages["delete"] + " " + (messages["nav_users"] || "User") || "Delete User"}>
+                            <button onClick={() => openDeleteModal(user)} title={messages["delete"] + " " + (messages["users"] || "User") || "Delete User"}>
                               <TrashBinIcon />
                             </button>
                           )}

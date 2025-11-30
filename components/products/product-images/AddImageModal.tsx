@@ -45,7 +45,7 @@ const AddImageModal: React.FC<Props> = ({
         file,
       });
       setSuccessMessage(
-        messages["image_added_successfully"] || "Image added successfully"
+        messages["created_successfully"] || "Created successfully!"
       );
       setTimeout(() => {
         onSuccess();
@@ -56,7 +56,7 @@ const AddImageModal: React.FC<Props> = ({
         setSuccessMessage("");
       }, 1000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || messages["upload_failed"] || "Failed to upload image.");
+      setError(err?.response?.data?.message || messages["created_error"] || "An error occurred while creating.");
     }
   };
 
@@ -145,8 +145,8 @@ const AddImageModal: React.FC<Props> = ({
           onClick={handleSubmit}
         >
           {createProductImage.isPending
-            ? messages["adding"] || "Adding..."
-            : messages["add"] || "Add"}
+            ? messages["creating"] || "Creating..."
+            : messages["create"] || "Create"}
         </Button>
       </div>
     </Modal>

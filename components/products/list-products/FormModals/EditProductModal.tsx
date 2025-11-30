@@ -159,7 +159,7 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
       onSuccess();
     } catch (err: any) {
       console.error(err);
-      setMessage(err?.response?.data?.message || messages["update_failed"] || "An error occurred while updating.");
+      setMessage(err?.response?.data?.message || messages["update_error"] || "An error occurred while updating.");
     }
   };
 
@@ -170,6 +170,10 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
         {message && <p className={`p-4 rounded-xl transition-opacity duration-300 border ${message.includes("Error") ? "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20" : "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"}`}>{message}</p>}
 
         <div className="space-y-6">
+          <div>
+            <Label>{messages["product_category_name"] || "Category Name"}</Label>
+            <Select value={form.category_id} onChange={(value) => handleChange("category_id", value)} options={categoryOptions} placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")} disabled={categoriesLoading || isPending} required />
+          </div>
           <div>
             <Label>{messages["product_name"] || "Product Name"}</Label>
             <InputField type="text" name="name" value={form.name} onChange={(e) => handleChange("name", e.target.value)} placeholder={messages["product_name_placeholder"] || "Enter product name"} required disabled={isPending} />
@@ -183,25 +187,21 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
             <TextArea value={form.description} onChange={(value) => handleChange("description", value)} placeholder={messages["product_description_placeholder"] || "Enter product description"} rows={4} disabled={isPending} />
           </div>
           <div>
-            <Label>{messages["product_category_name"] || "Category Name"}</Label>
-            <Select value={form.category_id} onChange={(value) => handleChange("category_id", value)} options={categoryOptions} placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")} disabled={categoriesLoading || isPending} required />
-          </div>
-          <div>
             <Label>{messages["product_stock_quantity"] || "Stock Quantity"}</Label>
             <InputField type="number" name="stock_quantity" value={form.stock_quantity.toString()} onChange={(e) => handleChange("stock_quantity", Number(e.target.value))} placeholder={messages["product_stock_quantity_placeholder"] || "Enter available stock"} min={0} disabled={isPending} />
           </div>
           <div>
-            <Label>{messages["priority"] || "Priority"}</Label>
+            <Label>{messages["product_priority"] || "Priority"}</Label>
             <InputField type="number" name="priority" value={form.priority.toString()} onChange={(e) => handleChange("priority", Number(e.target.value))} placeholder={messages["priority_placeholder"] || "Enter product priority"} min={0} required disabled={isPending} />
           </div>
           <div className="flex gap-6">
-            <Checkbox label={messages["is_active"] || "Active"} checked={form.is_active} onChange={(checked) => handleChange("is_active", checked)} disabled={isPending} />
-            <Checkbox label={messages["is_featured"] || "Featured"} checked={form.is_featured} onChange={(checked) => handleChange("is_featured", checked)} disabled={isPending} />
+            <Checkbox label={messages["product_is_active"] || "Active"} checked={form.is_active} onChange={(checked) => handleChange("is_active", checked)} disabled={isPending} />
+            <Checkbox label={messages["product_is_featured"] || "Featured"} checked={form.is_featured} onChange={(checked) => handleChange("is_featured", checked)} disabled={isPending} />
           </div>
         </div>
 
         <div className="flex items-center justify-end w-full gap-3 mt-8">
-          <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>{messages["close"] || "Close"}</Button>
+          <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>{messages["cancel"] || "Cancel"}</Button>
           <Button size="sm" type="submit" disabled={isPending || !isModified || isFormInvalid} className={isPending ? "opacity-75 cursor-not-allowed flex items-center justify-center text-white" : "text-white"}>
             {isPending ? <><LoadingIcon width={16} height={16} className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0" />{messages["updating"] || "Updating..."}</> : messages["update"] || "Update"}
           </Button>

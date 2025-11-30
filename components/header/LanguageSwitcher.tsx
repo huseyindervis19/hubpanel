@@ -2,11 +2,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useLocale } from "@/context/LocaleContext";
-import { useLanguages } from "@/hooks/useLanguages";
+
+const FIXED_LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "ar", name: "العربية" },
+];
 
 export default function LanguageDropdown() {
   const { locale, setLocale, messages } = useLocale();
-  const { languages: languagesData = [], isLoading } = useLanguages();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,14 +33,16 @@ export default function LanguageDropdown() {
   }
 
   function selectLanguage(code: string) {
-    setLocale(code);
+    setLocale(code as "en" | "ar");
     setIsOpen(false);
   }
 
-  const languages = languagesData;
+  const languages = FIXED_LANGUAGES;
 
   const currentLangLabel =
     languages.find((lang) => lang.code === locale)?.name || locale.toUpperCase();
+
+  const isLanguageDataLoading = false; 
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -47,9 +52,9 @@ export default function LanguageDropdown() {
         type="button"
         aria-haspopup="true"
         aria-expanded={isOpen}
-        disabled={isLoading}
+        disabled={isLanguageDataLoading}
       >
-        <span>{isLoading ? (messages["loading"] || "Loading...") : currentLangLabel}</span>
+        <span>{isLanguageDataLoading ? (messages["loading"] || "Loading...") : currentLangLabel}</span>
         <svg
           className={`ml-2 h-5 w-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
             }`}
@@ -70,8 +75,8 @@ export default function LanguageDropdown() {
         <div
           className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-b-md shadow-sm top-[100%] -mt-px max-h-select dark:bg-gray-900 border border-gray-300 dark:border-gray-700"
         >
-          <ul >
-            {isLoading ? (
+          <ul>
+            {isLanguageDataLoading ? (
               <li className="px-4 py-2 text-sm dark:text-white">{messages["loading"] || "Loading..."}</li>
             ) : languages.length === 0 ? (
               <li className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">{messages["no_languages"] || "No languages"}</li>
@@ -79,7 +84,7 @@ export default function LanguageDropdown() {
               languages.map(({ code, name }) => (
                 <li key={code}>
                   <button
-                    onClick={() => selectLanguage(code!)}
+                    onClick={() => selectLanguage(code)}
                     className={`block w-full px-4 py-2 text-left text-sm ${locale === code
                       ? "bg-gray-200 dark:bg-gray-700 font-semibold"
                       : "hover:bg-gray-100 dark:hover:bg-gray-700"

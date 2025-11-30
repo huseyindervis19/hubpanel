@@ -139,7 +139,7 @@ const EditCategoryModal: React.FC<Props> = ({
       if (onSuccess) onSuccess();
 
     } catch (err) {
-      setMessage({ text: messages["update_failed"] || "Update failed.", type: "error" });
+      setMessage({ text: messages["updated_error"] || "An error occurred while updating.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -174,13 +174,12 @@ const EditCategoryModal: React.FC<Props> = ({
         <TextArea value={form.description} onChange={handleTextAreaChange} rows={4} />
 
         {/* Priority */}
-        <Label className={LABEL}>{messages["priority"] || "Priority"}</Label>
+        <Label className={LABEL}>{messages["categoy_priority"] || "Priority"}</Label>
         <InputField
           type="number"
           name="priority"
           value={form.priority}
           onChange={handleChange}
-          placeholder={messages["enter_priority"] || "Enter priority"}
         />
 
         {/* Image */}
@@ -194,7 +193,7 @@ const EditCategoryModal: React.FC<Props> = ({
         {/* Buttons */}
         <div className="flex justify-end mt-8 gap-3">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            {messages["close"]}
+            {messages["cancel"]}
           </Button>
 
           <Button type="submit" disabled={loading}>

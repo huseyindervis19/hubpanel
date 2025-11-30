@@ -92,7 +92,7 @@ const AddCategoryComponent: React.FC = () => {
 
     } catch (err) {
       console.error(err);
-      setMessage({ text: messages["error"] || "An error occurred while creating.", type: "error" });
+      setMessage({ text: messages["created_error"] || "An error occurred while creating.", type: "error" });
     }
   };
 
@@ -166,7 +166,7 @@ const AddCategoryComponent: React.FC = () => {
             {/* PRIORITY INPUT */}
             <div className="space-y-1">
               <Label htmlFor="priority" className={LABEL_CLASS}>
-                {messages["priority"] || "Priority"} <span className="text-error-500">*</span>
+                {messages["categoy_priority"] || "Priority"} <span className="text-error-500">*</span>
               </Label>
               <InputField
                 id="priority"

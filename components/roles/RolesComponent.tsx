@@ -77,10 +77,10 @@ const RolesComponent = () => {
             <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <Th>{messages["name"] || "Name"}</Th>
-                  <Th>{messages["description"] || "Description"}</Th>
-                  <Th>{messages["permissions"] || "Permissions"}</Th>
-                  <Th>{messages["action"] || "Action"}</Th>
+                  <Th>{messages["role_name"] || "Name"}</Th>
+                  <Th>{messages["role_description"] || "Description"}</Th>
+                  <Th>{messages["role_permissions"] || "Permissions"}</Th>
+                  <Th>{messages["actions"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 

@@ -85,7 +85,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "An error occurred while creating.");
+      setMessage(messages["created_error"] || "An error occurred while creating.");
     }
   };
 
@@ -124,18 +124,18 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>{messages["username"] || "Username"}</Label>
+              <Label>{messages["user_name"] || "Name"}</Label>
               <InputField
                 type="text"
                 value={form.username}
                 onChange={(e) => handleChange("username", e.target.value)}
-                placeholder={messages["username_placeholder"] || "Enter username"}
+                placeholder={messages["username_placeholder"] || "enter user name"}
                 required
               />
             </div>
 
             <div className="flex-1">
-              <Label>{messages["email"] || "Email"}</Label>
+              <Label>{messages["user_email"] || "Email"}</Label>
               <InputField
                 type="email"
                 value={form.email}
@@ -153,7 +153,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                 type="password"
                 value={form.password}
                 onChange={(e) => handleChange("password", e.target.value)}
-                placeholder={messages["password_placeholder"] || "Enter password"}
+                placeholder={messages["password_placeholder"] || "enter password"}
                 required
               />
             </div>
@@ -212,7 +212,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            {messages["close"] || "Close"}
+            {messages["cancel"] || "Cancel"}
           </Button>
           <Button 
             size="sm" 

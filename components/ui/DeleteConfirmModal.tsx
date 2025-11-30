@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { LoadingIcon } from "../../icons";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Props {
   isOpen: boolean;
@@ -27,6 +28,7 @@ const DeleteConfirmModal: React.FC<Props> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { messages } = useLocale();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -78,7 +80,7 @@ const DeleteConfirmModal: React.FC<Props> = ({
 
       <div className="mt-6 flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={handleClose} disabled={isDeleting}>
-          Cancel
+          {messages["close"]}
         </Button>
         <Button
           size="sm"
@@ -97,10 +99,10 @@ const DeleteConfirmModal: React.FC<Props> = ({
                 height={16}
                 className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
               />
-              Deleting...
+              {messages["deleting"]}
             </>
           ) : (
-            "Delete"
+            messages["delete"]
           )}
         </Button>
       </div>

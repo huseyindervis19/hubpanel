@@ -174,7 +174,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({ preselectedCa
       }, 1500);
     } catch (error: any) {
       console.error("Error creating product:", error);
-      setErrorMessage(error?.response?.data?.message || messages["create_failed"] || "Failed to create product");
+      setErrorMessage(error?.response?.data?.message || messages["created_error"] || "An error occurred while creating.");
     }
   };
 
@@ -228,8 +228,8 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({ preselectedCa
           <InputField
             id="slug"
             name="slug"
-            label={messages["slug"] || "Slug"}
-            placeholder={messages["slug_placeholder"] || "Enter product slug"}
+            label={messages["product_slug"] || "Slug"}
+            placeholder={messages["product_slug_placeholder"] || "enter product slug"}
             value={form.slug}
             onChange={handleChange}
             required
@@ -244,7 +244,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({ preselectedCa
               value={form.description}
               onChange={(value) => handleTextAreaChange(value, "description")}
               rows={4}
-              placeholder={messages["product_description_placeholder"] || "Enter product description"}
+              placeholder={messages["product_description_placeholder"] || "enter product description"}
               disabled={createProduct.isPending}
             />
           </div>
@@ -276,7 +276,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({ preselectedCa
           <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0">
             <Checkbox
               id="is_active"
-              label={messages["is_active"] || "Active"}
+              label={messages["product_is_active"] || "Active"}
               checked={form.is_active}
               onChange={(checked) => handleCheckboxChange(checked, "is_active")}
               disabled={createProduct.isPending}
@@ -284,7 +284,7 @@ const AddProductComponent: React.FC<AddProductComponentProps> = ({ preselectedCa
 
             <Checkbox
               id="is_featured"
-              label={messages["is_featured"] || "Featured"}
+              label={messages["product_is_featured"] || "Featured"}
               checked={form.is_featured}
               onChange={(checked) => handleCheckboxChange(checked, "is_featured")}
               disabled={createProduct.isPending}

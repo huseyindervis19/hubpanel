@@ -79,7 +79,7 @@ const ProductsComponent: React.FC<Props> = ({ categoryId, categoryName: initialC
   };
 
   if (isLoading) return <p className="text-center py-8">{messages["loading"] || "Loading..."}</p>;
-  if (error) return <p className="text-center py-8 text-red-600">{messages["error"] || "Error loading products"}</p>;
+  if (error) return <p className="text-center py-8 text-red-600">{messages["error"] || "Error loading data"}</p>;
 
   return (
     <>
@@ -88,7 +88,7 @@ const ProductsComponent: React.FC<Props> = ({ categoryId, categoryName: initialC
           title={
             categoryId
               ? `${messages["products_list"] || "Products List"} - ${categoryName}`
-              : messages["product_list"] || "Products List"
+              : messages["products_list"] || "Products List"
           }
         />
         {canAddProduct && (
@@ -104,7 +104,7 @@ const ProductsComponent: React.FC<Props> = ({ categoryId, categoryName: initialC
         )}
         {onViewProducts && (
           <Button onClick={onViewProducts} className="h-9 px-4 text-sm ml-2">
-            {messages["view_products"] || "View Products"}
+            {messages["categoy_view_products"] || "View Products"}
           </Button>
         )}
       </div>
@@ -116,16 +116,16 @@ const ProductsComponent: React.FC<Props> = ({ categoryId, categoryName: initialC
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   <Th>{messages["product_main_image"] || "Main Image"}</Th>
-                  {!categoryId && <Th>{messages["product_category_name_in_table"] || "Category"}</Th>}
-                  <Th>{messages["name"] || "Name"}</Th>
+                  {!categoryId && <Th>{messages["product_category_name"] || "Category"}</Th>}
+                  <Th>{messages["product_name"] || "Name"}</Th>
                   <Th>{messages["slug"] || "Slug"}</Th>
-                  <Th>{messages["description"] || "Description"}</Th>
-                  <Th>{messages["stock_quantity_in_table"] || "Stock Quantity"}</Th>
-                  <Th>{messages["priority"] || "Priority"}</Th>
-                  <Th>{messages["is_active_in_table"] || "Status"}</Th>
-                  <Th>{messages["is_featured"] || "Featured"}</Th>
+                  <Th>{messages["product_description"] || "Description"}</Th>
+                  <Th>{messages["product_stock_quantity"] || "Stock Quantity"}</Th>
+                  <Th>{messages["product_priority"] || "Priority"}</Th>
+                  <Th>{messages["product_is_active"] || "Status"}</Th>
+                  <Th>{messages["product_is_featured"] || "Featured"}</Th>
                   <Th>{messages["product_images"] || "Product Images"}</Th>
-                  <Th>{messages["action"] || "Action"}</Th>
+                  <Th>{messages["actions"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 
@@ -201,7 +201,7 @@ const ProductsComponent: React.FC<Props> = ({ categoryId, categoryName: initialC
                 ) : (
                   <TableRow>
                     <td colSpan={categoryId ? 10 : 11} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                      {messages["no_products"] || "No products found"}
+                      {messages["no_data_found"] || "No data found!"}
                     </td>
                   </TableRow>
                 )}

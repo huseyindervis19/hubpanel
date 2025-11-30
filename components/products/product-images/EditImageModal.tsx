@@ -53,14 +53,14 @@ const EditImageModal: React.FC<Props> = ({ img, images, isOpen, onClose, onSucce
         },
         productId: img.productId,
       });
-      setSuccessMessage(messages["image_updated_successfully"] || "Image updated successfully");
+      setSuccessMessage(messages["updated_successfully"] || "Updated successfully!");
 
       setTimeout(() => {
         onClose();
         onSuccess();
       }, 2000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || messages["failed_to_update_image"] || "Failed to update image.");
+      setError(err?.response?.data?.message || messages["updated_error"] || "An error occurred while updating.");
     }
   };
 
@@ -88,7 +88,7 @@ const EditImageModal: React.FC<Props> = ({ img, images, isOpen, onClose, onSucce
         {/* Alt Text */}
         <input
           type="text"
-          placeholder={messages["alt_text"] || "Alt text"}
+          placeholder={messages["alt_text_label"] || "Alt text"}
           value={altText}
           onChange={(e) => setAltText(e.target.value)}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all duration-200 ease-in-out"
@@ -125,8 +125,8 @@ const EditImageModal: React.FC<Props> = ({ img, images, isOpen, onClose, onSucce
           onClick={handleEdit}
         >
           {updateProductImage.isPending
-            ? messages["saving"] || "Saving..."
-            : messages["save_changes"] || "Save Changes"}
+            ? messages["updating"] || "Updating..."
+            : messages["update"] || "Update"}
         </Button>
       </div>
     </Modal>

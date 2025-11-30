@@ -33,20 +33,21 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
     }
   };
 
+  const messageContent = messages["delete_warning_f"] ? (
+    <>
+      {messages["delete_warning_f"]} <strong>{user?.username}</strong>{messages["delete_warning_s"]}
+    </>
+  ) : (
+    `Are you sure you want to delete "${user?.username}"? This action cannot be undone.`
+  );
+
   return (
     <DeleteConfirmModal
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDelete}
       title={messages["confirm_delete"] || "An error occurred while deleting."}
-      message={
-        <>
-          {messages["delete_warning"] 
-            ? messages["delete_warning"].replace("{name}", user?.username || "")
-            : <>Are you sure you want to delete <strong>"{user?.username}"</strong>? This action cannot be undone.</>
-          }
-        </>
-      }
+      message={messageContent}
       errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
     />
   );

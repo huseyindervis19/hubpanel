@@ -32,12 +32,20 @@ const DeleteSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      setMessage(messages["delete_failed"] || "An error occurred while deleting.");
+      setMessage(messages["deleted_error"] || "An error occurred while deleting.");
       throw err;
     }
   };
 
   const name = slider?.translated?.title || "this slider";
+
+  const messageContent = messages["delete_warning_f"] ? (
+    <>
+      {messages["delete_warning_f"]} <strong>{name}</strong>{messages["delete_warning_s"]}
+    </>
+  ) : (
+    `Are you sure you want to delete "${name}"? This action cannot be undone.`
+  );
 
   return (
     <DeleteConfirmModal
@@ -45,12 +53,8 @@ const DeleteSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider
       onClose={onClose}
       onConfirm={handleDelete}
       title={messages["confirm_delete"] || "Confirm Deletion"}
-      message={
-        messages["delete_warning"]
-          ? messages["delete_warning"].replace("{name}", name)
-          : <>{`Are you sure you want to delete "${name}"? This action cannot be undone.`}</>
-      }
-      errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
+      message={messageContent}
+      errorMessage={messages["deleted_error"] || "An error occurred while deleting."}
     />
   );
 };

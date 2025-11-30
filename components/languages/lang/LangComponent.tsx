@@ -51,7 +51,7 @@ const LanguagesComponent = () => {
   const closeEditModal = () => setEditModalOpen(false);
   const closeDeleteModal = () => setDeleteModalOpen(false);
 
-  if (isLoading) { <LoadingComponent title="Languages" /> }
+  if (isLoading) { <LoadingComponent title={messages["languages"] || "Languages"} /> }
 
   return (
     <>
@@ -89,7 +89,7 @@ const LanguagesComponent = () => {
                   <Th> {messages["language_name"] || "Language Name"} </Th>
                   <Th> {messages["language_code"] || "Language Code"} </Th>
                   <Th> {messages["language_default"] || "Default Language"} </Th>
-                  <Th> {messages["action"] || "Action"}</Th>
+                  <Th> {messages["actions"] || "Actions"}</Th>
                 </TableRow>
               </TableHeader>
 

@@ -88,7 +88,7 @@ const AddSliderComponent: React.FC = () => {
       }, 1400);
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "An error occurred while creating.");
+      setMessage(messages["created_error"] || "An error occurred while creating.");
     }
   };
 

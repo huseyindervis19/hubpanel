@@ -66,7 +66,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       }, 1000);
     } catch (err) {
       console.error(err);
-      setMessage(messages["update_failed"] || "An error occurred while updating.");
+      setMessage(messages["updated_error"] || "An error occurred while updating.");
     }
   };
 
@@ -109,7 +109,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
 
       <div className="flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-          {messages["close"] || "Close"}
+          {messages["cancel"] || "Cancel"}
         </Button>
         <Button
           size="sm"

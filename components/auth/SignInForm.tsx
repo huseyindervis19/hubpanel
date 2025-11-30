@@ -75,12 +75,12 @@ export default function SignInForm() {
           {/* Email */}
           <div>
             <Label>
-              {messages["email"] || "Email"}{" "}
+              {messages["signin_email"] || "Email"}{" "}
               <span className="text-error-500">*</span>
             </Label>
             <Input
               type="email"
-              placeholder={messages["email_placeholder"] || "info@gmail.com"}
+              placeholder={messages["signin_email_placeholder"] || "info@gmail.com"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -90,14 +90,14 @@ export default function SignInForm() {
           {/* Password */}
           <div>
             <Label>
-              {messages["password"] || "Password"}{" "}
+              {messages["signin_password"] || "Password"}{" "}
               <span className="text-error-500">*</span>
             </Label>
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder={
-                  messages["password_placeholder"] ||
+                  messages["signin_password_placeholder"] ||
                   "enter your password"
                 }
                 value={password}

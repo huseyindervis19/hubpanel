@@ -37,21 +37,21 @@ const DeleteProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, produ
 
     setErrorMessage(null);
     setSuccessMessage(null);
-    
+
     try {
       await deleteProductMutation.mutateAsync(product.id);
       const successMsg = messages["delete_successfully"] || "Deleted successfully!";
       setSuccessMessage(successMsg);
       onSuccess?.();
     } catch (err) {
-      setErrorMessage(messages["delete_failed"] || "An error occurred while deleting.");
+      setErrorMessage(messages["delete_error"] || "An error occurred while deleting.");
       throw err;
     }
   };
 
-  const messageContent = messages["delete_warning"] ? (
+  const messageContent = messages["delete_warning_f"] ? (
     <>
-      {messages["delete_warning"]} <strong>{productName}</strong>?
+      {messages["delete_warning_f"]} <strong>{productName}</strong>{messages["delete_warning_s"]}
     </>
   ) : (
     `Are you sure you want to delete "${productName}"? This action cannot be undone.`
@@ -64,7 +64,7 @@ const DeleteProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, produ
       onConfirm={handleDeleteProduct}
       title={messages["confirm_delete"] || "Confirm Product Deletion"}
       message={messageContent}
-      errorMessage={errorMessage || messages["delete_failed"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}
       successMessage={successMessage || undefined}
     />
   );

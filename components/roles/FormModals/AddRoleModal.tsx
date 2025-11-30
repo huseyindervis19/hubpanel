@@ -66,7 +66,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "An error occurred while creating.");
+      setMessage(messages["created_error"] || "An error occurred while creating.");
     }
   };
 
@@ -80,7 +80,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     >
       <Form onSubmit={handleSubmit}>
          <TitleComponent
-          title={messages["add_roles"] || "Add Roles"}
+          title={messages["add_roles"] || "Add Role"}
           className="mb-4 font-semibold text-center"
         />
 
@@ -97,24 +97,24 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>{messages["name"] || "Name"}</Label>
+              <Label>{messages["role_name"] || "Name"}</Label>
               <InputField
                 type="text"
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                placeholder={messages["role_name_placeholder"] || "Enter role name"}
+                placeholder={messages["role_name_placeholder"] || "enter role name"}
                 required
               />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <Label>{messages["description"] || "Description"}</Label>
+              <Label>{messages["role_description"] || "Description"}</Label>
               <InputField
                 type="text"
                 value={form.description}
                 onChange={(e) => handleChange("description", e.target.value)}
-                placeholder={messages["role_description_placeholder"] || "Enter role description"}
+                placeholder={messages["role_description_placeholder"] || "enter role description"}
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
-            {messages["close"] || "Close"}
+            {messages["cancel"] || "Cancel"}
           </Button>
           <Button 
             size="sm" 

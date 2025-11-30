@@ -86,7 +86,7 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
           {productName && ` — ${productName}`}
         </h3>
         <Button size="sm" onClick={handleAdd} className="bg-primary hover:bg-primary/90 text-white shadow-sm">
-          {messages["add"] || "Add"}
+          {messages["create"] || "Create"}
         </Button>
       </div>
 
@@ -94,7 +94,7 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
       {imagesProduct.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center border border-dashed rounded-2xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
           <p className="text-md text-gray-800 dark:text-white/90">
-            {messages["no_images"] || "No images for this product."}
+            {messages["no_data_found"] || "No data found!"}
           </p>
         </div>
       ) : (
@@ -118,7 +118,7 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
                 {/* Main Tag */}
                 {img.isMain && (
                   <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-medium bg-green-500 text-white rounded-full shadow-sm">
-                    {messages["main"] || "Main"}
+                    {messages["main_image"] || "Main"}
                   </span>
                 )}
               </div>

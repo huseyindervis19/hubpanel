@@ -35,20 +35,19 @@ const DeleteImageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, img }) 
 
     try {
       await deleteImage.mutateAsync({ id: img.id, productId: img.productId });
-      const successMsg = messages["delete_success"] || "Deleted successfully!";
+      const successMsg = messages["delete_successfully"] || "Deleted successfully!";
       setSuccessMessage(successMsg);
       onSuccess?.();
     } catch (err) {
-      setErrorMessage(messages["delete_failed"] || "An error occurred while deleting.");
-      console.error("DeleteImageModal Error:", err);
+      setErrorMessage(messages["deleted_error"] || "An error occurred while deleting.");
     }
   };
 
   const imageName = img?.alt_text || "this image";
 
-  const messageContent = messages["delete_warning"] ? (
+  const messageContent = messages["delete_warning_f"] ? (
     <>
-      {messages["delete_warning"]} <strong>{imageName}</strong>?
+      {messages["delete_warning_f"]} <strong>{imageName}</strong>{messages["delete_warning_s"]}
     </>
   ) : (
     `Are you sure you want to delete "${imageName}"? This action cannot be undone.`

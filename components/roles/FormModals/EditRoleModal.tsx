@@ -85,7 +85,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["update_failed"] || "An error occurred while updating.");
+      setMessage(messages["updated_error"] || "An error occurred while updating.");
     }
   };
 
@@ -116,7 +116,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
         <div className="space-y-6">
           {/* Name */}
           <div>
-            <Label>{messages["name"] || "Name"}</Label>
+            <Label>{messages["role_name"] || "Name"}</Label>
             <InputField
               type="text"
               value={form.name}
@@ -127,7 +127,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
           </div>
           {/* Description */}
           <div>
-            <Label>{messages["description"] || "Description"}</Label>
+            <Label>{messages["role_description"] || "Description"}</Label>
             <InputField
               type="text"
               value={form.description}
@@ -139,7 +139,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
-            {messages["close"] || "Close"}
+            {messages["cancel"] || "Cancel"}
           </Button>
           <Button
             size="sm"

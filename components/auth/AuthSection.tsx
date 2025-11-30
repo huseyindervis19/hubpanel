@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useLocale } from "@/context/LocaleContext";
 
 const AuthSection = () => {
-  const { locale, messages } = useLocale();
+  const { messages } = useLocale();
 
   return (
     <div className="flex flex-col items-center max-w-xs">

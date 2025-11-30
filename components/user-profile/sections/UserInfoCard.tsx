@@ -37,8 +37,8 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
   }, [user.userRoles]);
 
   const infoFields = [
-    { label: messages["username"] || "Username", value: user.username },
-    { label: messages["email"] || "Email", value: user.email },
+    { label: messages["user_name"] || "Name", value: user.username },
+    { label: messages["user_email"] || "Email", value: user.email },
     { label: messages["roles"] || "Roles", element: RolesDisplay },
     { label: messages["language"] || "Language", value: user.language?.name || "-" },
   ];

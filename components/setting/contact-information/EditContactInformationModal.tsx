@@ -190,8 +190,8 @@ export const EditContactInformationModal = ({
               className="bg-primary-500 hover:bg-primary-600 text-white"
             >
               {updating
-                ? messages["submitting"] || "Submitting..."
-                : messages["save"] || "Save"}
+                ? messages["updating"] || "Updating..."
+                : messages["update"] || "Update"}
             </Button>
           </div>
         </form>

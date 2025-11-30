@@ -21,7 +21,7 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
   const { messages } = useLocale();
   const [message, setMessage] = useState<string | null>(null);
   const deleteLanguage = useDeleteLanguage();
-  const isPending = deleteLanguage.isPending; 
+  const isPending = deleteLanguage.isPending;
 
   useEffect(() => {
     if (!isOpen) {
@@ -44,25 +44,24 @@ const DeleteLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, lang
       onSuccess();
     } catch (err) {
       console.error(err);
-      setMessage(messages["delete_failed"] || "An error occurred while deleting.");
+      setMessage(messages["deleted_error"] || "An error occurred while deleting.");
     }
   };
-
+  const messageContent = messages["delete_warning_f"] ? (
+    <>
+      {messages["delete_warning_f"]} <strong>{language?.name}</strong>{messages["delete_warning_s"]}
+    </>
+  ) : (
+    `Are you sure you want to delete "${language?.name}"? This action cannot be undone.`
+  );
   return (
     <DeleteConfirmModal
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={handleDelete}
       title={messages["confirm_delete"] || "Confirm Deletion"}
-      message={
-        <>
-          {messages["delete_warning"] 
-            ? messages["delete_warning"].replace("{name}", language?.name || "")
-            : <>Are you sure you want to delete <strong>"{language?.name}"</strong>? This action cannot be undone.</>
-          }
-        </>
-      }
-      errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
+      message={messageContent}
+      errorMessage={messages["deleted_error"] || "An error occurred while deleting."}
     />
   );
 };

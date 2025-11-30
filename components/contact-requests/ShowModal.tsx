@@ -38,11 +38,10 @@ export default function ShowModal({ isOpen, onClose, contact }: Props) {
       >
         <div className="text-center mb-6">
           <h4 className="text-xl font-bold text-gray-800 dark:text-white">
-            {messages["nav_contact_requests"] || "Contact Requests"}
+            {messages["contact_requests"] || "Contact Requests"}
           </h4>
         </div>
 
-        {/* منطقة التمرير */}
         <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           <InfoItem
             icon={
@@ -50,7 +49,7 @@ export default function ShowModal({ isOpen, onClose, contact }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10m-12 9h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z" />
               </svg>
             }
-            label={messages["contact_request_date"] || "Date"}
+            label={messages["contact_date"] || "Date"}
             value={contact?.createdAt ? new Date(contact.createdAt).toLocaleDateString() : "N/A"}
           />
           <InfoItem
@@ -59,7 +58,7 @@ export default function ShowModal({ isOpen, onClose, contact }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.79.657 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             }
-            label={messages["contact_request_name"] || "Name"}
+            label={messages["contact_name"] || "Name"}
             value={contact?.name}
           />
           <InfoItem
@@ -68,7 +67,7 @@ export default function ShowModal({ isOpen, onClose, contact }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.197 3.59a1 1 0 01-.502 1.21l-2.266 1.133a11.042 11.042 0 005.516 5.516l1.133-2.266a1 1 0 011.21-.502l3.59 1.197a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
               </svg>
             }
-            label={messages["contact_request_phone"] || "Phone"}
+            label={messages["contact_phone"] || "Phone"}
             value={contact?.phone}
           />
           <InfoItem
@@ -77,7 +76,7 @@ export default function ShowModal({ isOpen, onClose, contact }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 20l1.2-3.6A7.966 7.966 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             }
-            label={messages["contact_request_message"] || "Message"}
+            label={messages["contact_message"] || "Message"}
             value={contact?.message}
           />
         </div>

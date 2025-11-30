@@ -66,7 +66,7 @@ const EditSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      setMessage(messages["update_failed"] || "Update failed.");
+      setMessage(messages["updated_error"] || "An error occurred while updating the item.");
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ const EditSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }
 
         <div className="flex justify-end mt-6 gap-3">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            {messages["close"]}
+            {messages["cancel"]}
           </Button>
 
           <Button type="submit" disabled={loading}>

@@ -69,7 +69,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage(messages["error"] || "An error occurred while creating.");
+      setMessage(messages["created_error"] || "An error occurred while creating.");
     }
   };
 
@@ -139,7 +139,7 @@ const AddLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="flex items-center justify-end gap-3 mt-6">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            {messages["close"] || "Close"}
+            {messages["cancel"] || "Cancel"}
           </Button>
           <Button
             size="sm"

@@ -80,9 +80,9 @@ export const ContactRequestsComponent = () => {
     };
 
     const statusOptions = [
-        { value: "في الانتظار", label: messages["status_pending"] || "في الانتظار" },
-        { value: "جاري العمل عليه", label: messages["status_in_progress"] || "جاري العمل عليه" },
-        { value: "تم الانتهاء", label: messages["status_completed"] || "تم الانتهاء" },
+        { value: "في الانتظار", label: messages["status_pending"] || "Pending" },
+        { value: "جاري العمل عليه", label: messages["status_in_progress"] || "In Progress" },
+        { value: "تم الانتهاء", label: messages["status_completed"] || "Completed" },
     ];
 
 
@@ -100,7 +100,7 @@ export const ContactRequestsComponent = () => {
                 )
             }
             <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
-                {messages["nav_contact_requests"] || "Contact Requests"}
+                {messages["contact_requests"] || "Contact Requests"}
             </h3>
 
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -110,22 +110,22 @@ export const ContactRequestsComponent = () => {
                             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                                 <TableRow>
                                     <TableCell isHeader className="px-1 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["date"] || "Date"}
+                                        {messages["contact_date"] || "Date"}
                                     </TableCell>
                                     <TableCell isHeader className="px-20 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["status"] || "Status"}
+                                        {messages["contact_status"] || "Status"}
                                     </TableCell>
                                     <TableCell isHeader className="pl-1 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["name"] || "Name"}
+                                        {messages["contact_name"] || "Name"}
                                     </TableCell>
                                     <TableCell isHeader className="px-1 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["phone"] || "Phone"}
+                                        {messages["contact_phone"] || "Phone"}
                                     </TableCell>
                                     <TableCell isHeader className="px-1 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["message"] || "Message"}
+                                        {messages["contact_message"] || "Message"}
                                     </TableCell>
                                     <TableCell isHeader className="px-1 py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                        {messages["action"] || "Action"}
+                                        {messages["actions"] || "Actions"}
                                     </TableCell>
                                 </TableRow>
 

@@ -66,10 +66,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {t?.description || category.description}
               </p>
               <p className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
-                {messages["product_count"] || "Product Count"}: {productCount}
+                {messages["category_product_count"] || "Product Count"}: {productCount}
               </p>
               <p className="text-sm font-medium text-purple-600 dark:text-purple-400 truncate">
-                {messages["priority"] || "Priority"}: {category.priority}
+                {messages["categoy_priority"] || "Priority"}: {category.priority}
               </p>
             </div>
 
@@ -92,7 +92,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     onItemClick={onViewProducts}
                     className="text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    {messages["view_products"] || "View Products"}
+                    {messages["categoy_view_products"] || "View Products"}
                   </DropdownItem>
                 )}
                 {onEdit && (

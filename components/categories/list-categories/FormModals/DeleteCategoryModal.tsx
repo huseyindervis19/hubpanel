@@ -38,16 +38,16 @@ const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, cate
       setSuccessMessage(successMsg);
       onSuccess?.();
     } catch (err) {
-      setErrorMessage(messages["delete_failed"] || "An error occurred while deleting.");
+      setErrorMessage(messages["deleted_error"] || "An error occurred while deleting.");
       throw err;
     }
   };
 
   const categoryName = category?.translated?.name || category?.name || "this category";
 
-  const messageContent = messages["delete_warning"] ? (
+  const messageContent = messages["delete_warning_f"] ? (
     <>
-      {messages["delete_warning"]} <strong>{categoryName}</strong>?
+      {messages["delete_warning_f"]} <strong>{categoryName}</strong>{messages["delete_warning_s"]}
     </>
   ) : (
     `Are you sure you want to delete "${categoryName}"? This action cannot be undone.`
@@ -60,7 +60,7 @@ const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, cate
       onConfirm={handleDeleteCategory}
       title={messages["confirm_delete"] || "Confirm Deletion"}
       message={messageContent}
-      errorMessage={errorMessage || messages["delete_failed"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}
       successMessage={successMessage || undefined}
     />
   );

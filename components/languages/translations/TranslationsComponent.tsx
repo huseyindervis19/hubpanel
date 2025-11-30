@@ -69,7 +69,7 @@ const TranslationsComponent = () => {
       setTimeout(() => setMessage(null), 1000);
     } catch (error) {
       console.error("Update failed:", error);
-      setMessage(messages["update_failed"] || "An error occurred while updating.");
+      setMessage(messages["updated_error"] || "An error occurred while updating.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ const TranslationsComponent = () => {
   if (isError)
     return (
       <div className="flex justify-center items-center py-10">
-        <p className="text-red-500">{messages["loading_failed"] || "An error occurred while loading data."}</p>
+        <p className="text-red-500">{messages["error"] || "An error occurred while loading data."}</p>
       </div>
     );
 

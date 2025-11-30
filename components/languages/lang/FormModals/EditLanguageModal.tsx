@@ -88,7 +88,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
       onSuccess();
     } catch (err) {
       console.error(err);
-      setMessage(messages["update_failed"] || "An error occurred while updating.");
+      setMessage(messages["updated_error"] || "An error occurred while updating.");
     }
   };
 
@@ -160,7 +160,7 @@ const EditLanguageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, langua
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
-            {messages["close"] || "Close"}
+            {messages["cancel"] || "Cancel"}
           </Button>
           <Button
             size="sm"

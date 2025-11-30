@@ -31,7 +31,7 @@ const SliderComponent: React.FC = () => {
 
 
       {loading && <div className="p-6">{messages["loading"] || "Loading..."}</div>}
-      {error && <div className="p-6 text-red-600">{messages["failed_to_load"] || "Failed to load sliders"}</div>}
+      {error && <div className="p-6 text-red-600">{messages["error"] || "Failed to load sliders"}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {homeSlider.map((s) => (
