@@ -8,6 +8,7 @@ interface Option {
 }
 
 interface SelectProps {
+  id?: string;
   options: Option[];
   placeholder?: string;
   onChange: (value: string) => void;
@@ -15,14 +16,19 @@ interface SelectProps {
   value?: string;
   required?: boolean;
   disabled?: boolean;
+  label?: string;
+  labelClassName?: string;
 }
 
 const Select: React.FC<SelectProps> = ({
+  id,
   options,
   placeholder,
   onChange,
   className = "",
   value = "",
+  label,
+  labelClassName = "",
   required = false,
   disabled = false,
 }) => {
@@ -73,6 +79,14 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="w-full relative" ref={containerRef}>
+      {label && (
+        <label
+          htmlFor={id}
+          className={`block text-sm font-medium text-gray-700 dark:text-white ${labelClassName} ${labelClassName?.includes("mb-") ? "" : "mb-2"}`}
+        >
+          {label}
+        </label>
+      )}
       <div
         className={`flex h-11 w-full items-center justify-between border border-gray-300 bg-white px-3 py-1 shadow-theme-xs cursor-pointer dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 ${className} 
           ${isOpen ? "rounded-t-lg rounded-b-none" : "rounded-lg"}

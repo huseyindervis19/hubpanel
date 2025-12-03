@@ -64,7 +64,7 @@ const DeleteConfirmModal: React.FC<Props> = ({
         </h4>
 
         {success && successMessage && (
-          <div className="mb-2 p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 dark:border-green-700 dark:bg-green-900/30 dark:text-green-300 text-sm">
+          <div className="font-medium mb-2 p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 dark:border-green-700 dark:bg-green-900/30 dark:text-green-300 text-sm">
             {successMessage}
           </div>
         )}
@@ -72,7 +72,7 @@ const DeleteConfirmModal: React.FC<Props> = ({
         <div className="text-sm leading-6 text-gray-600 dark:text-gray-300">{message}</div>
 
         {error && (
-          <div className="mt-4 p-3 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 text-xs">
+          <div className="font-medium mt-4 p-3 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 text-xs">
             {errorMessage}
           </div>
         )}
@@ -80,7 +80,8 @@ const DeleteConfirmModal: React.FC<Props> = ({
 
       <div className="mt-6 flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={handleClose} disabled={isDeleting}>
-          {messages["close"]}
+          {messages["cancel"] || "Cancel"}
+
         </Button>
         <Button
           size="sm"

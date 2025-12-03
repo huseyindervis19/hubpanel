@@ -41,11 +41,9 @@ export default function SignInForm() {
           setTimeout(() => router.push("/"), 1000);
         },
         onError: (err: any) => {
-          const message =
-            err?.response?.data?.message ||
-            (err instanceof Error ? err.message : "Login failed. Please try again.");
-
-          setErrorMessage(message);
+          const frontendMessage = messages["login_failed"];
+          const apiMessage = err?.response?.data?.message || (err instanceof Error ? err.message : null);
+          setErrorMessage(frontendMessage || apiMessage || "Login failed.");
         },
       }
     );
@@ -107,9 +105,8 @@ export default function SignInForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={`absolute top-1/2 -translate-y-1/2 z-10 ${
-                  isRtl ? "left-4" : "right-4"
-                }`}
+                className={`absolute top-1/2 -translate-y-1/2 z-10 ${isRtl ? "left-4" : "right-4"
+                  }`}
                 aria-label={showPassword ? (messages["hide_password"] || "Hide password") : (messages["show_password"] || "Show password")}
               >
                 {showPassword ? (
@@ -130,7 +127,7 @@ export default function SignInForm() {
               </span>
             </div>
             <Link
-              href="/reset-password"
+              href="/forgot-password"
               className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
             >
               {messages["forgot_password"] || "Forgot your password?"}
@@ -152,17 +149,17 @@ export default function SignInForm() {
 
             {/* Error message */}
             {errorMessage && (
-              <p className="mt-2 text-sm text-red-500 text-center">
+              <p className="mt-2 text-md text-red-600 dark:text-red-400">
                 {errorMessage === "Invalid credentials" || errorMessage.includes("Invalid")
                   ? messages["signin_error_invalid"] ||
-                    "Invalid email or password"
+                  "Invalid email or password"
                   : errorMessage}
               </p>
             )}
 
             {/* Success message */}
             {successMessage && (
-              <p className="mt-2 text-sm text-green-600 dark:text-green-400 text-center">
+              <p className="mt-2 text-md text-green-600 dark:text-green-400">
                 {successMessage}
               </p>
             )}

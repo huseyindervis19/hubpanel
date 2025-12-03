@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { LoginRequest, LoginResponse } from "@/types/Auth";
+import { LoginRequest, LoginResponse, ForgotPasswordRequest, ForgotPasswordResponse, ResetPasswordRequest, ResetPasswordResponse } from "@/types/Auth";
 import { AuthenticatedUser } from "@/types/User";
 
 export const authService = {
@@ -38,5 +38,15 @@ export const authService = {
     localStorage.removeItem("userId");
     localStorage.removeItem("token_exp");
     delete axiosInstance.defaults.headers.common["Authorization"];
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
+    const response = await axiosInstance.post<ForgotPasswordResponse>("/auth/forgot-password", data);
+    return response.data;
+  },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+    const response = await axiosInstance.post<ResetPasswordResponse>("/auth/reset-password", data);
+    return response.data;
   },
 };

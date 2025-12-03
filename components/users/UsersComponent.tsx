@@ -68,6 +68,7 @@ const UsersComponent = () => {
             </p>
             <div className="relative">
               <SearchBar
+              placeholder={messages["search"] || "Search..."}
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
               />
@@ -124,15 +125,12 @@ const UsersComponent = () => {
                       </Td>
 
                       {/* Status */}
-                      <Td>
-                        <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium ${user.status === "active"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                          }`}
+                        <Td
+                          className={`px-6 py-4 font-medium ${user.status ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                            }`}
                         >
-                          {user.status}
-                        </span>
-                      </Td>
+                          {user.status ? messages["active"] || "Active" : messages["inactive"] || "Inactive"}
+                        </Td>
                       <Td>
                         <div className="flex items-center gap-5">
                           {canEditUser && (

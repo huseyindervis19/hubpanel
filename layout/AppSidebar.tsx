@@ -13,11 +13,7 @@ import {
   ProductsIcon,
   DashboardIcon,
   LockIcon,
-  LanguageIcon,
-  PageIcon,
-  EnvelopeIcon,
-  MailIcon,
-  PlugInIcon,
+  EnvelopeIcon
 } from "../icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useHasPermission } from "@/hooks/useAuth";

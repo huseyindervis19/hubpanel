@@ -17,7 +17,7 @@ import { Category } from "@/types/Category";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess: () => void;
   category?: Category | null;
 }
 
@@ -132,11 +132,9 @@ const EditCategoryModal: React.FC<Props> = ({
       });
 
       setMessage({ text: messages["updated_successfully"] || "Updated successfully!", type: "success" });
-
       await new Promise(resolve => setTimeout(resolve, 1000));
-
       onClose();
-      if (onSuccess) onSuccess();
+      onSuccess();
 
     } catch (err) {
       setMessage({ text: messages["updated_error"] || "An error occurred while updating.", type: "error" });
@@ -184,7 +182,11 @@ const EditCategoryModal: React.FC<Props> = ({
 
         {/* Image */}
         <Label className={LABEL}>{messages["category_image"]}</Label>
-        <FileInput onChange={handleFileChange} accept="image/*" />
+        <FileInput 
+          onChange={handleFileChange}
+          accept="image/*" 
+          placeholder={messages["choose_file"] || "Choose File"}
+          />
 
         {previewUrl && (
           <img src={previewUrl} alt="preview" className="w-20 h-20 rounded mt-2 object-cover" />

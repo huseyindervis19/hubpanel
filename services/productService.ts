@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/types/ApiResponse";
-import { Product, CreateProductData } from "@/types/Product";
+import { Product, ProductData } from "@/types/Product";
 
 // fetch all products by language
 export const fetchAllProducts = async (lang: string): Promise<ApiResponse<Product[]>> => {
@@ -10,7 +10,7 @@ export const fetchAllProducts = async (lang: string): Promise<ApiResponse<Produc
 
 // create product
 export const createProduct = async (
-  data: CreateProductData
+  data: ProductData
 ): Promise<Product> => {
   const response = await axiosInstance.post<ApiResponse<Product>>(
     `/products`,
@@ -20,19 +20,9 @@ export const createProduct = async (
 };
 
 // update product
-export interface UpdateProductData {
-  name?: string;
-  slug?: string;
-  description?: string;
-  stockQuantity?: number;
-  isActive?: boolean;
-  isFeatured?: boolean;
-  categoryId?: number;
-}
-
 export const updateProduct = async (
   id: number,
-  data: UpdateProductData,
+  data: ProductData,
   lang: string
 ): Promise<Product> => {
   const response = await axiosInstance.patch<ApiResponse<Product>>(

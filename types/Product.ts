@@ -16,7 +16,7 @@ export interface ProductLinks {
 
 export interface Product {
   id: number;
-  categoryId: number | null;
+  categoryId: number;
   stockQuantity: number;
   isActive: boolean;
   isFeatured: boolean;
@@ -29,12 +29,13 @@ export interface Product {
   _links: ProductLinks;
 }
 
-export interface CreateProductData {
+export interface ProductData {
   name: string;
   slug?: string;
   description?: string;
   stockQuantity?: number;
+  priority?: number;
   isActive?: boolean;
   isFeatured?: boolean;
-  categoryId?: number;
+  categoryId: number;
 }

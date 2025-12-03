@@ -9,6 +9,9 @@ interface TextareaProps {
   disabled?: boolean; // Disabled state
   error?: boolean; // Error state
   hint?: string; // Hint text to display
+  id?: string;
+  label?: string;
+  labelClassName?: string;
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -20,6 +23,9 @@ const TextArea: React.FC<TextareaProps> = ({
   disabled = false, // Disabled state
   error = false, // Error state
   hint = "", // Default hint text
+  id,
+  label,
+  labelClassName = "",
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onChange) {
@@ -27,7 +33,7 @@ const TextArea: React.FC<TextareaProps> = ({
     }
   };
 
-  let textareaClasses = `w-full rounded-lg border px-4 py-2.5 text-sm shadow-theme-xs focus:outline-hidden ${className}`;
+  let textareaClasses = `w-full rounded-lg border px-4 py-2 text-sm shadow-theme-xs focus:outline-hidden ${className}`;
 
   if (disabled) {
     textareaClasses += ` bg-gray-100 opacity-50 text-gray-500 border-gray-300 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700`;
@@ -42,6 +48,14 @@ const TextArea: React.FC<TextareaProps> = ({
 
   return (
     <div className="relative">
+      {label && (
+        <label
+          htmlFor={id}
+          className={`block text-sm font-medium text-gray-700 dark:text-white ${labelClassName} ${labelClassName?.includes("mb-") ? "" : "mb-2"}`}
+        >
+          {label}
+        </label>
+      )}
       <textarea
         placeholder={placeholder}
         rows={rows}
@@ -52,9 +66,8 @@ const TextArea: React.FC<TextareaProps> = ({
       />
       {hint && (
         <p
-          className={`mt-2 text-sm ${
-            error ? "text-error-500" : "text-gray-500 dark:text-gray-400"
-          }`}
+          className={`mt-2 text-sm ${error ? "text-error-500" : "text-gray-500 dark:text-gray-400"
+            }`}
         >
           {hint}
         </p>

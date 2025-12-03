@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
 import { fetchAllProducts, fetchProductById, createProduct, updateProduct, deleteProduct, UpdateProductData } from "@/services/productService";
-import { Product, CreateProductData } from "@/types/Product";
+import { Product, ProductData } from "@/types/Product";
 import { ApiResponse } from "@/types/ApiResponse";
 
 // fetch all products by language
@@ -26,7 +26,7 @@ export const useProductById = (id: number, language: string) => {
 // create product
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
-  return useMutation<Product, Error, CreateProductData>({
+  return useMutation<Product, Error, ProductData>({
     mutationFn: (data) => createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -37,9 +37,9 @@ export const useCreateProduct = () => {
 // update product
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
-  return useMutation<Product, Error, { id: number; data: UpdateProductData; lang: string }>({
+  return useMutation<Product, Error, { id: number; data: ProductData; lang: string }>({
     mutationFn: ({ id, data, lang }) => updateProduct(id, data, lang),
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["products-by-category"] });
     },

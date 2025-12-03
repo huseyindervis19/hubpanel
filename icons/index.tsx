@@ -80,6 +80,9 @@ import CategoriesIconPath from "./categories.svg";
 import DashboardIconPath from "./dashboard.svg";
 import GlobeIconPath from "./globe.svg";
 import LoadingIconPath from "./loading.svg";
+import phoneIconPath from "./phone.svg";
+import AddressIconPath from "./address.svg";
+import WhatsappIconPath from "./whatsapp.svg";
 
 export const PlusIcon = createIconComponent(PlusIconPath, "Plus");
 export const CloseIcon = createIconComponent(CloseIconPath, "Close");
@@ -139,3 +142,6 @@ export const CategoriesIcon = createIconComponent(CategoriesIconPath, "Categorie
 export const DashboardIcon = createIconComponent(DashboardIconPath, "Dashboard");
 export const LanguageIcon = createIconComponent(GlobeIconPath, "Language");
 export const LoadingIcon = createIconComponent(LoadingIconPath, "Loading");
+export const PhoneIcon = createIconComponent(phoneIconPath, "Phone");
+export const AddressIcon = createIconComponent(AddressIconPath, "Address");
+export const WhatsappIcon = createIconComponent(WhatsappIconPath, "Whatsapp");

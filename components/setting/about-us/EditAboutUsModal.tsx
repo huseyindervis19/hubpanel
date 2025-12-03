@@ -82,10 +82,10 @@ export const EditAboutUsModal = ({
       <div className="relative max-h-[90vh]  max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <div className="px-2 pr-14">
 
-          <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-            {messages["edit_about_us_modal_title"] || "Edit About Us"}
+          <h4 className="text-center mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+            {messages["about_us"] || "About Us"}
           </h4>
-          
+
           {successMessage && (
             <div className="w-full mb-4 px-4 py-2 text-center text-green-700 bg-green-100 rounded-lg border border-green-300">
               {successMessage}
@@ -100,7 +100,8 @@ export const EditAboutUsModal = ({
                   {messages["about_us_story"] || "Our Story"}
                 </Label>
                 <Textarea
-                  className="w-full min-h-[110px] text-gray-800"
+                  placeholder={messages["enter_your_message"] || "Enter your message"}
+                  className="w-full min-h-[70px] text-gray-800"
                   value={form.story}
                   onChange={(value) => handleChange("story", value)}
                 />
@@ -110,7 +111,8 @@ export const EditAboutUsModal = ({
                   {messages["about_us_mission"] || "Our Mission"}
                 </Label>
                 <Textarea
-                  className="w-full min-h-[110px] text-gray-800"
+                  placeholder={messages["enter_your_message"] || "Enter your message"}
+                  className="w-full min-h-[70px] text-gray-800"
                   value={form.mission}
                   onChange={(value) => handleChange("mission", value)}
                 />
@@ -120,7 +122,8 @@ export const EditAboutUsModal = ({
                   {messages["about_us_vision"] || "Our Vision"}
                 </Label>
                 <Textarea
-                  className="w-full min-h-[110px] text-gray-800"
+                  placeholder={messages["enter_your_message"] || "Enter your message"}
+                  className="w-full min-h-[70px] text-gray-800"
                   value={form.vision}
                   onChange={(value) => handleChange("vision", value)}
                 />
@@ -130,7 +133,8 @@ export const EditAboutUsModal = ({
                   {messages["about_us_values"] || "Our Values"}
                 </Label>
                 <Textarea
-                  className="w-full min-h-[110px] text-gray-800"
+                  placeholder={messages["enter_your_message"] || "Enter your message"}
+                  className="w-full min-h-[70px] text-gray-800"
                   value={form.values}
                   onChange={(value) => handleChange("values", value)}
                 />

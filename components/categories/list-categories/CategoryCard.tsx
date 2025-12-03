@@ -59,16 +59,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className="p-4 flex flex-col justify-between h-full">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-1 truncate">
-                {t?.name || category.name}
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-2 truncate">
+                {messages["category_name"] || "Category Name"} : {t?.name || category.name}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 truncate">
-                {t?.description || category.description}
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">
+                {messages["category_description"] || "Category Description"} : {t?.description || category.description}
               </p>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2 truncate">
                 {messages["category_product_count"] || "Product Count"}: {productCount}
               </p>
-              <p className="text-sm font-medium text-purple-600 dark:text-purple-400 truncate">
+              <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-2 truncate">
                 {messages["categoy_priority"] || "Priority"}: {category.priority}
               </p>
             </div>

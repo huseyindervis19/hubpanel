@@ -1,7 +1,23 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
+// ==========================
+// Smart Logger
+// ==========================
+const isDev = process.env.NODE_ENV === "development";
+
+const logError = (...args: any[]) => {
+  if (isDev) console.error(...args);
+};
+
+const logWarn = (...args: any[]) => {
+  if (isDev) console.warn(...args);
+};
+
+// ==========================
+// Axios Base Config
+// ==========================
 const baseConfig: AxiosRequestConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
   headers: {
     "Content-Type": "application/json",
     "X-Requested-With": "XMLHttpRequest",
@@ -12,57 +28,61 @@ const baseConfig: AxiosRequestConfig = {
 
 const apiClient: AxiosInstance = axios.create(baseConfig);
 
-//
-//  Request Interceptor
-//
+// ==========================
+// Request Interceptor
+// ==========================
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
-
     return config;
   },
   (error: AxiosError) => {
-    console.error("Request error:", error.message);
+    logError("Request error:", error.message);
     return Promise.reject(error);
   }
 );
 
-//
-//  Response Interceptor
-//
+// ==========================
+// Response Interceptor
+// ==========================
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response) {
       const status = error.response.status;
-      const url = error.config?.url || "";
+      const url = error.config?.url ?? "unknown";
 
+      // ====== Handle Unauthorized (401) ======
       if (status === 401 && !url.includes("/auth/login")) {
-        console.warn("Unauthorized — redirecting to signin...");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userId");
+        logWarn("Unauthorized — redirecting to signin...");
+
         if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("userId");
           window.location.href = "/signin";
         }
       }
 
-      console.error(" API Error:", {
-        url,
-        status,
-        data: error.response.data,
-      });
+      // ====== Log error in development only ======
+      logError(
+        "API Error:",
+        "URL:", url,
+        "STATUS:", status,
+        "DATA:", error.response.data ?? "No response"
+      );
     }
     else if (error.request) {
-      console.error("No response received from server:", error.request);
+      logError("No response received from server:", error.request);
     }
     else {
-      console.error("Axios setup error:", error.message);
+      logError("Axios setup error:", error.message);
     }
-    
+
     return Promise.reject(error);
   }
 );

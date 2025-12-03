@@ -8,25 +8,10 @@ import Backdrop from "@/layout/Backdrop";
 import { useSidebar } from "@/context/SidebarContext";
 import { useLocale, LocaleProvider } from "@/context/LocaleContext";
 import UnauthorizedPage from "../unauthorized";
-import { useCurrentUser } from "@/hooks/useAuth";
 
-export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
-  const { data: currentUser, isLoading } = useCurrentUser();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-gray-500">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!currentUser || !currentUser.language) {
-    return <UnauthorizedPage />;
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <LocaleProvider userLang={currentUser.language.code}>
+    <LocaleProvider >
       <InnerAdminLayout>{children}</InnerAdminLayout>
     </LocaleProvider>
   );
@@ -36,13 +21,9 @@ function InnerAdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
   const { locale, isHydrated } = useLocale();
-
   const [hasToken, setHasToken] = useState<boolean | null>(null);
 
-  // client-only token check
   useEffect(() => {
-    if (!isHydrated) return;
-
     const checkToken = () => {
       const token = localStorage.getItem("accessToken");
       const exp = localStorage.getItem("token_exp");
@@ -80,10 +61,6 @@ function InnerAdminLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!hasToken) {
-    return <UnauthorizedPage />;
-  }
-
   const isRtl = locale === "ar";
 
   const sidebarMarginClass = isMobileOpen
@@ -95,6 +72,12 @@ function InnerAdminLayout({ children }: { children: React.ReactNode }) {
       : isRtl
         ? "lg:mr-[90px]"
         : "lg:ml-[90px]";
+
+  if (!isHydrated) return;
+
+  if (!hasToken) {
+    return <UnauthorizedPage />;
+  }
 
   return (
     <div className="min-h-screen xl:flex">

@@ -114,7 +114,7 @@ const AddUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         {message && (
           <p
             className={`mb-4 text-center font-medium ${
-              message.includes("Error") ? "text-red-600" : "text-green-600"
+              message.includes("Error") ? "p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300" : "p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300"
             }`}
           >
             {message}

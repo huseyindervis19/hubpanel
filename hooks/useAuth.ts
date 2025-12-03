@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient, UseMutationResult } from "@tanstack/react-query";
 import { authService } from "@/services/authService";
-import { LoginRequest, LoginResponse } from "@/types/Auth";
+import { LoginRequest, LoginResponse, ForgotPasswordRequest, ForgotPasswordResponse, ResetPasswordRequest, ResetPasswordResponse } from "@/types/Auth";
 import { AuthenticatedUser } from "@/types/User";
 import { Permission } from "@/types/Permission";
 
@@ -28,7 +28,7 @@ export function useCurrentUser() {
   return useQuery<AuthenticatedUser | null>({
     queryKey: ["currentUser"],
     queryFn: authService.fetchCurrentUser,
-    staleTime: 0, 
+    staleTime: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     retry: 1,
@@ -54,3 +54,38 @@ export const useHasPermission = (endpoint: string): boolean => {
   const { data: user } = useCurrentUser();
   return !!user?.permissions?.some((p: Permission) => p.endpoint === endpoint);
 };
+
+/**
+ * Hook for forgot password
+ */
+
+export function useForgotPassword(): UseMutationResult<
+  ForgotPasswordResponse,
+  Error,
+  ForgotPasswordRequest,
+  unknown
+> {
+  return useMutation<ForgotPasswordResponse, Error, ForgotPasswordRequest, unknown>({
+    mutationFn: async (data: ForgotPasswordRequest) => {
+      const res = await authService.forgotPassword(data);
+      return res;
+    },
+  });
+}
+
+/**
+ * Hook for resetting password
+ */
+export function useResetPassword(): UseMutationResult<
+  ResetPasswordResponse,
+  Error,
+  ResetPasswordRequest,
+  unknown
+> {
+  return useMutation<ResetPasswordResponse, Error, ResetPasswordRequest, unknown>({
+    mutationFn: async (data: ResetPasswordRequest) => {
+      const res = await authService.resetPassword(data);
+      return res;
+    },
+  });
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useDeleteRole } from "@/hooks/useRoles";
 import { Role } from "@/types/Role";
@@ -16,22 +16,31 @@ interface Props {
 const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
   const { messages } = useLocale();
   const deleteRole = useDeleteRole();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+    }
+  }, [isOpen]);
 
   const handleDeleteRole = async (): Promise<void> => {
-    if (!role?.id) {
-      return Promise.reject(new Error("Role ID is missing."));
-    }
+    if (!role?.id) return;
+
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
     try {
       await deleteRole.mutateAsync(role.id);
+      const successMsg = messages["delete_successfully"] || "Deleted successfully!";
+      setSuccessMessage(successMsg);
+      onSuccess?.();
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      onSuccess();
-
-      return Promise.resolve();
     } catch (err) {
-      return Promise.reject(err);
+      setErrorMessage(messages["delete_error"] || "An error occurred while deleting.");
+      throw err;
     }
   };
   const messageContent = messages["delete_warning_f"] ? (
@@ -49,8 +58,8 @@ const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) 
       onConfirm={handleDeleteRole}
       title={messages["confirm_delete"] || "An error occurred while deleting."}
       message={messageContent}
-
-      errorMessage={messages["deleted_error"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}
+      successMessage={successMessage || undefined}
     />
   );
 };

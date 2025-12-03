@@ -96,8 +96,6 @@ const AddCategoryComponent: React.FC = () => {
     }
   };
 
-  const LABEL_CLASS = "text-md text-gray-800 dark:text-white/90";
-
   return (
     <>
       <TitleComponent
@@ -119,10 +117,8 @@ const AddCategoryComponent: React.FC = () => {
 
           {/* NAME */}
           <div>
-            <Label htmlFor="name" className={LABEL_CLASS}>
-              {messages["category_name"] || "Category Name"} <span className="text-error-500">*</span>
-            </Label>
             <InputField
+              label={messages["category_name"] || "Category Name"}
               id="name"
               name="name"
               value={form.name}
@@ -134,10 +130,8 @@ const AddCategoryComponent: React.FC = () => {
 
           {/* DESCRIPTION */}
           <div>
-            <Label htmlFor="description" className={LABEL_CLASS}>
-              {messages["category_description"] || "Description"}
-            </Label>
             <TextArea
+              label={messages["category_description"] || "Category Description"}
               value={form.description}
               onChange={handleTextAreaChange}
               rows={4}
@@ -147,10 +141,9 @@ const AddCategoryComponent: React.FC = () => {
 
           {/* IMAGE + PRIORITY */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             {/* IMAGE INPUT */}
             <div className="space-y-1">
-              <Label htmlFor="file" className={LABEL_CLASS}>
+              <Label htmlFor="file" className={"text-md text-gray-800 dark:text-white/90"}>
                 {messages["category_image"] || "Category Image"} <span className="text-error-500">*</span>
               </Label>
               <FileInput
@@ -162,25 +155,19 @@ const AddCategoryComponent: React.FC = () => {
                 fileName={fileName}
               />
             </div>
-
             {/* PRIORITY INPUT */}
             <div className="space-y-1">
-              <Label htmlFor="priority" className={LABEL_CLASS}>
-                {messages["categoy_priority"] || "Priority"} <span className="text-error-500">*</span>
-              </Label>
               <InputField
+                label={messages["categoy_priority"] || "Priority"}
                 id="priority"
                 name="priority"
                 type="number"
                 min={0}
                 value={form.priority}
                 onChange={handleChange}
-                
               />
             </div>
-
           </div>
-
           {/* SUBMIT BUTTON */}
           <div className="mt-6 flex justify-end gap-3">
             <Button

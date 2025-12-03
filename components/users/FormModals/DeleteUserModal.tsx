@@ -19,17 +19,31 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
   const { messages } = useLocale();
   const deleteUser = useDeleteUser();
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+    }
+  }, [isOpen]);
+
   const handleDelete = async () => {
     if (!user?.id) return;
 
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
     try {
       await deleteUser.mutateAsync(user.id);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      onClose();
-      onSuccess();
+      const successMsg = messages["delete_successfully"] || "Deleted successfully!";
+      setSuccessMessage(successMsg);
+      onSuccess?.();
 
     } catch (err) {
-      console.error(err);
+      setErrorMessage(messages["delete_error"] || "An error occurred while deleting.");
+      throw err;
     }
   };
 
@@ -48,7 +62,8 @@ const DeleteUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) 
       onConfirm={handleDelete}
       title={messages["confirm_delete"] || "An error occurred while deleting."}
       message={messageContent}
-      errorMessage={messages["delete_failed"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}
+      successMessage={successMessage || undefined}
     />
   );
 };

@@ -47,7 +47,7 @@ export const AboutUsComponent = () => {
       <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
         {messages["about_us"] || "About Us"}
       </h3>
-      <div className="p-6 border border-gray-200 rounded-2xl dark:border-gray-800 bg-white dark:bg-gray-900">
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6 space-y-6">
         <div className="flex justify-between items-center mb-6">
           <h4 className="text-xl font-semibold text-gray-800 dark:text-white"></h4>
           <button
