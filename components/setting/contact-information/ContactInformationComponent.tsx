@@ -2,7 +2,7 @@
 
 import { useLocale } from "@/context/LocaleContext";
 import { useModal } from "@/hooks/useModal";
-import { useContactInfo } from "@/hooks/useContactInformations"; // ← النسخة الجديدة الصحيحة
+import { useContactInfo } from "@/hooks/useContactInformations";
 
 import { EditContactInformationModal } from "./EditContactInformationModal";
 
@@ -86,9 +86,6 @@ export default function ContactInformationComponent() {
   const { messages, locale } = useLocale();
   const { isOpen, openModal, closeModal } = useModal();
 
-  //
-  // استخدام الــ hook الجديدة
-  //
   const {
     data: contactInformation,
     isLoading: loading,
@@ -145,7 +142,7 @@ export default function ContactInformationComponent() {
     {
       key: "address",
       label: messages["address"],
-      value: contactInformation.translated?.address, // ← عرض الترجمة فقط
+      value: contactInformation.translated?.address,
     },
     {
       key: "latitude",

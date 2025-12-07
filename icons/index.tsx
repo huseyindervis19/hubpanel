@@ -83,6 +83,8 @@ import LoadingIconPath from "./loading.svg";
 import phoneIconPath from "./phone.svg";
 import AddressIconPath from "./address.svg";
 import WhatsappIconPath from "./whatsapp.svg";
+import logoutIconPath from "./logout.svg";
+import supportIconPath from "./support.svg";
 
 export const PlusIcon = createIconComponent(PlusIconPath, "Plus");
 export const CloseIcon = createIconComponent(CloseIconPath, "Close");
@@ -145,3 +147,5 @@ export const LoadingIcon = createIconComponent(LoadingIconPath, "Loading");
 export const PhoneIcon = createIconComponent(phoneIconPath, "Phone");
 export const AddressIcon = createIconComponent(AddressIconPath, "Address");
 export const WhatsappIcon = createIconComponent(WhatsappIconPath, "Whatsapp");
+export const LogoutIcon = createIconComponent(logoutIconPath, "logout");
+export const SupportIcon = createIconComponent(supportIconPath, "support");
