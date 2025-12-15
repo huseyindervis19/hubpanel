@@ -44,8 +44,6 @@ export const useUpdateCategory = () => {
   });
 };
 
-
-
 export const useDeleteCategory = (): UseMutationResult<void, Error, number> => {
   const queryClient = useQueryClient();
   return useMutation({

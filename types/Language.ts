@@ -1,4 +1,4 @@
-export interface LanguageLinks {
+export interface Links {
   self: string;
   edit: string;
   delete: string;
@@ -11,5 +11,5 @@ export interface Language {
   isDefault?: boolean;   
   createdAt?: string;
   updatedAt?: string;
-  _links?: LanguageLinks; 
+  _links?: Links; 
 }

@@ -1,64 +1,37 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
-import {
-  fetchAboutUs,
-  createAboutUs,
-  updateAboutUs,
-  deleteAboutUs,
-} from "@/services/aboutUsService";
-import { AboutUs, CreateAboutUsData, UpdateAboutUsData } from "@/types/AboutUs";
+import { fetchAboutUs, updateAboutUs } from "@/services/aboutUsService";
+import { AboutUs } from "@/types/AboutUs";
 import { ApiResponse } from "@/types/ApiResponse";
 
-// fetch about us by language
-export const useAboutUs = (language?: string) => {
-  const queryClient = useQueryClient();
-  const lang = language || "en";
-
-  const { data, isLoading, error, refetch } = useQuery<ApiResponse<AboutUs>>({
-    queryKey: ["about-us", lang],
-    queryFn: () => fetchAboutUs(lang),
-    enabled: !!lang,
+// ----------------------------
+// Hook: fetch About Us
+// ----------------------------
+export const useAboutUs = (language: string) => {
+  return useQuery<ApiResponse<AboutUs>, Error>({
+    queryKey: ["about-us", language],
+    queryFn: () => fetchAboutUs(language),
   });
-
-  const create = useMutation<AboutUs, Error, CreateAboutUsData>({
-    mutationFn: (data) => createAboutUs(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["about-us"] });
-    },
-  });
-
-  const update = useMutation<
-    AboutUs,
-    Error,
-    { id: number; data: UpdateAboutUsData; lang: string }
-  >({
-    mutationFn: ({ id, data, lang }) => updateAboutUs(id, data, lang),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["about-us"] });
-    },
-  });
-
-  const remove = useMutation<void, Error, number>({
-    mutationFn: (id) => deleteAboutUs(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["about-us"] });
-    },
-  });
-
-  return {
-    aboutUs: data?.data,
-    loading: isLoading,
-    error: error as Error | null,
-    refetch,
-    create: create.mutate,
-    update: async (id: number, data: UpdateAboutUsData, lang: string = "en") => {
-      return update.mutateAsync({ id, data, lang });
-    },
-    remove: remove.mutate,
-    creating: create.isPending,
-    updating: update.isPending,
-    deleting: remove.isPending,
-  };
 };
 
+// ----------------------------
+// Hook: update About Us
+// ----------------------------
+
+export const useUpdateAboutUs = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data, lang }: {
+      id: number;
+      data: FormData | Partial<AboutUs>;
+      lang: string;
+    }) => updateAboutUs(id, data, lang),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["about-us"] });
+      queryClient.invalidateQueries({ queryKey: ["about-us", variables.id] });
+    },
+  });
+};

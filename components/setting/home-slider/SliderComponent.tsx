@@ -19,8 +19,8 @@ const SliderComponent: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { messages, locale } = useLocale();
-  const { homeSlider, loading, error, refetch } = useHomeSlider(locale);
-
+  const { data: homeSlider, isLoading, error, refetch } = useHomeSlider(locale);
+  const slider = homeSlider?.data || [];
   return (
     <>
       <div className="mb-5 flex items-center justify-between lg:mb-7">
@@ -30,11 +30,11 @@ const SliderComponent: React.FC = () => {
         </Button>
       </div>
 
-      {loading && <div className="p-6">{messages["loading"] || "Loading..."}</div>}
+      {isLoading && <div className="p-6">{messages["loading"] || "Loading..."}</div>}
       {error && <div className="p-6 text-red-600">{messages["error"] || "Failed to load sliders"}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {homeSlider.map((s) => (
+        {slider.map((s) => (
           <HomeSliderCard
             key={s.id}
             slider={s}

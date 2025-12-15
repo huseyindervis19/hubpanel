@@ -1,63 +1,54 @@
 "use client";
 
-import {
-  fetchSocialLinks,
-  createSocialLink,
-  updateSocialLink,
-  deleteSocialLink,
-} from "@/services/socialLinkService";
-import {
-  SocialLink,
-  CreateSocialLinkData,
-  UpdateSocialLinkData,
-} from "@/types/SocialLink";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation, UseMutationResult } from "@tanstack/react-query";
+import { getSocialLinks, getSocialLinkById, createSocialLink, updateSocialLink, deleteSocialLink } from "@/services/socialLinkService";
+import { SocialLink } from "@/types/SocialLink";
+import { ApiResponse } from "@/types/ApiResponse";
 
-export const useSocialLink = () => {
-  const queryClient = useQueryClient();
-
-  const { data, isLoading, error, refetch } = useQuery({
+export const useSocialLinks = () => {
+  return useQuery<ApiResponse<SocialLink[]>, Error>({
     queryKey: ["social-links"],
-    queryFn: fetchSocialLinks,
+    queryFn: getSocialLinks,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
-
-  const createMutation = useMutation<SocialLink, Error, CreateSocialLinkData>({
-    mutationFn: createSocialLink,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["social-links"] });
-    },
-  });
-
-  const updateMutation = useMutation<
-    SocialLink,
-    Error,
-    { id: number; data: UpdateSocialLinkData }
-  >({
-    mutationFn: ({ id, data }) => updateSocialLink(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["social-links"] });
-    },
-  });
-
-  const deleteMutation = useMutation<void, Error, number>({
-    mutationFn: deleteSocialLink,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["social-links"] });
-    },
-  });
-
-  return {
-    socialLinks: data || [],
-    loading: isLoading,
-    error: error as Error | null,
-    refetch,
-    create: (payload: CreateSocialLinkData) => createMutation.mutateAsync(payload),
-    update: (id: number, payload: UpdateSocialLinkData) =>
-      updateMutation.mutateAsync({ id, data: payload }),
-    remove: (id: number) => deleteMutation.mutateAsync(id),
-    creating: createMutation.isPending,
-    updating: updateMutation.isPending,
-    deleting: deleteMutation.isPending,
-  };
 };
 
+export function useSocialLink(id: number) {
+  return useQuery<ApiResponse<SocialLink>, Error>({
+    queryKey: ["social-links", id],
+    queryFn: () => getSocialLinkById(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
+
+export function useCreateSocialLink(): UseMutationResult<ApiResponse<SocialLink>, Error, Partial<SocialLink>> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<SocialLink>) => createSocialLink(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["social-links"] }),
+  });
+}
+
+export function useUpdateSocialLink(): UseMutationResult<ApiResponse<SocialLink>, Error, { id: number; data: Partial<SocialLink> }> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }) => updateSocialLink(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["social-links"] });
+      queryClient.invalidateQueries({ queryKey: ["social-links", variables.id] });
+    },
+  });
+}
+
+export function useDeleteSocialLink(): UseMutationResult<void, Error, number> {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => deleteSocialLink(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["social-links"] }),
+  });
+}

@@ -1,166 +1,176 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
+import TextArea from "@/components/form/input/TextArea";
+import FileInput from "@/components/form/input/FileInput";
+import Form from "@/components/form/Form";
 import { AboutUs } from "@/types/AboutUs";
 import { useLocale } from "@/context/LocaleContext";
-import { useAboutUs } from "@/hooks/useAboutUs";
-import Textarea from "@/components/form/input/TextArea";
+import TitleComponent from "@/components/ui/TitleComponent";
+import { useUpdateAboutUs } from "@/hooks/useAboutUs";
+import { LoadingIcon } from "@/icons";
 
 interface EditAboutUsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  handleSave: () => void;
+  onSuccess: () => void;
   data: AboutUs;
 }
 
 export const EditAboutUsModal = ({
   isOpen,
   onClose,
-  handleSave,
+  onSuccess,
   data,
 }: EditAboutUsModalProps) => {
   const { messages, locale } = useLocale();
-  const { update, updating, error } = useAboutUs();
+  const updateAboutUs = useUpdateAboutUs();
 
   const [form, setForm] = useState({
     story: "",
     mission: "",
     vision: "",
     values: "",
+    imageFile: null as File | null,
+    imagePreview: "" as string,
   });
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
-    if (data) {
-      const currentTranslation = data.translated || (data.translations?.[locale] || {}) as {
-        story?: string;
-        mission?: string;
-        vision?: string;
-        values?: string;
-      };
-
+    if (data && isOpen) {
       setForm({
-        story: currentTranslation.story ?? "",
-        mission: currentTranslation.mission ?? "",
-        vision: currentTranslation.vision ?? "",
-        values: currentTranslation.values ?? "",
+        story: data.translated?.story ?? "",
+        mission: data.translated?.mission ?? "",
+        vision: data.translated?.vision ?? "",
+        values: data.translated?.values ?? "",
+        imageFile: null,
+        imagePreview: data.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}` : "",
       });
+    } else if (!isOpen) {
+      setForm({
+        story: "",
+        mission: "",
+        vision: "",
+        values: "",
+        imageFile: null,
+        imagePreview: "",
+      });
+      setMessage(null);
     }
-  }, [data, locale]);
+  }, [data, isOpen]);
 
-  const handleChange = (field: keyof typeof form, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+  const handleTextAreaChange = (field: "story" | "mission" | "vision" | "values", value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+    setForm(prev => ({ ...prev, imageFile: selectedFile }));
+
+    if (selectedFile) {
+      const url = URL.createObjectURL(selectedFile);
+      setForm(prev => ({ ...prev, imagePreview: url }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!data?.id) return;
 
-    const payload = {
-      story: form.story,
-      mission: form.mission,
-      vision: form.vision,
-      values: form.values,
-    };
+    setLoading(true);
+    setMessage(null);
 
     try {
-      await update(data.id, payload, locale);
-      setSuccessMessage(messages["updated_successfully"] || "Updated successfully");
+      const formData = new FormData();
+      formData.append("story", form.story);
+      formData.append("mission", form.mission);
+      formData.append("vision", form.vision);
+      formData.append("values", form.values);
+      if (form.imageFile) formData.append("imageUrl", form.imageFile);
+
+      await updateAboutUs.mutateAsync({ id: data.id, data: formData, lang: locale });
+      setMessage({ text: messages["updated_successfully"] || "Updated successfully", type: "success" });
       setTimeout(() => {
-        setSuccessMessage(null);
         onClose();
-        handleSave();
-      }, 700);
+        onSuccess();
+      }, 1200);
+
     } catch (err) {
-      console.error("Error updating about us:", err);
+      setMessage({ text: messages["updated_error"] || "An error occurred", type: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
+  const LABEL = "text-md text-gray-800 dark:text-white/90";
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
-      <div className="relative max-h-[90vh]  max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-        <div className="px-2 pr-14">
-
-          <h4 className="text-center mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-            {messages["about_us"] || "About Us"}
-          </h4>
-
-          {successMessage && (
-            <div className="w-full mb-4 px-4 py-2 text-center text-green-700 bg-green-100 rounded-lg border border-green-300">
-              {successMessage}
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-0">
+      <div className="max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900">
+        <Form onSubmit={handleSubmit}>
+          <TitleComponent title={messages["about_us"] || "Edit About Us"} className="text-center mb-6" />
+          {message && (
+            <div className={`p-4 rounded-xl border mb-4 transition-opacity duration-300 ${message.type === "success"
+              ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
+              : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
+              }`}>
+              {message.text}
             </div>
           )}
-        </div>
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          <div className="custom-scrollbar max-h-[calc(100vh-250px)] overflow-y-auto px-4 pb-4">
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-1">
-                <Label className="text-lg font-medium text-gray-800">
-                  {messages["about_us_story"] || "Our Story"}
-                </Label>
-                <Textarea
-                  placeholder={messages["enter_your_message"] || "Enter your message"}
-                  className="w-full min-h-[70px] text-gray-800"
-                  value={form.story}
-                  onChange={(value) => handleChange("story", value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-lg font-medium text-gray-800">
-                  {messages["about_us_mission"] || "Our Mission"}
-                </Label>
-                <Textarea
-                  placeholder={messages["enter_your_message"] || "Enter your message"}
-                  className="w-full min-h-[70px] text-gray-800"
-                  value={form.mission}
-                  onChange={(value) => handleChange("mission", value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-lg font-medium text-gray-800">
-                  {messages["about_us_vision"] || "Our Vision"}
-                </Label>
-                <Textarea
-                  placeholder={messages["enter_your_message"] || "Enter your message"}
-                  className="w-full min-h-[70px] text-gray-800"
-                  value={form.vision}
-                  onChange={(value) => handleChange("vision", value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-lg font-medium text-gray-800">
-                  {messages["about_us_values"] || "Our Values"}
-                </Label>
-                <Textarea
-                  placeholder={messages["enter_your_message"] || "Enter your message"}
-                  className="w-full min-h-[70px] text-gray-800"
-                  value={form.values}
-                  onChange={(value) => handleChange("values", value)}
-                />
-              </div>
-            </div>
+          <FileInput
+            accept="image/*"
+            onChange={handleFileChange}
+            placeholder={messages["choose_file"] || "Choose File"}
+          />
+          {form.imagePreview && (
+            <img
+              src={form.imagePreview}
+              alt="preview"
+              className="w-full max-h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-700 mt-2"
+            />
+          )}
+
+          <div className="space-y-1 mt-4">
+            <Label className={LABEL}>{messages["about_us_story"] || "Story"} :</Label>
+            <TextArea value={form.story} onChange={v => handleTextAreaChange("story", v)} rows={3} />
           </div>
 
-          {error && <p className="text-red-500 mt-2">{error.message || "An error occurred"}</p>}
+          <div className="space-y-1 mt-4">
+            <Label className={LABEL}>{messages["about_us_values"] || "Values"} :</Label>
+            <TextArea value={form.values} onChange={v => handleTextAreaChange("values", v)} rows={3} />
+          </div>
+          
+          <div className="space-y-1 mt-4">
+            <Label className={LABEL}>{messages["about_us_mission"] || "Mission"} :</Label>
+            <TextArea value={form.mission} onChange={v => handleTextAreaChange("mission", v)} rows={3} />
+          </div>
 
+          <div className="space-y-1 mt-4">
+            <Label className={LABEL}>{messages["about_us_vision"] || "Vision"} :</Label>
+            <TextArea value={form.vision} onChange={v => handleTextAreaChange("vision", v)} rows={3} />
+          </div>
 
-          <div className="flex items-center gap-3 px-2 lg:justify-end">
-            <Button size="sm" variant="outline" onClick={onClose}>
+          <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-900 p-4 flex justify-end border-t border-gray-200 dark:border-gray-700">
+            <Button variant="outline" onClick={onClose} disabled={loading}>
               {messages["cancel"] || "Cancel"}
             </Button>
-            <Button
-              size="sm"
-              type="submit"
-              disabled={updating}
-              className="bg-primary-500 hover:bg-primary-600 text-white"
-            >
-              {updating
-                ? messages["updating"] || "Updating..."
-                : messages["update"] || "Update"}
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <LoadingIcon className="animate-spin" />
+                  {messages["updating"] || "Updating..."}
+                </>
+              ) : (
+                messages["update"]
+              )}
             </Button>
           </div>
-        </form>
+        </Form>
       </div>
     </Modal>
   );

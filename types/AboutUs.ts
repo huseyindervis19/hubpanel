@@ -1,43 +1,21 @@
-export interface AboutUsLinks {
+export interface Links {
   self: string;
   edit: string;
   delete: string;
 }
 
-export interface AboutUsTranslated {
+export interface Translated {
   story: string;
   mission: string;
   vision: string;
   values: string;
-}
-
-export interface AboutUsTranslations {
-  [key: string]: AboutUsTranslated;
 }
 
 export interface AboutUs {
   id: number;
-  imageUrl: string;
+  imageUrl?: string;
   createdAt: string;
   updatedAt: string;
-  translated?: AboutUsTranslated;
-  translations?: AboutUsTranslations;
-  _links: AboutUsLinks;
+  translated?: Translated;
+  _links: Links;
 }
-
-export interface CreateAboutUsData {
-  imageUrl?: string;
-  story: string;
-  mission: string;
-  vision: string;
-  values: string;
-}
-
-export interface UpdateAboutUsData {
-  imageUrl?: string;
-  story?: string;
-  mission?: string;
-  vision?: string;
-  values?: string;
-}
-

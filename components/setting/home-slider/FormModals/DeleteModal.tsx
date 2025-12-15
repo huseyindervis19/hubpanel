@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useLocale } from "@/context/LocaleContext";
 import { HomeSlider } from "@/types/HomeSlider";
-import { useHomeSlider } from "@/hooks/useHomeSlider";
+import { useDeleteHomeSlider } from "@/hooks/useHomeSlider";
 
 interface Props {
   isOpen: boolean;
@@ -14,25 +14,32 @@ interface Props {
 }
 
 const DeleteModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }) => {
-  const { messages, locale } = useLocale();
-  const { remove } = useHomeSlider(locale);
-  const [message, setMessage] = useState<string | null>(null);
+  const { messages } = useLocale();
+  const deleteHomeSlider = useDeleteHomeSlider();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
 
   useEffect(() => {
-    if (!isOpen) setMessage(null);
+    if (!isOpen) {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+    }
   }, [isOpen]);
 
   const handleDelete = async (): Promise<void> => {
     if (!slider?.id) return;
-    setMessage(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
     try {
-      await remove(slider.id);
+      await deleteHomeSlider.mutateAsync(slider.id);
       const successMsg = messages["delete_successfully"] || "Deleted successfully!";
-      setMessage(successMsg);
+      setSuccessMessage(successMsg);
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      setMessage(messages["deleted_error"] || "An error occurred while deleting.");
+      setErrorMessage(messages["deleted_error"] || "An error occurred while deleting.");
       throw err;
     }
   };
@@ -54,7 +61,8 @@ const DeleteModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }) =>
       onConfirm={handleDelete}
       title={messages["confirm_delete"] || "Confirm Deletion"}
       message={messageContent}
-      errorMessage={messages["deleted_error"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}
+      successMessage={successMessage || undefined}
     />
   );
 };

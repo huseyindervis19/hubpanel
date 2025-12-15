@@ -42,10 +42,6 @@ export const updateCategory = async (
   return response.data.data;
 };
 
-
-
-
-
 export const deleteCategory = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/categories/${id}`);
 };

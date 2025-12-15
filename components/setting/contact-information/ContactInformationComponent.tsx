@@ -12,7 +12,7 @@ import {
   WhatsappIcon,
   MailIcon,
   PhoneIcon,
-  
+
 } from "@/icons";
 
 //
@@ -82,7 +82,7 @@ const InfoField = ({
 //
 // Main Component
 //
-export default function ContactInformationComponent() {
+const ContactInformationComponent = () => {
   const { messages, locale } = useLocale();
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -98,9 +98,6 @@ export default function ContactInformationComponent() {
     refetch();
   };
 
-  //
-  // Loading State
-  //
   if (loading) {
     return (
       <p className="text-gray-500 dark:text-gray-400 animate-pulse">
@@ -109,9 +106,6 @@ export default function ContactInformationComponent() {
     );
   }
 
-  //
-  // Error or No Data
-  //
   if (error || !contactInformation) {
     return (
       <p className="text-red-500 text-sm">
@@ -120,9 +114,6 @@ export default function ContactInformationComponent() {
     );
   }
 
-  //
-  // Fields List
-  //
   const fields = [
     {
       key: "phone",
@@ -198,6 +189,55 @@ export default function ContactInformationComponent() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <h3 className="mb-5 text-xl font-semibold text-gray-800 dark:text-white/90 lg:mb-7">
+          {messages["find_us"] || "Find Us"} :
+        </h3>
+
+        <div
+          className="
+      rounded-2xl overflow-hidden 
+      border border-gray-200 dark:border-gray-800
+      bg-white dark:bg-white/[0.05]
+      shadow-lg hover:shadow-xl transition-all duration-300 
+      transform hover:-translate-y-1
+    "
+        >
+          {contactInformation ? (
+            <div className="relative h-[350px] md:h-[450px]">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+              <iframe
+                width="100%"
+                height="100%"
+                loading="lazy"
+                allowFullScreen
+                style={{ border: 0 }}
+                className="rounded-2xl"
+                src={`https://maps.google.com/maps?q=${contactInformation.latitude},${contactInformation.longitude}&z=15&output=embed`}
+              ></iframe>
+
+              <div
+                className="
+            absolute bottom-4 left-4 
+            px-4 py-2 rounded-xl 
+            bg-white/80 dark:bg-black/40
+            backdrop-blur-md
+            text-gray-700 dark:text-gray-200
+            text-sm font-medium 
+            shadow-md border border-gray-200 dark:border-gray-700
+          "
+              >
+                {messages["contact.location.subtitle"] || "Our Location"}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[350px] text-gray-400 dark:text-gray-500">
+              {messages["loading"] || "Loading map..."}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Modal */}
       <EditContactInformationModal
         isOpen={isOpen}
@@ -208,3 +248,5 @@ export default function ContactInformationComponent() {
     </>
   );
 }
+
+export default ContactInformationComponent;

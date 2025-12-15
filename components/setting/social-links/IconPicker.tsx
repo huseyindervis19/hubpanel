@@ -1,75 +1,106 @@
 "use client";
 
 import { useState } from "react";
-import * as Icons from "lucide-react";
-import { useLocale } from "@/context/LocaleContext";
+import {
+  SiSnapchat,
+  SiTiktok,
+  SiFacebook,
+  SiLinkedin,
+  SiInstagram,
+  SiX
+} from "react-icons/si";
+import * as SiIcons from "react-icons/si";
 
-export type IconName = keyof typeof Icons;
+/* -------------------------------------------------------------------------- */
+/*                                Icon Config                                 */
+/* -------------------------------------------------------------------------- */
+
+const SOCIAL_ICONS = {
+  Snapchat: SiSnapchat,
+  Tiktok: SiTiktok,
+  Facebook: SiFacebook,
+  Linkedin: SiLinkedin,
+  Instagram: SiInstagram,
+  X: SiX
+} as const;
+
+export type IconName = keyof typeof SOCIAL_ICONS;
 
 const AVAILABLE_ICONS: IconName[] = [
-    "Facebook",
-    "Instagram",
-    "Twitter",
-    "Linkedin",
-    "Youtube",
-    "Mail",
-    "Phone",
-    "Globe",
-    "User",
-    "Users",
-    "Star",
-    "Heart",
-    "Check",
-    "X"
+  "Snapchat",
+  "Tiktok",
+  "Facebook",
+  "Linkedin",
+  "Instagram",
+  "X"
 ];
 
+/* -------------------------------------------------------------------------- */
+/*                                   Props                                    */
+/* -------------------------------------------------------------------------- */
+
 interface IconPickerProps {
-    value: IconName | "";
-    onChange: (iconName: IconName) => void;
+  value: IconName | "";
+  onChange: (iconName: IconName) => void;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                Component                                   */
+/* -------------------------------------------------------------------------- */
+
 export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange }) => {
-      const { messages } = useLocale();
-    const [open, setOpen] = useState(false);
-    const SelectedIcon = value ? (Icons as any)[value] : null;
+  const [open, setOpen] = useState(false);
+console.log("all icons",Object.keys(SiIcons));
 
-    return (
-        <div className="relative">
-            <button
-                type="button"
-                className="flex items-center gap-2 w-full rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-700 dark:bg-gray-800"
-                onClick={() => setOpen(prev => !prev)}
-            >
-                {SelectedIcon && <SelectedIcon size={24} className="text-gray-700 dark:text-gray-300" />}
-                <span>{value || "Select Icon"}</span>
-            </button>
+  const SelectedIcon = value ? SOCIAL_ICONS[value] : null;
 
-            {open && (
-                <div className="absolute top-full left-0 z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
-                    <div className="grid grid-cols-5 gap-1 p-1">
-                        {AVAILABLE_ICONS.map(iconName => {
-                            const IconComponent = (Icons as any)[iconName];
-                            if (!IconComponent) return null;
-                            return (
-                                <button
-                                    key={iconName}
-                                    type="button"
-                                    className={`flex h-10 w-10 items-center justify-center rounded-lg border ${value === iconName
-                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/50"
-                                        : "border-gray-200 dark:border-gray-700"
-                                        } hover:bg-gray-100 dark:hover:bg-white/5`}
-                                    onClick={() => {
-                                        onChange(iconName as IconName);
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <IconComponent size={24} className="text-gray-700 dark:text-gray-300" />
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
+  return (
+    <div className="relative">
+      {/* Trigger */}
+      <button
+        type="button"
+        className="flex w-full items-center gap-2 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-700 dark:bg-gray-800"
+        onClick={() => setOpen(prev => !prev)}
+      >
+        {SelectedIcon && (
+          <SelectedIcon size={22} className="text-gray-700 dark:text-gray-300" />
+        )}
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
+          {value || "Select Social Icon"}
+        </span>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
+          <div className="grid grid-cols-6 gap-1 p-1">
+            {AVAILABLE_ICONS.map(iconName => {
+              const IconComponent = SOCIAL_ICONS[iconName];
+
+              return (
+                <button
+                  key={iconName}
+                  type="button"
+                  className={`flex h-9 w-9 items-center justify-center rounded-md border
+                    ${
+                      value === iconName
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/40"
+                        : "border-gray-200 dark:border-gray-700"
+                    }
+                    hover:bg-gray-100 dark:hover:bg-white/5`}
+                  onClick={() => {
+                    onChange(iconName);
+                    setOpen(false);
+                  }}
+                  title={iconName}
+                >
+                  <IconComponent size={20} />
+                </button>
+              );
+            })}
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
