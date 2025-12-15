@@ -1,3 +1,9 @@
+export interface Links {
+  self: string;
+  edit: string;
+  delete: string;
+}
+
 export interface SocialLink {
   id: number;
   platform: string;
@@ -6,19 +12,6 @@ export interface SocialLink {
   order: number;
   createdAt?: string;
   updatedAt?: string;
-}
-
-export interface CreateSocialLinkData {
-  platform: string;
-  icon: string;
-  url: string;
-  order: number;
-}
-
-export interface UpdateSocialLinkData {
-  platform?: string;
-  icon?: string;
-  url?: string;
-  order?: number;
+  _links?: Links; 
 }
 

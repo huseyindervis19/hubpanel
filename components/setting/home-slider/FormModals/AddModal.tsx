@@ -9,7 +9,7 @@ import FileInput from "@/components/form/input/FileInput";
 import Form from "@/components/form/Form";
 import { LoadingIcon } from "@/icons";
 import { useLocale } from "@/context/LocaleContext";
-import { useHomeSlider } from "@/hooks/useHomeSlider";
+import { useCreateHomeSlider } from "@/hooks/useHomeSlider";
 
 interface Props {
   isOpen: boolean;
@@ -25,8 +25,8 @@ interface FormState {
 }
 
 const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const { messages, locale } = useLocale();
-  const { create, creating } = useHomeSlider(locale);
+  const { messages } = useLocale();
+  const CreateHomeSlider = useCreateHomeSlider();
 
   const [form, setForm] = useState<FormState>({
     title: "",
@@ -81,8 +81,7 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       formData.append("ctaLink", form.ctaLink.trim());
       formData.append("imageUrl", file);
 
-      await create(formData);
-
+      await CreateHomeSlider.mutateAsync(formData);
       setMessage(messages["created_successfully"] || "Created Successfully!");
       setSuccess(true);
 
@@ -90,7 +89,7 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         onSuccess();
         onClose();
         setSuccess(false);
-      }, 1000);
+      }, 700);
     } catch (err) {
       console.error(err);
       setMessage(messages["created_error"] || "An error occurred while creating.");
@@ -107,20 +106,33 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
       {message && (
         <div
-          className={`p-4 rounded-xl border transition-opacity duration-300 ${
-            message.includes("successfully") || message.includes("Successfully")
-              ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
-              : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
-          }`}
+          className={`p-4 rounded-xl border transition-opacity duration-300 ${message.includes("successfully") || message.includes("Successfully")
+            ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
+            : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
+            }`}
         >
           {message}
         </div>
       )}
 
       <Form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+        <div className="space-y-1">
+          <Label htmlFor="file" className={LABEL_CLASS}>
+            {messages["slider_image"] || "Image"}  :
+          </Label>
+          <FileInput
+            id="file"
+            onChange={handleFileChange}
+            className="w-full"
+            accept="image/*"
+            placeholder={messages["choose_file"] || "Choose File"}
+            fileName={fileName}
+          />
+        </div>
+
         <div>
           <Label htmlFor="title" className={LABEL_CLASS}>
-            {messages["slider_title"] || "Title"} <span className="text-error-500">*</span>
+            {messages["slider_title"] || "Title"} :
           </Label>
           <InputField
             id="title"
@@ -134,7 +146,7 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
         <div>
           <Label htmlFor="subTitle" className={LABEL_CLASS}>
-            {messages["slider_subtitle"] || "Sub Title"}
+            {messages["slider_subtitle"] || "Sub Title"} :
           </Label>
           <InputField
             id="subTitle"
@@ -146,21 +158,8 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         <div>
-          <Label htmlFor="ctaText" className={LABEL_CLASS}>
-            {messages["slider_cta_text"] || "CTA Text"}
-          </Label>
-          <InputField
-            id="ctaText"
-            name="ctaText"
-            value={form.ctaText}
-            onChange={handleChange}
-            placeholder={messages["slider_cta_text_placeholder"] || "Enter CTA text"}
-          />
-        </div>
-
-        <div>
           <Label htmlFor="ctaLink" className={LABEL_CLASS}>
-            {messages["slider_cta_link"] || "CTA Link"}
+            {messages["slider_cta_link"] || "CTA Link"} :
           </Label>
           <InputField
             id="ctaLink"
@@ -171,17 +170,16 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           />
         </div>
 
-        <div className="space-y-1">
-          <Label htmlFor="file" className={LABEL_CLASS}>
-            {messages["slider_image"] || "Image"} <span className="text-error-500">*</span>
+        <div>
+          <Label htmlFor="ctaText" className={LABEL_CLASS}>
+            {messages["slider_cta_text"] || "CTA Text"} :
           </Label>
-          <FileInput
-            id="file"
-            onChange={handleFileChange}
-            className="w-full"
-            accept="image/*"
-            placeholder={messages["choose_file"] || "Choose File"}
-            fileName={fileName}
+          <InputField
+            id="ctaText"
+            name="ctaText"
+            value={form.ctaText}
+            onChange={handleChange}
+            placeholder={messages["slider_cta_text_placeholder"] || "Enter CTA text"}
           />
         </div>
 
@@ -189,8 +187,8 @@ const AddModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           <Button type="button" variant="outline" size="sm" onClick={onClose}>
             {messages["cancel"] || "Cancel"}
           </Button>
-          <Button type="submit" variant="primary" size="sm" disabled={creating || success} className="text-white">
-            {creating ? (
+          <Button type="submit" variant="primary" size="sm" disabled={CreateHomeSlider.isPending || success} className="text-white">
+            {CreateHomeSlider.isPending ? (
               <>
                 <LoadingIcon width={16} height={16} className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0" />
                 {messages["creating"] || "Creating..."}

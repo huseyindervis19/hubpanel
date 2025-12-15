@@ -13,6 +13,7 @@
       "cancel": "Cancel",
       "error": "Error",
       "actions": "Actions",
+      "image": "Image",
       "no_image": "No Image Available",
       "active": "Active",
       "inactive": "Inactive",
@@ -197,6 +198,7 @@
       "latitude": "Latitude",
       "longitude": "Longitude",
       "contact_information": "Contact Information",
+      "find_us": "Find Us",
       "edit_contact_info": "Edit Contact Information",
       "edit_contact_info_desc": "Update the displayed contact information.",
       "phone_placeholder": "Enter phone number",
@@ -214,7 +216,11 @@
       "icon_name": "Icon Name",
       "icon_placeholder": "Facebook",
       "url": "URL",
-      "display_order": "Display Order"
+      "display_order": "Display Order",
+      "categories_total": "Total Categories",
+      "contact_requestes_total": "Total Contact Requests",
+      "products_total": "Total Products",
+      "users_total": "Total Users"
     },
     "ar": {
       "_Standards": "المعايير",
@@ -229,6 +235,7 @@
       "cancel": "إلغاء",
       "error": "خطأ",
       "actions": "الإجراءات",
+      "image": "الصورة",
       "no_image": "لا توجد صورة",
       "active": "نشط",
       "inactive": "غير نشط",
@@ -413,6 +420,7 @@
       "latitude": "خط العرض",
       "longitude": "خط الطول",
       "contact_information": "معلومات التواصل",
+      "find_us": "أوجدنا",
       "edit_contact_info": "تعديل معلومات التواصل",
       "edit_contact_info_desc": "تحديث معلومات التواصل المعروضة.",
       "phone_placeholder": "أدخل رقم الهاتف",
@@ -430,7 +438,11 @@
       "icon_name": "اسم الأيقونة",
       "icon_placeholder": "فيسبوك",
       "url": "الرابط",
-      "display_order": "ترتيب العرض"
+      "display_order": "ترتيب العرض",
+      "categories_total": "إجمالي التصنيفات",
+      "contact_requestes_total": "إجمالي طلبات التواصل",
+      "products_total": "إجمالي المنتجات",
+      "users_total": "إجمالي المستخدمين"
     }
   }
 }

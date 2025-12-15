@@ -26,7 +26,7 @@ const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, cate
     }
   }, [isOpen]);
 
-  const handleDeleteCategory = async (): Promise<void> => {
+  const handleDelete = async (): Promise<void> => {
     if (!category?.id) return;
 
     setErrorMessage(null);
@@ -57,7 +57,7 @@ const DeleteCategoryModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, cate
     <DeleteConfirmModal
       isOpen={isOpen}
       onClose={onClose}
-      onConfirm={handleDeleteCategory}
+      onConfirm={handleDelete}
       title={messages["confirm_delete"] || "Confirm Deletion"}
       message={messageContent}
       errorMessage={errorMessage || messages["delete_error"] || "An error occurred while deleting."}

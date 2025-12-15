@@ -1,12 +1,12 @@
-export interface CategoryTranslated {
-  name: string;
-  description: string;
-}
-
-export interface CategoryLinks {
+export interface Links {
   self: string;
   edit: string;
   delete: string;
+}
+
+export interface Translated {
+  name: string;
+  description: string;
 }
 
 export interface Category {
@@ -17,5 +17,6 @@ export interface Category {
   priority: number;
   createdAt: string;
   updatedAt: string;
-  translated?: CategoryTranslated;
+  translated?: Translated;
+  _links: Links;
 }

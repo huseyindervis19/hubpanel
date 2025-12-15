@@ -2,7 +2,7 @@ import { Language } from "./Language";
 import { Permission } from "./Permission";
 import { UserRole } from "./UserRole";
 
-export interface UserLinks {
+export interface Links {
   self: string;
   edit: string;
   delete: string;
@@ -18,7 +18,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   userRoles: UserRole[];
-  _links: UserLinks;
+  _links: Links;
 }
 
 /**

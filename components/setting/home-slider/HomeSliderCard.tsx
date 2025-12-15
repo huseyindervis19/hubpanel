@@ -43,16 +43,29 @@ const HomeSliderCard: React.FC<Props> = ({ slider, openDropdownId, onDropdownTog
         </div>
 
         <div className="p-4 flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1 truncate">{slider.translated?.title}</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-300 mb-1 truncate">{slider.translated?.subTitle}</p>
+          <div className="flex-1 min-w-0 space-y-2">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate">
+              {messages["slider_title"] || "Title"}: {slider.translated?.title}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-300 truncate">
+              {messages["slider_subtitle"] || "Sub Title"}: {slider.translated?.subTitle}
+            </p>
+
             {slider.translated?.ctaText && slider.ctaLink && (
-              <Link href={slider.ctaLink} className="inline-block px-3 py-2 bg-blue-600 text-white rounded text-sm">
-                {slider.translated.ctaText}
-              </Link>
+              <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  {messages["slider_cta_link"] || "CTA Link"}:
+                </p>
+
+                <Link
+                  href={slider.ctaLink}
+                  className="inline-block mt-1 sm:mt-0 px-4 py-2 bg-blue-600 text-white dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md truncate"
+                >
+                  {slider.translated.ctaText}
+                </Link>
+              </div>
             )}
           </div>
-
           <div className="relative flex-shrink-0">
             <button
               className="dropdown-toggle text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"

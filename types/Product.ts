@@ -8,7 +8,7 @@ export interface ProductTranslated {
   description: string;
 }
 
-export interface ProductLinks {
+export interface Links {
   self: string;
   edit: string;
   delete: string;
@@ -26,7 +26,7 @@ export interface Product {
   Images: ProductImage[];
   translated: ProductTranslated;
   mainImage?: string;
-  _links: ProductLinks;
+  _links: Links;
 }
 
 export interface ProductData {

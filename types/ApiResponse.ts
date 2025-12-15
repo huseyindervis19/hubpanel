@@ -4,7 +4,7 @@ export type ApiResponse<T> = {
     total: number;
     count: number;
   };
-  links: any;
+  links: { next?: string; prev?: string; self: string };
   message: string;
   statusCode: number;
 };
