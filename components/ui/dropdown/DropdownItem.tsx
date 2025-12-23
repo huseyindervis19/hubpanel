@@ -17,19 +17,31 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   href,
   onClick,
   onItemClick,
-  baseClassName = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+  baseClassName = `
+    block w-full px-4 py-2 text-sm
+    text-gray-700 dark:text-gray-400
+    hover:bg-gray-100 dark:hover:bg-gray-700
+    hover:text-gray-900 dark:hover:text-gray-200
+    transition
+  `,
   className = "",
   children,
 }) => {
   const { locale } = useLocale();
   const isRtl = locale === "ar";
-  const combinedClasses = `${baseClassName} ${className} ${isRtl ? "text-right" : "text-left"}`.trim();
+
+  const combinedClasses = `
+    ${baseClassName}
+    ${className}
+    ${isRtl ? "text-right" : "text-left"}
+  `.trim();
+
   const handleClick = (event: React.MouseEvent) => {
     if (tag === "button") {
       event.preventDefault();
     }
-    if (onClick) onClick();
-    if (onItemClick) onItemClick();
+    onClick?.();
+    onItemClick?.();
   };
 
   if (tag === "a" && href) {

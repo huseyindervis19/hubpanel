@@ -7,6 +7,8 @@ import { EyeIcon } from "@/icons";
 import { useState } from "react";
 import ShowModal from "./ShowModal";
 import Select from "@/components/form/Select";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 export const ContactRequestsComponent = () => {
     const { requests, refetch, update } = useContactRequests();
@@ -14,6 +16,8 @@ export const ContactRequestsComponent = () => {
     const [showModalOpen, setShowModalOpen] = useState(false);
     const [contactToShow, setContactToShow] = useState<ContactRequest | null>(null);
 
+    const canUpdateRequestStatus = useHasPermission(PERMISSIONS.EDIT_CONTACT_REQUEST);
+    
     const getRequestId = (request: Partial<ContactRequest>): string => `${request.id || ""}`;
 
     const handleStatusChange = async (id: string, newStatus: RequestStatus) => {
@@ -100,6 +104,7 @@ export const ContactRequestsComponent = () => {
                                                     value={request.status}
                                                     options={statusOptions}
                                                     placeholder={messages["contact_status"] || "Status"}
+                                                    disabled={!canUpdateRequestStatus}
                                                     onChange={(value) => handleStatusChange(getRequestId(request), value as RequestStatus)}
                                                 />
                                             </Td>

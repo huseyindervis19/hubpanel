@@ -1,22 +1,18 @@
-export interface Links {
-  self: string;
-  edit: string;
-  delete: string;
-}
+import { ApiLinks } from "./ApiResponse";
 
 export interface Translated {
   name: string;
-  description: string;
+  description?: string;
 }
 
 export interface Category {
   id: number;
   name: string;
-  description: string;
+  description?: string;
   imageUrl?: string | null;
   priority: number;
   createdAt: string;
   updatedAt: string;
   translated?: Translated;
-  _links: Links;
+  _links?: ApiLinks;
 }

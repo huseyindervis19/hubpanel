@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
 import TextArea from "@/components/form/input/TextArea";
 import Select from "@/components/form/Select";
@@ -13,8 +12,9 @@ import { LoadingIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 import { useCreateProduct } from "@/hooks/useProduct";
-import { useAllCategories } from "@/hooks/useCategory";
-import { ProductData } from "@/types/Product";
+import { useCategories } from "@/hooks/useCategory";
+import { CreateProductPayload } from "@/types/ProductPayload";
+import Message from "@/components/ui/Message";
 
 interface AddProductProps {
   preselectedCategoryId?: number;
@@ -24,22 +24,21 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
   const router = useRouter();
   const { messages, locale } = useLocale();
 
-  const [form, setForm] = useState<ProductData>({
+  const [form, setForm] = useState<CreateProductPayload & { isActive: boolean; isFeatured: boolean }>({
     name: "",
     slug: "",
     description: "",
     stockQuantity: 0,
+    priority: 0,
     isActive: true,
     isFeatured: false,
-    categoryId: preselectedCategoryId || 0,
-    priority: 0,
+    categoryId: preselectedCategoryId || undefined,
   });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  const { data: categoriesResponse, isLoading: categoriesLoading } = useAllCategories(locale);
-  const categories = categoriesResponse?.data || [];
+  const { data: categoriesResponse, isLoading: categoriesLoading } = useCategories(locale);
+  const categories = categoriesResponse || [];
   const createProduct = useCreateProduct();
 
   const categoryOptions = categories.map(cat => ({
@@ -47,23 +46,13 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
     label: cat.translated?.name || cat.name || "",
   }));
 
-  // Update preselected category if it changes
   useEffect(() => {
     if (preselectedCategoryId) {
       setForm(prev => ({ ...prev, categoryId: preselectedCategoryId }));
     }
   }, [preselectedCategoryId]);
 
-  // Clear success message after 4 seconds
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage]);
-
-  // Handle field changes
-  const handleChange = (value: string | boolean, field: keyof ProductData) => {
+  const handleChange = (value: string | boolean, field: keyof typeof form) => {
     setForm(prev => ({
       ...prev,
       [field]:
@@ -77,54 +66,44 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    setMessage(null);
 
-    if (!form.name.trim()) {
-      setErrorMessage(messages["name_required"] || "Name is required");
+    if (!form.name?.trim()) {
+      setMessage({ text: messages["name_required"] || "Name is required", type: "error" });
       return;
     }
     if (!form.categoryId) {
-      setErrorMessage(messages["category_name_required"] || "Category is required");
+      setMessage({ text: messages["category_name_required"] || "Category is required", type: "error" });
       return;
     }
     if ((form.stockQuantity ?? 0) < 0) {
-      setErrorMessage(messages["stock_quantity_required"] || "Stock must be 0 or greater");
+      setMessage({ text: messages["stock_quantity_required"] || "Stock must be 0 or greater", type: "error" });
       return;
     }
     if ((form.priority ?? 0) < 0) {
-      setErrorMessage(messages["priority_required"] || "Priority must be 0 or greater");
+      setMessage({ text: messages["priority_required"] || "Priority must be 0 or greater", type: "error" });
       return;
     }
 
     try {
-      await createProduct.mutateAsync({
-        name: form.name.trim(),
-        slug: form.slug?.trim() || undefined,
-        description: form.description?.trim() || undefined,
-        stockQuantity: form.stockQuantity,
-        isActive: form.isActive,
-        isFeatured: form.isFeatured,
-        categoryId: Number(form.categoryId),
-        priority: form.priority,
-      });
+      await createProduct.mutateAsync(form);
 
-      setSuccessMessage(messages["created_successfully"] || "Product created successfully!");
+      setMessage({ text: messages["created_successfully"] || "Product created successfully!", type: "success" });
       setForm({
         name: "",
         slug: "",
         description: "",
         stockQuantity: 0,
+        priority: 0,
         isActive: true,
         isFeatured: false,
-        categoryId: preselectedCategoryId || 0,
-        priority: 0,
+        categoryId: preselectedCategoryId || undefined,
       });
 
       setTimeout(() => router.push("/products/list-products"), 1500);
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err?.response?.data?.message || messages["created_error"] || "Error creating product");
+      setMessage({ text: err?.response?.data?.message || messages["created_error"] || "Error creating product", type: "error" });
     }
   };
 
@@ -133,22 +112,14 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
       <TitleComponent title={messages["add_new_product"] || "Add New Product"} className="mb-6 lg:mb-8" />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
-        {successMessage && (
-          <div className="p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20">
-            {successMessage}
-          </div>
-        )}
-        {errorMessage && (
-          <div className="p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20">
-            {errorMessage}
-          </div>
-        )}
+        {/* استخدمنا Message component الموحد */}
+        <Message message={message} />
 
         <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Category */}
           <Select
             label={messages["product_category_name"] || "Category Name"}
-            value={form.categoryId.toString()}
+            value={form.categoryId?.toString() || ""}
             onChange={(value) => handleChange(value, "categoryId")}
             options={categoryOptions}
             placeholder={categoriesLoading ? messages["loading"] || "Loading..." : messages["product_category_name_placeholder"] || "Select Category"}
@@ -189,7 +160,7 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
           <InputField
             type="number"
             label={messages["product_stock_quantity"] || "Stock Quantity"}
-            value={form.stockQuantity?.toString()}
+            value={form.stockQuantity?.toString() || "0"}
             onChange={(e) => handleChange(e.target.value, "stockQuantity")}
             min={0}
             required
@@ -200,7 +171,7 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
           <InputField
             type="number"
             label={messages["product_priority"] || "Priority"}
-            value={form.priority?.toString()}
+            value={form.priority?.toString() || "0"}
             onChange={(e) => handleChange(e.target.value, "priority")}
             min={0}
             required
@@ -227,7 +198,7 @@ const AddProductComponent: React.FC<AddProductProps> = ({ preselectedCategoryId 
             <Button
               type="submit"
               size="sm"
-              disabled={createProduct.isPending || !!successMessage}
+              disabled={createProduct.isPending}
               className="text-white"
             >
               {createProduct.isPending ? (

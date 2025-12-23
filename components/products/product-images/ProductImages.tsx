@@ -8,35 +8,48 @@ import Button from "@/components/ui/button/Button";
 import AddImageModal from "./AddImageModal";
 import EditImageModal from "./EditImageModal";
 import DeleteImageModal from "./DeleteImageModal";
-import { useProductImagesByProductId } from "@/hooks/useProductImages";
-import { useProductById } from "@/hooks/useProduct";
+import { useProductImages } from "@/hooks/useProductImages";
+import { useProduct } from "@/hooks/useProduct";
 
 interface Props {
   productId: number;
   productName: string;
 }
 
-const ProductImages: React.FC<Props> = ({ productId, productName: initialProductName }) => {
+const ProductImages: React.FC<Props> = ({
+  productId,
+  productName: initialProductName,
+}) => {
   const { messages, locale } = useLocale();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  // Hook: Fetch Product to get translated name
-  const { data: productResponse } = useProductById(productId, locale);
-  const product = productResponse?.data;
+  /* =======================
+     Product (for name)
+  ======================= */
+  const { data: product } = useProduct(productId, locale);
   const productName = product?.translated?.name || initialProductName;
 
-  // Hook: Fetch Images
-  const { data: imagesResponse, isLoading, error, refetch } = useProductImagesByProductId(productId);
-  const imagesProduct = imagesResponse?.data || [];
+  /* =======================
+     Images
+  ======================= */
+  const {
+    data: imagesProduct = [],
+    isLoading,
+    error,
+    refetch,
+  } = useProductImages(productId);
 
-
-  // Local UI States
+  /* =======================
+     Local UI State
+  ======================= */
   const [selectedImg, setSelectedImg] = useState<ProductImage | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // Handlers
+  /* =======================
+     Handlers
+  ======================= */
   const handleAdd = () => setAddModalOpen(true);
 
   const handleEdit = (img: ProductImage) => {
@@ -66,17 +79,24 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
     refetch();
   };
 
-  const handleSuccess = () => {
-    refetch();
-  };
-
-  // Loading / Error states
-  if (isLoading)
+  /* =======================
+     States
+  ======================= */
+  if (isLoading) {
     return <p>{messages["loading"] || "Loading..."}</p>;
+  }
 
-  if (error)
-    return <p className="text-red-600">{messages["error"] || "Error loading images"}</p>;
+  if (error) {
+    return (
+      <p className="text-red-600">
+        {messages["error"] || "Error loading images"}
+      </p>
+    );
+  }
 
+  /* =======================
+     Render
+  ======================= */
   return (
     <>
       {/* Header */}
@@ -85,7 +105,12 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
           {messages["product_images"] || "Product Images"}
           {productName && ` — ${productName}`}
         </h3>
-        <Button size="sm" onClick={handleAdd} className="bg-primary hover:bg-primary/90 text-white shadow-sm">
+
+        <Button
+          size="sm"
+          onClick={handleAdd}
+          className="bg-primary hover:bg-primary/90 text-white"
+        >
           {messages["create"] || "Create"}
         </Button>
       </div>
@@ -102,48 +127,44 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
           {imagesProduct.map((img) => (
             <div
               key={img.id}
-              className="group relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all duration-300"
+              className="group relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all"
             >
               {/* Image */}
               <div className="relative w-full h-44">
                 <img
                   src={`${baseUrl}${img.url}`}
-                  alt={img.alt_text || "Product Image"}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  alt="Product Image"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
 
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-300" />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
 
-                {/* Main Tag */}
+                {/* Main badge */}
                 {img.isMain && (
-                  <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-medium bg-green-500 text-white rounded-full shadow-sm">
+                  <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-medium bg-green-500 text-white rounded-full">
                     {messages["main_image"] || "Main"}
                   </span>
                 )}
               </div>
 
-              {/* Info + Actions */}
-              <div className="flex items-center justify-between p-3">
-                <p className="text-sm truncate text-gray-800 dark:text-gray-200 max-w-[65%]">
-                  {img.alt_text || ""}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEdit(img)}
-                    className="p-1.5 rounded-lg text-gray-800 dark:text-white"
-                    title={messages["edit"] || "Edit"}
-                  >
-                    <PencilIcon className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(img)}
-                    className="p-1.5 rounded-lg dark:text-red-400 transition-colors"
-                    title={messages["delete"] || "Delete"}
-                  >
-                    <TrashBinIcon className="w-6 h-6" />
-                  </button>
-                </div>
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 p-3">
+                <button
+                  onClick={() => handleEdit(img)}
+                  className="p-1.5 rounded-lg text-gray-800 dark:text-white"
+                  title={messages["edit"] || "Edit"}
+                >
+                  <PencilIcon className="w-6 h-6" />
+                </button>
+
+                <button
+                  onClick={() => handleDelete(img)}
+                  className="p-1.5 rounded-lg text-red-500"
+                  title={messages["delete"] || "Delete"}
+                >
+                  <TrashBinIcon className="w-6 h-6" />
+                </button>
               </div>
             </div>
           ))}
@@ -156,17 +177,17 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
           productId={productId}
           isOpen={addModalOpen}
           onClose={closeAddModal}
-          onSuccess={handleSuccess}
+          onSuccess={refetch}
         />
       )}
 
       {selectedImg && (
         <EditImageModal
           img={selectedImg}
-          isOpen={editModalOpen}
           images={imagesProduct}
+          isOpen={editModalOpen}
           onClose={closeEditModal}
-          onSuccess={handleSuccess}
+          onSuccess={refetch}
         />
       )}
 
@@ -175,11 +196,10 @@ const ProductImages: React.FC<Props> = ({ productId, productName: initialProduct
           img={selectedImg}
           isOpen={deleteModalOpen}
           onClose={closeDeleteModal}
-          onSuccess={handleSuccess}
+          onSuccess={refetch}
         />
       )}
     </>
-
   );
 };
 

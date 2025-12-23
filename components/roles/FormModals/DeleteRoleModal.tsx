@@ -45,10 +45,10 @@ const DeleteRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) 
   };
   const messageContent = messages["delete_warning_f"] ? (
     <>
-      {messages["delete_warning_f"]} <strong>{role?.name}</strong>{messages["delete_warning_s"]}
+      {messages["delete_warning_f"]} <strong>{role?.translated?.name}</strong>{messages["delete_warning_s"]}
     </>
   ) : (
-    `Are you sure you want to delete "${role?.name}"? This action cannot be undone.`
+    `Are you sure you want to delete "${role?.translated?.name}"? This action cannot be undone.`
   );
 
   return (

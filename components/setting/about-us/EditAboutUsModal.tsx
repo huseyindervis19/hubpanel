@@ -12,6 +12,7 @@ import { useLocale } from "@/context/LocaleContext";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useUpdateAboutUs } from "@/hooks/useAboutUs";
 import { LoadingIcon } from "@/icons";
+import Message from "@/components/ui/Message";
 
 interface EditAboutUsModalProps {
   isOpen: boolean;
@@ -49,7 +50,9 @@ export const EditAboutUsModal = ({
         vision: data.translated?.vision ?? "",
         values: data.translated?.values ?? "",
         imageFile: null,
-        imagePreview: data.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}` : "",
+        imagePreview: data.imageUrl
+          ? `${process.env.NEXT_PUBLIC_API_URL}${data.imageUrl}`
+          : "",
       });
     } else if (!isOpen) {
       setForm({
@@ -64,7 +67,10 @@ export const EditAboutUsModal = ({
     }
   }, [data, isOpen]);
 
-  const handleTextAreaChange = (field: "story" | "mission" | "vision" | "values", value: string) => {
+  const handleTextAreaChange = (
+    field: "story" | "mission" | "vision" | "values",
+    value: string
+  ) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
@@ -93,15 +99,26 @@ export const EditAboutUsModal = ({
       formData.append("values", form.values);
       if (form.imageFile) formData.append("imageUrl", form.imageFile);
 
-      await updateAboutUs.mutateAsync({ id: data.id, data: formData, lang: locale });
-      setMessage({ text: messages["updated_successfully"] || "Updated successfully", type: "success" });
+      await updateAboutUs.mutateAsync({
+        id: data.id,
+        data: formData,
+        lang: locale,
+      });
+
+      setMessage({
+        text: messages["updated_successfully"] || "Updated successfully",
+        type: "success",
+      });
+
       setTimeout(() => {
         onClose();
         onSuccess();
       }, 1200);
-
     } catch (err) {
-      setMessage({ text: messages["updated_error"] || "An error occurred", type: "error" });
+      setMessage({
+        text: messages["updated_error"] || "An error occurred",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -113,20 +130,19 @@ export const EditAboutUsModal = ({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-0">
       <div className="max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900">
         <Form onSubmit={handleSubmit}>
-          <TitleComponent title={messages["about_us"] || "Edit About Us"} className="text-center mb-6" />
-          {message && (
-            <div className={`p-4 rounded-xl border mb-4 transition-opacity duration-300 ${message.type === "success"
-              ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
-              : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
-              }`}>
-              {message.text}
-            </div>
-          )}
+          <TitleComponent
+            title={messages["about_us"] || "Edit About Us"}
+            className="text-center mb-6"
+          />
+
+          <Message message={message} />
+
           <FileInput
             accept="image/*"
             onChange={handleFileChange}
             placeholder={messages["choose_file"] || "Choose File"}
           />
+
           {form.imagePreview && (
             <img
               src={form.imagePreview}
@@ -136,23 +152,47 @@ export const EditAboutUsModal = ({
           )}
 
           <div className="space-y-1 mt-4">
-            <Label className={LABEL}>{messages["about_us_story"] || "Story"} :</Label>
-            <TextArea value={form.story} onChange={v => handleTextAreaChange("story", v)} rows={3} />
+            <Label className={LABEL}>
+              {messages["about_us_story"] || "Story"} :
+            </Label>
+            <TextArea
+              value={form.story}
+              onChange={v => handleTextAreaChange("story", v)}
+              rows={3}
+            />
           </div>
 
           <div className="space-y-1 mt-4">
-            <Label className={LABEL}>{messages["about_us_values"] || "Values"} :</Label>
-            <TextArea value={form.values} onChange={v => handleTextAreaChange("values", v)} rows={3} />
-          </div>
-          
-          <div className="space-y-1 mt-4">
-            <Label className={LABEL}>{messages["about_us_mission"] || "Mission"} :</Label>
-            <TextArea value={form.mission} onChange={v => handleTextAreaChange("mission", v)} rows={3} />
+            <Label className={LABEL}>
+              {messages["about_us_values"] || "Values"} :
+            </Label>
+            <TextArea
+              value={form.values}
+              onChange={v => handleTextAreaChange("values", v)}
+              rows={3}
+            />
           </div>
 
           <div className="space-y-1 mt-4">
-            <Label className={LABEL}>{messages["about_us_vision"] || "Vision"} :</Label>
-            <TextArea value={form.vision} onChange={v => handleTextAreaChange("vision", v)} rows={3} />
+            <Label className={LABEL}>
+              {messages["about_us_mission"] || "Mission"} :
+            </Label>
+            <TextArea
+              value={form.mission}
+              onChange={v => handleTextAreaChange("mission", v)}
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-1 mt-4">
+            <Label className={LABEL}>
+              {messages["about_us_vision"] || "Vision"} :
+            </Label>
+            <TextArea
+              value={form.vision}
+              onChange={v => handleTextAreaChange("vision", v)}
+              rows={3}
+            />
           </div>
 
           <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-900 p-4 flex justify-end border-t border-gray-200 dark:border-gray-700">

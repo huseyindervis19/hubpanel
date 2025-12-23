@@ -1,69 +1,70 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getProductImagesByProductId,
-  createProductImage,
-  updateProductImage,
-  deleteProductImage,
-  CreateProductImageData,
-  UpdateProductImageData,
+  productImageService,
 } from "@/services/productImagesService";
-import { ProductImage } from "@/types/ProductImage";
-import { ApiResponse } from "@/types/ApiResponse";
+import {
+  CreateProductImagePayload,
+  UpdateProductImagePayload,
+  ProductImage,
+} from "@/types/ProductImage";
 
-// fetch product images by product ID
-export const useProductImagesByProductId = (productId: number) => {
-  return useQuery<ApiResponse<ProductImage[]>>({
+/* =======================
+   Fetch images
+======================= */
+export const useProductImages = (productId?: number) => {
+  return useQuery<ProductImage[]>({
     queryKey: ["product-images", productId],
-    queryFn: () => getProductImagesByProductId(productId),
+    queryFn: async () => {
+      if (!productId) return [];
+      const res = await productImageService.getByProductId(productId);
+      return res.data;
+    },
     enabled: !!productId,
   });
 };
 
-// create product image
+/* =======================
+   Create image
+======================= */
 export const useCreateProductImage = () => {
   const queryClient = useQueryClient();
-  return useMutation<
-    ProductImage,
-    Error,
-    { data: CreateProductImageData; file: File }
-  >({
-    mutationFn: ({ data, file }) => createProductImage(data, file),
+
+  return useMutation({
+    mutationFn: ({
+      payload,
+      file,
+    }: {
+      payload: CreateProductImagePayload;
+      file: File;
+    }) => productImageService.create(payload, file),
+
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["product-images", variables.data.productId],
+        queryKey: ["product-images", variables.payload.productId],
       });
     },
   });
 };
 
-// update product image
+/* =======================
+   Update image
+======================= */
 export const useUpdateProductImage = () => {
   const queryClient = useQueryClient();
-  return useMutation<
-    ProductImage,
-    Error,
-    { id: number; data: UpdateProductImageData; productId: number }
-  >({
-    mutationFn: ({ id, data }) => updateProductImage(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["product-images", variables.productId],
-      });
-    },
-  });
-};
 
-// delete product image
-export const useDeleteProductImage = (): UseMutationResult<
-  void,
-  Error,
-  { id: number; productId: number }
-> => {
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id }) => deleteProductImage(id),
+    mutationFn: ({
+      id,
+      productId,
+      payload,
+    }: {
+      id: number;
+      productId: number;
+      payload: UpdateProductImagePayload;
+    }) => productImageService.update(id, payload),
+
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["product-images", variables.productId],
@@ -72,3 +73,25 @@ export const useDeleteProductImage = (): UseMutationResult<
   });
 };
 
+/* =======================
+   Delete image
+======================= */
+export const useDeleteProductImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      productId,
+    }: {
+      id: number;
+      productId: number;
+    }) => productImageService.remove(id),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["product-images", variables.productId],
+      });
+    },
+  });
+};

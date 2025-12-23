@@ -3,8 +3,10 @@ import { Permission } from "@/types/Permission";
 import { ApiResponse } from "@/types/ApiResponse";
 
 export const permissionService = {
-  getPermissions: async (): Promise<Permission[]> => {
-    const response = await axiosInstance.get<ApiResponse<Permission[]>>("/permissions");
-    return response.data.data; 
+  getAll: async (lang: string): Promise<ApiResponse<Permission[]>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Permission[]>>("/permissions", {
+      params: { lang },
+    });
+    return data;
   },
 };

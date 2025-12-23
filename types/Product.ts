@@ -1,41 +1,23 @@
-export interface ProductImage {
-  url: string;
-}
+import { ApiLinks } from "./ApiResponse";
+import { ProductImage } from "./ProductImage";
 
 export interface ProductTranslated {
   name: string;
   slug: string;
-  description: string;
-}
-
-export interface Links {
-  self: string;
-  edit: string;
-  delete: string;
+  description?: string;
 }
 
 export interface Product {
   id: number;
-  categoryId: number;
+  categoryId?: number | null;
   stockQuantity: number;
   isActive: boolean;
   isFeatured: boolean;
   priority: number;
   createdAt: string;
   updatedAt: string;
-  Images: ProductImage[];
-  translated: ProductTranslated;
-  mainImage?: string;
-  _links: Links;
-}
-
-export interface ProductData {
-  name: string;
-  slug?: string;
-  description?: string;
-  stockQuantity?: number;
-  priority?: number;
-  isActive?: boolean;
-  isFeatured?: boolean;
-  categoryId: number;
+  images?: ProductImage[];
+  translated?: ProductTranslated;
+  mainImage?: string | null;
+  _links?: ApiLinks;
 }

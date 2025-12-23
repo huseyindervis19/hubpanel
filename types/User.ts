@@ -1,12 +1,7 @@
 import { Language } from "./Language";
 import { Permission } from "./Permission";
 import { UserRole } from "./UserRole";
-
-export interface Links {
-  self: string;
-  edit: string;
-  delete: string;
-}
+import { ApiLinks } from "./ApiResponse";
 
 export interface User {
   id: number;
@@ -18,7 +13,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   userRoles: UserRole[];
-  _links: Links;
+  _links?: ApiLinks;
 }
 
 /**

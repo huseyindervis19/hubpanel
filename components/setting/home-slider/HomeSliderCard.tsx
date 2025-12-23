@@ -8,6 +8,8 @@ import { HorizontaLDots } from "@/icons";
 import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import { useLocale } from "@/context/LocaleContext";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -25,9 +27,11 @@ const HomeSliderCard: React.FC<Props> = ({ slider, openDropdownId, onDropdownTog
   const isDropdownOpen = openDropdownId === slider.id;
   const { locale, messages } = useLocale();
   const isRtl = locale === "ar";
+  const canEditSlider = useHasPermission(PERMISSIONS.EDIT_HOME_SLIDER);
+  const canDeleteSlider = useHasPermission(PERMISSIONS.DELETE_HOME_SLIDER);
 
   return (
-    <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03]">
       <CardContent className="p-0">
         <div className="relative overflow-hidden rounded-t-2xl">
           {slider.imageUrl && (
@@ -67,27 +71,29 @@ const HomeSliderCard: React.FC<Props> = ({ slider, openDropdownId, onDropdownTog
             )}
           </div>
           <div className="relative flex-shrink-0">
+            
             <button
               className="dropdown-toggle text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
               onClick={onDropdownToggle}
+              disabled={!canEditSlider && !canDeleteSlider}
             >
               <HorizontaLDots />
             </button>
-
+            
             <Dropdown
               isOpen={isDropdownOpen}
               onClose={onDropdownClose}
               className={`w-28 origin-top-left ${isRtl ? "right-auto left-0" : "right-0 left-auto"} ${isRtl ? "rtl" : ""}`}
               style={{ maxWidth: "calc(100vw - 1rem)", minWidth: "max-content" }}
             >
-              {onEdit && (
+              {onEdit && canEditSlider && (
                 <DropdownItem
                   onItemClick={onEdit}
                 >
                   {messages["edit"] || "Edit"}
                 </DropdownItem>
               )}
-              {onDelete && (
+              {onDelete && canDeleteSlider && (
                 <DropdownItem
                   onItemClick={onDelete}
                 >

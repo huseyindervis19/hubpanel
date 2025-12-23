@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
@@ -11,6 +11,7 @@ import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -20,77 +21,100 @@ interface Props {
 }
 
 const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const updateRole = useUpdateRole();
 
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-  });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const isPending = updateRole.isPending;
-  const isSuccess = message?.includes("successfully") ?? false;
+  const isSuccess = message?.type === "success";
+
+  /* ---------------- INIT / RESET ---------------- */
+
+  useEffect(() => {
+    if (isOpen && role) {
+      setName(role.translated?.name ?? "");
+      setDescription(role.translated?.description ?? "");
+      setMessage(null);
+    }
+  }, [isOpen, role]);
 
   useEffect(() => {
     if (!isOpen) {
+      setName("");
+      setDescription("");
       setMessage(null);
-      setForm({ name: "", description: "" });
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (role && isOpen) {
-      setForm({
-        name: role.name || "",
-        description: role.description || "",
-      });
-      setMessage(null);
-    }
-  }, [role, isOpen]);
-
-  const handleChange = (field: string, value: string) => {
-    setForm({ ...form, [field]: value });
-  };
+  /* ---------------- DERIVED STATE ---------------- */
 
   const isModified = useMemo(() => {
     if (!role) return false;
 
-    const nameChanged = form.name.trim() !== (role.name || "");
-    const descChanged = form.description.trim() !== (role.description || "");
+    return (
+      name.trim() !== (role.translated?.name ?? "") ||
+      description.trim() !== (role.translated?.description ?? "")
+    );
+  }, [name, description, role]);
 
-    return nameChanged || descChanged;
-  }, [form, role]);
+  const isInvalid = name.trim().length === 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!role?.id) return;
+  /* ---------------- SUBMIT ---------------- */
 
-    setMessage(null);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!role?.id || isInvalid) return;
 
-    const payload = {
-      name: form.name.trim(),
-      description: form.description.trim(),
-    };
+      setMessage(null);
 
-    try {
-      await updateRole.mutateAsync({ id: role.id, data: payload });
-      setMessage(messages["updated_successfully"] || "Updated successfully!");
+      const payload: { name?: string; description?: string } = {};
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (name.trim() !== role.translated?.name) {
+        payload.name = name.trim();
+      }
 
-      onClose();
-      onSuccess();
+      if (description.trim() !== (role.translated?.description ?? "")) {
+        payload.description = description.trim();
+      }
 
-    } catch (err) {
-      console.error(err);
-      setMessage(messages["updated_error"] || "An error occurred while updating.");
-    }
-  };
+      try {
+        await updateRole.mutateAsync({
+          id: role.id,
+          payload,
+          lang: locale,
+        });
 
-  const areFieldsEmpty = form.name.trim() === "";
+        setMessage({
+          text: messages["updated_successfully"] || "Updated successfully!",
+          type: "success",
+        });
 
+        setTimeout(() => {
+          onClose();
+          onSuccess();
+        }, 800);
+      } catch (error) {
+        console.error(error);
+        setMessage({
+          text:
+            messages["updated_error"] ||
+            "An error occurred while updating.",
+          type: "error",
+        });
+      }
+    },
+    [role, name, description, locale, isInvalid, updateRole, messages, onClose, onSuccess]
+  );
+
+  /* ---------------- RENDER ---------------- */
 
   return (
     <Modal
@@ -104,14 +128,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
           className="mb-6 text-center"
         />
 
-        {message && (
-          <p
-            className={`mb-4 text-center font-medium ${message.includes("Error") ? "p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300" : "p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300"
-              }`}
-          >
-            {message}
-          </p>
-        )}
+        <Message message={message} />
 
         <div className="space-y-6">
           {/* Name */}
@@ -119,32 +136,42 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
             <Label>{messages["role_name"] || "Name"}</Label>
             <InputField
               type="text"
-              value={form.name}
-              onChange={(e) => handleChange("name", e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder={messages["role_name_placeholder"] || "Enter role name"}
               required
             />
           </div>
+
           {/* Description */}
           <div>
             <Label>{messages["role_description"] || "Description"}</Label>
             <InputField
               type="text"
-              value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              placeholder={messages["role_description_placeholder"] || "Enter role description"}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={
+                messages["role_description_placeholder"] ||
+                "Enter role description"
+              }
             />
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3 mt-6">
-          <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onClose}
+            disabled={isPending || isSuccess}
+          >
             {messages["cancel"] || "Cancel"}
           </Button>
+
           <Button
             size="sm"
             type="submit"
-            disabled={isPending || !isModified || areFieldsEmpty || isSuccess}
+            disabled={isPending || !isModified || isInvalid || isSuccess}
             className={
               isPending
                 ? "opacity-75 cursor-not-allowed flex items-center justify-center"
@@ -156,7 +183,7 @@ const EditRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) =>
                 <LoadingIcon
                   width={16}
                   height={16}
-                  className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
+                  className="animate-spin -ml-1 mr-3"
                 />
                 {messages["updating"] || "Updating..."}
               </>

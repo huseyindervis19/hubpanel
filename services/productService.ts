@@ -1,50 +1,47 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/types/ApiResponse";
-import { Product, ProductData } from "@/types/Product";
+import { Product } from "@/types/Product";
+import { CreateProductPayload, UpdateProductPayload } from "@/types/ProductPayload";
 
-// fetch all products by language
-export const fetchAllProducts = async (lang: string): Promise<ApiResponse<Product[]>> => {
-  const response = await axiosInstance.get<ApiResponse<Product[]>>(`/products?lang=${lang}`);
-  return response.data;
+export const productService = {
+  getAll: async (lang: string): Promise<ApiResponse<Product[]>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Product[]>>(
+      "/products",
+      { params: { lang } }
+    );
+    return data;
+  },
+
+  getById: async (id: number, lang: string): Promise<ApiResponse<Product>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Product>>(
+      `/products/${id}`,
+      { params: { lang } }
+    );
+    return data;
+  },
+
+  create: async (payload: CreateProductPayload): Promise<Product> => {
+    const { data } = await axiosInstance.post<ApiResponse<Product>>(
+      "/products",
+      payload
+    );
+    return data.data;
+  },
+
+  update: async (
+    id: number,
+    payload: UpdateProductPayload,
+    lang: string
+  ): Promise<Product> => {
+    const { data } = await axiosInstance.patch<ApiResponse<Product>>(
+      `/products/${id}`,
+      payload,
+      { params: { lang } }
+    );
+    return data.data;
+  },
+
+  remove: async (id: number): Promise<void> => {
+    await axiosInstance.delete(`/products/${id}`);
+  },
 };
-
-// create product
-export const createProduct = async (
-  data: ProductData
-): Promise<Product> => {
-  const response = await axiosInstance.post<ApiResponse<Product>>(
-    `/products`,
-    data
-  );
-  return response.data.data;
-};
-
-// update product
-export const updateProduct = async (
-  id: number,
-  data: ProductData,
-  lang: string
-): Promise<Product> => {
-  const response = await axiosInstance.patch<ApiResponse<Product>>(
-    `/products/${id}?lang=${lang}`,
-    data
-  );
-  return response.data.data;
-};
-
-// delete product
-export const deleteProduct = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/products/${id}`);
-};
-
-// fetch product by ID
-export const fetchProductById = async (
-  id: number,
-  lang: string
-): Promise<ApiResponse<Product>> => {
-  const response = await axiosInstance.get<ApiResponse<Product>>(
-    `/products/${id}?lang=${lang}`
-  );
-  return response.data;
-};
-

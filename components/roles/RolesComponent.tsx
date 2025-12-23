@@ -17,14 +17,14 @@ import TitleComponent from "../ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 
 const RolesComponent = () => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
 
-  const { roles = [], isLoading, refetch } = useRoles();
+  const { data: roles = [], isLoading, refetch } = useRoles(locale);
   const canAddRole = useHasPermission(PERMISSIONS.ADD_ROLE);
   const canEditRole = useHasPermission(PERMISSIONS.EDIT_ROLE);
   const canDeleteRole = useHasPermission(PERMISSIONS.DELETE_ROLE);
@@ -58,7 +58,7 @@ const RolesComponent = () => {
     setSelectedRole(null);
   };
 
-  if (isLoading) { <LoadingComponent title={messages["roles"] || "Roles"} /> }
+  if (isLoading) return <LoadingComponent title={messages["roles"] || "Roles"} />;
 
   return (
     <>
@@ -66,7 +66,9 @@ const RolesComponent = () => {
         <TitleComponent title={messages["roles"] || "Roles"} />
         <div className="flex justify-end mb-4">
           {canAddRole && (
-            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>{messages["create"] || "Create"}</Button>
+            <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
+              {messages["create"] || "Create"}
+            </Button>
           )}
         </div>
       </div>
@@ -88,9 +90,9 @@ const RolesComponent = () => {
                 {roles.length > 0 ? (
                   roles.map((role: Role) => (
                     <TableRow key={role.id}>
-                      <Td >{role.name}</Td>
-                      <Td>{role.description || "-"}</Td>
-                      <Td >
+                      <Td>{role.translated?.name}</Td>
+                      <Td>{role.translated?.description || "-"}</Td>
+                      <Td>
                         {canManagePermissions && (
                           <Button
                             size="sm"
@@ -102,7 +104,7 @@ const RolesComponent = () => {
                         )}
                       </Td>
                       <Td>
-                        <div className="flex items-center ">
+                        <div className="flex items-center">
                           {canEditRole && (
                             <Button size="icon" variant="ghost" onClick={() => openEditModal(role)}>
                               <PencilIcon width={20} height={20} />
@@ -119,10 +121,7 @@ const RolesComponent = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <td
-                      colSpan={4}
-                      className="px-5 py-6 text-center text-gray-500 dark:text-gray-400"
-                    >
+                    <td colSpan={4} className="px-5 py-6 text-center text-gray-500 dark:text-gray-400">
                       {messages["no_data_found"] || "No Data Found!"}
                     </td>
                   </TableRow>

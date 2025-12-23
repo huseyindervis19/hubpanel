@@ -64,15 +64,15 @@ const DeleteConfirmModal: React.FC<Props> = ({
         </h4>
 
         {success && successMessage && (
-          <div className="font-medium mb-2 p-3 rounded-lg border border-green-200 bg-green-50 text-green-700 dark:border-green-700 dark:bg-green-900/30 dark:text-green-300 text-sm">
+          <div className="p-4 rounded-xl border mb-4 text-center font-medium transition-opacity duration-300 border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20">
             {successMessage}
           </div>
         )}
 
-        <div className="text-sm leading-6 text-gray-600 dark:text-gray-300">{message}</div>
+        <div className="text-medium leading-6 text-gray-600 dark:text-gray-300">{message}</div>
 
         {error && (
-          <div className="font-medium mt-4 p-3 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 text-xs">
+          <div className="p-4 rounded-xl border mb-4 text-center font-medium transition-opacity duration-300 border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20">
             {errorMessage}
           </div>
         )}

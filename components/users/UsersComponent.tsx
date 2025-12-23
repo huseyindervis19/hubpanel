@@ -17,7 +17,7 @@ import { User } from "@/types/User";
 import { useLocale } from "@/context/LocaleContext";
 
 const UsersComponent = () => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -28,11 +28,11 @@ const UsersComponent = () => {
   const canEditUser = useHasPermission(PERMISSIONS.EDIT_USER);
   const canDeleteUser = useHasPermission(PERMISSIONS.DELETE_USER);
 
-  const { data: users = [], isLoading, refetch } = useUsers();
+  const { data: users = [], isLoading, refetch } = useUsers(locale);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
-      const roleName = user.userRoles[0]?.role?.name?.toLowerCase() || "";
+      const roleName = user.userRoles[0]?.role?.translated?.name?.toLowerCase() || "";
       return (
         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,7 +68,7 @@ const UsersComponent = () => {
             </p>
             <div className="relative">
               <SearchBar
-              placeholder={messages["search"] || "Search..."}
+                placeholder={messages["search"] || "Search..."}
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
               />
@@ -112,7 +112,7 @@ const UsersComponent = () => {
                                 key={ur.id}
                                 className="inline-flex items-center rounded-full bg-blue-100 px-3 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
                               >
-                                {ur.role?.name || "N/A"}
+                                {ur.role?.translated?.name || "N/A"}
                               </span>
                             ))}
                           </div>
@@ -125,22 +125,22 @@ const UsersComponent = () => {
                       </Td>
 
                       {/* Status */}
-                        <Td
-                          className={`px-6 py-4 font-medium ${user.status ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                            }`}
-                        >
-                          {user.status ? messages["active"] || "Active" : messages["inactive"] || "Inactive"}
-                        </Td>
+                      <Td
+                        className={`px-6 py-4 font-medium ${user.status ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                          }`}
+                      >
+                        {user.status ? messages["active"] || "Active" : messages["inactive"] || "Inactive"}
+                      </Td>
                       <Td className="px-6 py-4 text-gray-800 dark:text-white">
                         <div className="-mx-[5px] flex items-center gap-2">
                           {canEditUser && (
                             <button onClick={() => openEditModal(user)} title={messages["edit_user"] || "Edit User"}>
-                              <PencilIcon  width={20} height={20}/>
+                              <PencilIcon width={20} height={20} />
                             </button>
                           )}
                           {canDeleteUser && (
                             <button onClick={() => openDeleteModal(user)} title={messages["delete"] + " " + (messages["users"] || "User") || "Delete User"}>
-                              <TrashBinIcon width={20} height={20}/>
+                              <TrashBinIcon width={20} height={20} />
                             </button>
                           )}
                         </div>

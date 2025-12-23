@@ -1,66 +1,84 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { useLocale } from "@/context/LocaleContext";
 import { useUpdateProductImage } from "@/hooks/useProductImages";
+import Message from "@/components/ui/Message";
 import { ProductImage } from "@/types/ProductImage";
 
 interface Props {
   img: ProductImage;
-  isOpen: boolean;
   images: ProductImage[];
+  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const EditImageModal: React.FC<Props> = ({ img, images, isOpen, onClose, onSuccess }) => {
+const EditImageModal: React.FC<Props> = ({
+  img,
+  images,
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
   const { messages } = useLocale();
   const updateProductImage = useUpdateProductImage();
 
-  const [altText, setAltText] = useState(img?.alt_text || "");
-  const [isMain, setIsMain] = useState(img?.isMain || false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [isMain, setIsMain] = useState<boolean>(false);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  // Reset state whenever a new image is passed in
+  /* =======================
+     Sync state with image
+  ======================= */
   useEffect(() => {
-    if (img) {
-      setAltText(img.alt_text || "");
-      setIsMain(img.isMain || false);
-      if (img.isMain && images.length === 1) {
-        setIsMain(true);
-      }
+    if (!img) return;
 
-      setError(null);
-      // setSuccessMessage("");
-    }
-  }, [img, images]);
+    setIsMain(img.isMain);
+    setMessage(null);
+  }, [img]);
 
+  /* =======================
+     Submit
+  ======================= */
   const handleEdit = async () => {
-    if (img.isMain && images.length === 1 && isMain === false) {
-      setError(
-        messages["cannot_remove_main_from_only_image"] ||
-        "Cannot remove main from the product's only image."
-      );
+    setMessage(null);
+
+    if (img.isMain && images.length === 1 && !isMain) {
+      setMessage({
+        text:
+          messages["cannot_remove_main_from_only_image"] ||
+          "Cannot remove main image when it is the only image.",
+        type: "error",
+      });
       return;
     }
 
     try {
       await updateProductImage.mutateAsync({
         id: img.id,
-        data: {
-          isMain,
-        },
         productId: img.productId,
+        payload: { isMain },
       });
-      setSuccessMessage(messages["updated_successfully"] || "Updated successfully!");
+
+      setMessage({
+        text: messages["updated_successfully"] || "Updated successfully!",
+        type: "success",
+      });
 
       setTimeout(() => {
         onClose();
         onSuccess();
-      }, 2000);
+      }, 1200);
     } catch (err: any) {
-      setError(err?.response?.data?.message || messages["updated_error"] || "An error occurred while updating.");
+      setMessage({
+        text:
+          err?.response?.data?.message ||
+          messages["updated_error"] ||
+          "An error occurred while updating.",
+        type: "error",
+      });
     }
   };
 
@@ -68,59 +86,44 @@ const EditImageModal: React.FC<Props> = ({ img, images, isOpen, onClose, onSucce
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-6">
       {/* Header */}
       <div className="pb-4 text-center border-b border-gray-200 dark:border-gray-700">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+        <h4 className="text-lg font-semibold text-gray-800 dark:text-white">
           {messages["edit_product_image"] || "Edit Product Image"}
         </h4>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {messages["edit_product_image_helper"] || "Update the details of this product image"}
+          {messages["edit_product_image_helper"] ||
+            "Update image settings"}
         </p>
       </div>
 
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 shadow-sm dark:border-green-700 dark:bg-green-900/30 dark:text-green-300 animate-in slide-in-from-top-2 duration-300">
-          ✅ <p className="font-medium">{successMessage}</p>
-        </div>
-      )}
+      {/* Message */}
+      <div className="mt-4">
+        <Message message={message} />
+      </div>
 
       {/* Form */}
       <div className="space-y-4 mt-4">
-        {/* Alt Text */}
-        <input
-          type="text"
-          placeholder={messages["alt_text_label"] || "Alt text"}
-          value={altText}
-          onChange={(e) => setAltText(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all duration-200 ease-in-out"
-        />
-
-        {/* Main Image Checkbox */}
-        <div className="flex items-center space-x-3">
+        {/* Main Image */}
+        <div className="flex items-center gap-3">
           <input
             id="is_main"
-            name="is_main"
             type="checkbox"
             checked={isMain}
             onChange={(e) => setIsMain(e.target.checked)}
-            className="w-5 h-5 text-brand-500 border-gray-300 rounded focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-600"
+            className="w-5 h-5"
           />
-          <label htmlFor="is_main" className="text-sm text-gray-700 dark:text-white cursor-pointer">
-            {messages["is_main_helper"] || "Mark this image as the main image"}
+          <label htmlFor="is_main" className="text-sm cursor-pointer">
+            {messages["is_main_helper"] || "Mark as main image"}
           </label>
         </div>
       </div>
 
-      {/* Error Message */}
-      {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
-
-      {/* Action Buttons */}
+      {/* Actions */}
       <div className="mt-6 flex justify-end gap-3">
         <Button size="sm" variant="outline" onClick={onClose}>
           {messages["cancel"] || "Cancel"}
         </Button>
         <Button
           size="sm"
-          className="bg-blue-600 hover:bg-blue-700 text-white"
           disabled={updateProductImage.isPending}
           onClick={handleEdit}
         >

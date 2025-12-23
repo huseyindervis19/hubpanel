@@ -10,6 +10,7 @@ import { LoadingIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const createRole = useCreateRole();
 
   const [form, setForm] = useState({
@@ -26,10 +27,13 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     description: "",
   });
 
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const isPending = createRole.isPending;
-  const isSuccess = message?.includes("successfully") ?? false;
+  const isSuccess = message?.type === "success";
 
   useEffect(() => {
     if (!isOpen) {
@@ -55,18 +59,25 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     };
 
     try {
-      await createRole.mutateAsync(payload);
+      await createRole.mutateAsync({ payload });
 
-      setMessage(messages["created_successfully"] || "Created Successfully!");
+      setMessage({
+        text: messages["created_successfully"] || "Created Successfully!",
+        type: "success",
+      });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onSuccess();
       onClose();
-
     } catch (err) {
       console.error(err);
-      setMessage(messages["created_error"] || "An error occurred while creating.");
+      setMessage({
+        text:
+          messages["created_error"] ||
+          "An error occurred while creating.",
+        type: "error",
+      });
     }
   };
 
@@ -84,14 +95,8 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           className="mb-4 font-semibold text-center"
         />
 
-        {message && (
-          <p
-            className={`mb-4 text-center font-medium ${message.includes("Error") ? "p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300" : "p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300"
-              }`}
-          >
-            {message}
-          </p>
-        )}
+        {/* ✅ Message الموحد */}
+        <Message message={message} />
 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -101,28 +106,43 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
                 type="text"
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                placeholder={messages["role_name_placeholder"] || "enter role name"}
+                placeholder={
+                  messages["role_name_placeholder"] ||
+                  "enter role name"
+                }
                 required
               />
             </div>
           </div>
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>{messages["role_description"] || "Description"}</Label>
               <InputField
                 type="text"
                 value={form.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                placeholder={messages["role_description_placeholder"] || "enter role description"}
+                onChange={(e) =>
+                  handleChange("description", e.target.value)
+                }
+                placeholder={
+                  messages["role_description_placeholder"] ||
+                  "enter role description"
+                }
               />
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3 mt-6">
-          <Button size="sm" variant="outline" onClick={onClose} disabled={isPending || isSuccess}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onClose}
+            disabled={isPending || isSuccess}
+          >
             {messages["cancel"] || "Cancel"}
           </Button>
+
           <Button
             size="sm"
             type="submit"

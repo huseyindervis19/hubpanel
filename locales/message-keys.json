@@ -217,10 +217,10 @@
       "icon_placeholder": "Facebook",
       "url": "URL",
       "display_order": "Display Order",
-      "categories_total": "Total Categories",
-      "contact_requestes_total": "Total Contact Requests",
-      "products_total": "Total Products",
-      "users_total": "Total Users"
+      "total_categories": "Total Categories",
+      "total_contact_requestes": "Total Contact Requests",
+      "total_products": "Total Products",
+      "total_users": "Total Users"
     },
     "ar": {
       "_Standards": "المعايير",
@@ -439,10 +439,10 @@
       "icon_placeholder": "فيسبوك",
       "url": "الرابط",
       "display_order": "ترتيب العرض",
-      "categories_total": "إجمالي التصنيفات",
-      "contact_requestes_total": "إجمالي طلبات التواصل",
-      "products_total": "إجمالي المنتجات",
-      "users_total": "إجمالي المستخدمين"
+      "total_categories": "إجمالي الفئات",
+      "total_contact_requestes": "إجمالي طلبات التواصل",
+      "total_products": "إجمالي المنتجات",
+      "total_users": "إجمالي المستخدمين"
     }
   }
 }

@@ -19,11 +19,9 @@ const DeleteProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, produ
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Get product name and id - support both new Product type and legacy format
   const productName = product && 'translated' in product
     ? product.translated?.name
     : (product as { name?: string })?.name || "";
-
 
   useEffect(() => {
     if (!isOpen) {

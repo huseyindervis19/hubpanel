@@ -1,48 +1,66 @@
 "use client";
 
-import { useQuery, useQueryClient, useMutation, UseMutationResult } from "@tanstack/react-query";
-import { getRoles, createRole, updateRole, deleteRole } from "@/services/roleService";
-import { Role } from "@/types/Role";
+import { useQuery, useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
+import { roleService } from "@/services/roleService";
+import { Role, CreateRolePayload, UpdateRolePayload } from "@/types/Role";
 
-export const useRoles = () => {
-  const { data = [], isLoading, isError, refetch } = useQuery<Role[], Error>({
-    queryKey: ["roles"],
-    queryFn: getRoles,
-    staleTime: 1000 * 60 * 5,
-    retry: 2,
-  });
-
-  return {
-    roles: data,
-    isLoading,
-    isError,
-    refetch,
-  };
-};
-
-export const useCreateRole = (): UseMutationResult<Role, Error, Partial<Role>> => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: Partial<Role>) => createRole(data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
+export const useRoles = (lang: string) => {
+  return useQuery({
+    queryKey: ["roles", lang],
+    queryFn: async () => {
+      const res = await roleService.getAll(lang);
+      return res.data;
+    },
+    enabled: !!lang,
   });
 };
 
-export const useUpdateRole = (): UseMutationResult<Role, Error, { id: number; data: Partial<Role> }> => {
+export const useRole = (id?: number, lang?: string) => {
+  return useQuery({
+    queryKey: ["role", id, lang],
+    queryFn: async () => {
+      if (!id || !lang) return null;
+      const res = await roleService.getById(id, lang);
+      return res.data;
+    },
+    enabled: !!id && !!lang,
+  });
+};
+
+export const useCreateRole = (): UseMutationResult<Role, unknown, { payload: CreateRolePayload; lang: string }, unknown> => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ id, data }) => updateRole(id, data),
-    onSuccess: (_, variables) => {
+    mutationFn: ({ payload, lang }) => roleService.create(payload, lang),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
-      queryClient.invalidateQueries({ queryKey: ["roles", variables.id] });
     },
   });
 };
 
-export const useDeleteRole = (): UseMutationResult<void, Error, number> => {
+export const useUpdateRole = (): UseMutationResult<
+  Role,
+  unknown,
+  { id: number; payload: UpdateRolePayload; lang: string },
+  unknown
+> => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (id: number) => deleteRole(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
+    mutationFn: ({ id, payload, lang }) => roleService.update(id, payload, lang),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+    },
+  });
+};
+
+export const useDeleteRole = (): UseMutationResult<void, unknown, number, unknown> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: roleService.remove,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+    },
   });
 };

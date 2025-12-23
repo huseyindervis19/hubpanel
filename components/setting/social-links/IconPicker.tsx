@@ -7,9 +7,9 @@ import {
   SiFacebook,
   SiLinkedin,
   SiInstagram,
-  SiX
+  SiX,
+  SiYoutube
 } from "react-icons/si";
-import * as SiIcons from "react-icons/si";
 
 /* -------------------------------------------------------------------------- */
 /*                                Icon Config                                 */
@@ -21,7 +21,8 @@ const SOCIAL_ICONS = {
   Facebook: SiFacebook,
   Linkedin: SiLinkedin,
   Instagram: SiInstagram,
-  X: SiX
+  X: SiX,
+  Youtube: SiYoutube
 } as const;
 
 export type IconName = keyof typeof SOCIAL_ICONS;
@@ -32,7 +33,8 @@ const AVAILABLE_ICONS: IconName[] = [
   "Facebook",
   "Linkedin",
   "Instagram",
-  "X"
+  "X",
+  "Youtube"
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -50,7 +52,6 @@ interface IconPickerProps {
 
 export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
-console.log("all icons",Object.keys(SiIcons));
 
   const SelectedIcon = value ? SOCIAL_ICONS[value] : null;
 
@@ -63,7 +64,7 @@ console.log("all icons",Object.keys(SiIcons));
         onClick={() => setOpen(prev => !prev)}
       >
         {SelectedIcon && (
-          <SelectedIcon size={22} className="text-gray-700 dark:text-gray-300" />
+          <SelectedIcon size={24} className="text-gray-700 dark:text-gray-300" />
         )}
         <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
           {value || "Select Social Icon"}
@@ -81,7 +82,7 @@ console.log("all icons",Object.keys(SiIcons));
                 <button
                   key={iconName}
                   type="button"
-                  className={`flex h-9 w-9 items-center justify-center rounded-md border
+                  className={`flex h-9  items-center justify-center rounded-md border text-sm font-medium text-gray-700 dark:text-gray-400
                     ${
                       value === iconName
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-900/40"
@@ -94,7 +95,7 @@ console.log("all icons",Object.keys(SiIcons));
                   }}
                   title={iconName}
                 >
-                  <IconComponent size={20} />
+                  <IconComponent size={24} />
                 </button>
               );
             })}

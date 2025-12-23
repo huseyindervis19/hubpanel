@@ -3,8 +3,15 @@ export interface ProductImage {
   productId: number;
   url: string;
   isMain: boolean;
-  alt_text?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
+export interface CreateProductImagePayload {
+  productId: number;
+  isMain?: boolean;
+}
+
+export interface UpdateProductImagePayload {
+  isMain?: boolean;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import { useLocale } from "@/context/LocaleContext";
 import { ProductImage } from "@/types/ProductImage";
@@ -13,13 +13,21 @@ interface Props {
   img?: ProductImage | null;
 }
 
-const DeleteImageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, img }) => {
+const DeleteImageModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  img,
+}) => {
   const { messages } = useLocale();
   const deleteImage = useDeleteProductImage();
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  /* =======================
+     Reset state on close
+  ======================= */
   useEffect(() => {
     if (!isOpen) {
       setErrorMessage(null);
@@ -27,30 +35,54 @@ const DeleteImageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, img }) 
     }
   }, [isOpen]);
 
-  const handleDeleteImage = async (): Promise<void> => {
-    if (!img?.id || !img.productId) return;
+  /* =======================
+     Delete handler
+  ======================= */
+  const handleDeleteImage = async () => {
+    if (!img) return;
+    console.log('is main', img);
 
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    // Prevent deleting the only main image
+    if (img.isMain) {
+      const msg =
+        messages["cannot_remove_main_from_only_image"] ||
+        "Cannot remove main image when it is the only image.";
+
+      setErrorMessage(msg);
+      throw new Error(msg);
+    }
 
     try {
-      await deleteImage.mutateAsync({ id: img.id, productId: img.productId });
-      const successMsg = messages["delete_successfully"] || "Deleted successfully!";
-      setSuccessMessage(successMsg);
+      await deleteImage.mutateAsync({
+        id: img.id,
+        productId: img.productId,
+      });
+
+      setSuccessMessage(
+        messages["delete_successfully"] || "Deleted successfully!"
+      );
+
       onSuccess?.();
-    } catch (err) {
-      setErrorMessage(messages["deleted_error"] || "An error occurred while deleting.");
+    } catch (err: any) {
+      setErrorMessage(
+        err?.response?.data?.message ||
+        messages["deleted_error"] ||
+        "An error occurred while deleting."
+      );
     }
   };
 
-  const imageName = img?.alt_text || "this image";
+  const imageLabel =
+    messages["this_image"] || "this image";
 
   const messageContent = messages["delete_warning_f"] ? (
     <>
-      {messages["delete_warning_f"]} <strong>{imageName}</strong>{messages["delete_warning_s"]}
+      {messages["delete_warning_f"]}{" "}
+      <strong>{imageLabel}</strong>{" "}
+      {messages["delete_warning_s"]}
     </>
   ) : (
-    `Are you sure you want to delete "${imageName}"? This action cannot be undone.`
+    `Are you sure you want to delete ${imageLabel}? This action cannot be undone.`
   );
 
   return (
@@ -60,7 +92,7 @@ const DeleteImageModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, img }) 
       onConfirm={handleDeleteImage}
       title={messages["confirm_delete"] || "Confirm Deletion"}
       message={messageContent}
-      errorMessage={errorMessage || messages["delete_failed"] || "An error occurred while deleting."}
+      errorMessage={errorMessage || undefined}
       successMessage={successMessage || undefined}
     />
   );

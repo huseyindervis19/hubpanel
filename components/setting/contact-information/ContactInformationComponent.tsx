@@ -3,8 +3,9 @@
 import { useLocale } from "@/context/LocaleContext";
 import { useModal } from "@/hooks/useModal";
 import { useContactInfo } from "@/hooks/useContactInformations";
-
 import { EditContactInformationModal } from "./EditContactInformationModal";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 import {
   PencilIcon,
@@ -85,6 +86,7 @@ const InfoField = ({
 const ContactInformationComponent = () => {
   const { messages, locale } = useLocale();
   const { isOpen, openModal, closeModal } = useModal();
+  const canEditContactInformation = useHasPermission(PERMISSIONS.EDIT_CONTACT_INFORMATION);
 
   const {
     data: contactInformation,
@@ -167,7 +169,7 @@ const ContactInformationComponent = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white"></h4>
-
+          {(canEditContactInformation && 
           <button
             className="flex items-center gap-2 rounded-full border 
                        border-gray-300 bg-white px-4 py-3 text-sm font-medium
@@ -179,6 +181,7 @@ const ContactInformationComponent = () => {
             <PencilIcon />
             {messages["edit"] || "Edit"}
           </button>
+          )}
         </div>
 
         {/* Fields Grid */}

@@ -6,6 +6,7 @@ import Input from "@/components/form/input/InputField";
 import { ContactInformation } from "@/types/ContactInformation";
 import { useLocale } from "@/context/LocaleContext";
 import { useUpdateContactInfo } from "@/hooks/useContactInformations";
+import Message from "@/components/ui/Message";
 
 interface EditContactInformationModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export const EditContactInformationModal = ({
   data,
 }: EditContactInformationModalProps) => {
   const { messages, locale } = useLocale();
-  const { mutateAsync: update, isPending: updating, error } = useUpdateContactInfo();
+  const { mutateAsync: update, isPending: updating } = useUpdateContactInfo();
 
   const [form, setForm] = useState({
     phone: "",
@@ -32,7 +33,7 @@ export const EditContactInformationModal = ({
     address: "",
   });
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   //
   // Load initial data
@@ -62,6 +63,7 @@ export const EditContactInformationModal = ({
   //
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(null);
 
     const payload = {
       phone: form.phone.trim(),
@@ -72,28 +74,41 @@ export const EditContactInformationModal = ({
       address: form.address.trim(),
     };
 
-    const result = await update({
-      id: data.id,
-      data: payload,
-      lang: locale,
-    });
+    try {
+      const result = await update({
+        id: data.id,
+        data: payload,
+        lang: locale,
+      });
 
-    if (result) {
-      setSuccessMessage(messages["updated_successfully"] || "Updated successfully");
+      if (result) {
+        setMessage({
+          text: messages["updated_successfully"] || "Updated successfully",
+          type: "success",
+        });
 
-      setTimeout(() => {
-        setSuccessMessage(null);
-        handleSave();
-        onClose();
-      }, 1300);
+        setTimeout(() => {
+          setMessage(null);
+          handleSave();
+          onClose();
+        }, 1300);
+      }
+    } catch (err: any) {
+      setMessage({
+        text:
+          err?.response?.data?.message ||
+          messages["updated_error"] ||
+          "An error occurred",
+        type: "error",
+      });
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
       <div
-        className="no-scrollbar relative w-full max-w-[700px] 
-        overflow-y-auto rounded-3xl bg-white p-5 
+        className="no-scrollbar relative w-full max-w-[700px]
+        overflow-y-auto rounded-3xl bg-white p-5
         dark:bg-gray-900 lg:p-10 shadow-xl transition-all duration-300"
       >
         {/* Header */}
@@ -102,22 +117,16 @@ export const EditContactInformationModal = ({
         </h4>
 
         <p className="text-center mb-6 text-sm text-gray-500 dark:text-gray-400">
-          {messages["edit_contact_info_desc"] || "Update the displayed contact information."}
+          {messages["edit_contact_info_desc"] ||
+            "Update the displayed contact information."}
         </p>
 
-        {/* Success message */}
-        {successMessage && (
-          <div className="p-4 mb-5 rounded-xl border border-green-300 
-            bg-green-50 text-green-700 dark:border-green-700 
-            dark:bg-green-900/20 animate-fadeIn">
-            {successMessage}
-          </div>
-        )}
+        {/* Message */}
+        <Message message={message} />
 
         {/* Form */}
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             {/* Phone */}
             <div className="space-y-2">
               <Label>{messages["phone"]}</Label>
@@ -134,7 +143,9 @@ export const EditContactInformationModal = ({
               <Input
                 value={form.whatsapp}
                 onChange={(e) => handleChange("whatsapp", e.target.value)}
-                placeholder={messages["whatsapp_placeholder"] || "Enter WhatsApp number"}
+                placeholder={
+                  messages["whatsapp_placeholder"] || "Enter WhatsApp number"
+                }
               />
             </div>
 
@@ -145,7 +156,9 @@ export const EditContactInformationModal = ({
                 type="email"
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                placeholder={messages["email_placeholder"] || "Enter email address"}
+                placeholder={
+                  messages["email_placeholder"] || "Enter email address"
+                }
               />
             </div>
 
@@ -179,17 +192,12 @@ export const EditContactInformationModal = ({
               <Input
                 value={form.address}
                 onChange={(e) => handleChange("address", e.target.value)}
-                placeholder={messages["address_placeholder"] || "Enter address"}
+                placeholder={
+                  messages["address_placeholder"] || "Enter address"
+                }
               />
             </div>
           </div>
-
-          {/* Error message */}
-          {error && (
-            <p className="text-red-500 text-sm font-medium mt-2">
-              {error.message}
-            </p>
-          )}
 
           {/* Buttons */}
           <div className="flex items-center gap-4 mt-5 justify-end">
@@ -197,12 +205,7 @@ export const EditContactInformationModal = ({
               {messages["cancel"] || "Cancel"}
             </Button>
 
-            <Button
-              size="sm"
-              type="submit"
-              disabled={updating}
-              className="bg-primary-500 hover:bg-primary-600 text-white"
-            >
+            <Button size="sm" type="submit" disabled={updating}>
               {updating
                 ? messages["updating"] || "Updating..."
                 : messages["update"] || "Update"}

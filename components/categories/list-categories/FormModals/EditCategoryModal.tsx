@@ -13,6 +13,7 @@ import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 import { useUpdateCategory } from "@/hooks/useCategory";
 import { Category } from "@/types/Category";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -127,7 +128,7 @@ const EditCategoryModal: React.FC<Props> = ({
 
       await updateCategory.mutateAsync({
         id: category.id,
-        data: formData,
+        payload: formData,
         lang: locale
       });
 
@@ -146,17 +147,11 @@ const EditCategoryModal: React.FC<Props> = ({
   const LABEL = "text-md text-gray-800 dark:text-white/90";
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 ">
       <Form onSubmit={handleSubmit}>
         <TitleComponent title={messages["edit_product_category"] || "Edit Category"} className="text-center mb-6" />
-        {message && (
-          <div className={`p-4 rounded-xl border transition-opacity duration-300 ${message.type === "success"
-            ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
-            : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
-            }`}>
-            {message.text}
-          </div>
-        )}
+
+        <Message message={message} />
 
         {/* Name */}
         <Label className={LABEL}>{messages["category_name"]}</Label>
@@ -176,6 +171,7 @@ const EditCategoryModal: React.FC<Props> = ({
         <InputField
           type="number"
           name="priority"
+          min={0}
           value={form.priority}
           onChange={handleChange}
         />
@@ -186,7 +182,7 @@ const EditCategoryModal: React.FC<Props> = ({
           onChange={handleFileChange}
           accept="image/*" 
           placeholder={messages["choose_file"] || "Choose File"}
-          />
+        />
 
         {previewUrl && (
           <img src={previewUrl} alt="preview" className="w-20 h-20 rounded mt-2 object-cover" />

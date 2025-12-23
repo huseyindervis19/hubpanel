@@ -13,6 +13,9 @@ import AddSocialLinkModal from "./FormModals/AddSocialLinkModal";
 import EditSocialLinkModal from "./FormModals/EditSocialLinkModal";
 import DeleteSocialLinkModal from "./FormModals/DeleteSocialLinkModal";
 
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
+
 /* -------------------------------------------------------------------------- */
 /*                           Main Component                                    */
 /* -------------------------------------------------------------------------- */
@@ -27,6 +30,8 @@ const SocialLinksComponent = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  const canAddLink = useHasPermission(PERMISSIONS.ADD_SOCIAL_LINKS);
+  
   const handleDropdownToggle = (linkId: number) => {
     setOpenDropdownId(prev => (prev === linkId ? null : linkId));
   };
@@ -77,24 +82,25 @@ const SocialLinksComponent = () => {
         <TitleComponent
           title={messages["social_links"] || "Social Links"}
         />
-
+        {canAddLink && (
         <Button
           className="h-9 px-4 text-sm"
           onClick={() => setAddModalOpen(true)}
         >
           {messages["create"] || "Create"}
         </Button>
+        )}
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.data.map(link => (
           <SocialLinkCard
             key={link.id}
             link={link}
-            openDropdownId={openDropdownId}
-            onDropdownToggle={() => handleDropdownToggle(link.id)}
-            onDropdownClose={handleDropdownClose}
+            isDropdownOpen={openDropdownId == link.id}
+            onToggleDropdown={() => handleDropdownToggle(link.id)}
+            onCloseDropdown={handleDropdownClose}
             onEdit={() => openEditModal(link)}
             onDelete={() => openDeleteModal(link)}
           />

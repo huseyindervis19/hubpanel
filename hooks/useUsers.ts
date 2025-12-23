@@ -10,14 +10,16 @@ import {
 } from "@/services/userService";
 import { User } from "@/types/User";
 
-export function useUsers() {
-  return useQuery<User[], Error>({
+export const useUsers = (lang: string) => {
+  return useQuery({
     queryKey: ["users"],
-    queryFn: getUsers,
-    staleTime: 1000 * 60 * 5,
-    retry: 1,
+    queryFn: async () => {
+      const res = await getUsers(lang);
+      return res.data;
+    },
+    enabled: !!lang,
   });
-}
+};
 
 export function useUser(id: number) {
   return useQuery<User, Error>({

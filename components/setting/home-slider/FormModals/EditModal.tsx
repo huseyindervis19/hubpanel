@@ -12,6 +12,7 @@ import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 import { useUpdateHomeSlider } from "@/hooks/useHomeSlider";
 import { HomeSlider } from "@/types/HomeSlider";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -89,14 +90,22 @@ const EditSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }
       if (form.imageFile) formData.append("imageUrl", form.imageFile);
 
       await updateHomeSlider.mutateAsync({ id: slider.id, data: formData, lang: locale });
-      setMessage({ text: messages["updated_successfully"] || "Updated successfully", type: "success" });
+
+      setMessage({
+        text: messages["updated_successfully"] || "Updated successfully",
+        type: "success",
+      });
+
       setTimeout(() => {
         onClose();
         onSuccess?.();
         setMessage(null);
       }, 1200);
     } catch (err) {
-      setMessage({ text: messages["updated_error"] || "An error occurred", type: "error" });
+      setMessage({
+        text: messages["updated_error"] || "An error occurred",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -106,62 +115,73 @@ const EditSliderModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, slider }
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-6">
       <div className="space-y-4">
         <Form onSubmit={handleSubmit}>
-        <TitleComponent title={messages["edit_home_slider"] || "Edit Slider"} className="text-center mb-4" />
-        {message && (
-          <div className={`p-4 rounded-xl border mb-4 transition-opacity duration-300 ${message.type === "success"
-            ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
-            : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
-            }`}>
-            {message.text}
-          </div>
-        )}
-        <FileInput
-          accept="image/*"
-          onChange={handleFileChange}
-          placeholder={messages["choose_file"] || "Choose File"}
-        />
-        {form.imagePreview && (
-          <img
-            src={form.imagePreview}
-            alt="preview"
-            className="w-full max-h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-700 mt-2"
+          <TitleComponent
+            title={messages["edit_home_slider"] || "Edit Slider"}
+            className="text-center mb-4"
           />
-        )}
-        <div className="space-y-3">
-          <div>
-            <Label className="text-md text-gray-800 dark:text-white/90">{messages["slider_title"] || "Title"} : </Label>
-            <InputField name="title" value={form.title} onChange={handleChange} />
-          </div>
-          <div>
-            <Label className="text-md text-gray-800 dark:text-white/90">{messages["slider_subtitle"] || "Sub Title"} : </Label>
-            <InputField name="subTitle" value={form.subTitle} onChange={handleChange} />
-          </div>
-          <div>
-            <Label className="text-md text-gray-800 dark:text-white/90">{messages["slider_cta_link"] || "CTA Link"} : </Label>
-            <InputField name="ctaText" value={form.ctaLink} onChange={handleChange} />
-          </div>
-          <div>
-            <Label className="text-md text-gray-800 dark:text-white/90">{messages["slider_cta_text"] || "CTA Text"} : </Label>
-            <InputField name="ctaText" value={form.ctaText} onChange={handleChange} />
+
+          {/* ✅ Message الموحد */}
+          <Message message={message} />
+
+          <FileInput
+            accept="image/*"
+            onChange={handleFileChange}
+            placeholder={messages["choose_file"] || "Choose File"}
+          />
+
+          {form.imagePreview && (
+            <img
+              src={form.imagePreview}
+              alt="preview"
+              className="w-full max-h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-700 mt-2"
+            />
+          )}
+
+          <div className="space-y-3">
+            <div>
+              <Label className="text-md text-gray-800 dark:text-white/90">
+                {messages["slider_title"] || "Title"} :
+              </Label>
+              <InputField name="title" value={form.title} onChange={handleChange} />
+            </div>
+
+            <div>
+              <Label className="text-md text-gray-800 dark:text-white/90">
+                {messages["slider_subtitle"] || "Sub Title"} :
+              </Label>
+              <InputField name="subTitle" value={form.subTitle} onChange={handleChange} />
+            </div>
+
+            <div>
+              <Label className="text-md text-gray-800 dark:text-white/90">
+                {messages["slider_cta_link"] || "CTA Link"} :
+              </Label>
+              <InputField name="ctaText" value={form.ctaLink} onChange={handleChange} />
+            </div>
+
+            <div>
+              <Label className="text-md text-gray-800 dark:text-white/90">
+                {messages["slider_cta_text"] || "CTA Text"} :
+              </Label>
+              <InputField name="ctaText" value={form.ctaText} onChange={handleChange} />
+            </div>
           </div>
 
-        </div>
-
-        <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose} disabled={loading}>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="outline" onClick={onClose} disabled={loading}>
               {messages["cancel"] || "Cancel"}
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <LoadingIcon className="animate-spin -ml-1 mr-2" />
-                {messages["updating"] || "Updating..."}
-              </>
-            ) : (
-              messages["update"] || "Update"
-            )}
-          </Button>
-        </div>
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <LoadingIcon className="animate-spin -ml-1 mr-2" />
+                  {messages["updating"] || "Updating..."}
+                </>
+              ) : (
+                messages["update"] || "Update"
+              )}
+            </Button>
+          </div>
         </Form>
       </div>
     </Modal>

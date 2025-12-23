@@ -9,17 +9,18 @@ import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
 import { LoadingIcon } from "@/icons";
 import { useLocale } from "@/context/LocaleContext";
+import { Role } from "@/types/Role";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  role: { id: number; name: string } | null;
+  role: Role | null;
 }
 
 const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, role }) => {
-  const { messages } = useLocale();
-  const { permissions = [], isLoading: isPermissionsLoading } = usePermissions();
+  const { messages, locale } = useLocale();
+  const { data: permissions = [], isLoading: isPermissionsLoading } = usePermissions(locale);
 
   const { permissionIds = [], isLoading: isRolePermissionsLoading } = useRolePermissions(role?.id ?? 0);
   const updateRolePermissions = useUpdateRolePermissions();
@@ -80,7 +81,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
     >
       <h4 className="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90 text-center">
         {(messages["manage_permissions_for"] || "Manage Permissions for {role}")
-          .replace("{role}", role?.name || "")}
+          .replace("{role}", role?.translated?.name || "")}
       </h4>
 
 
@@ -93,7 +94,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
       {isLoading && !permissions.length ? (
         <p>{messages["loading"] || "Loading ..."}</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-6 overflow-y-auto max-h-80 pr-2">
           {permissions.map(permission => (
             <Label key={permission.id} className="flex items-center gap-2 cursor-pointer">
               <Checkbox
@@ -101,7 +102,7 @@ const ManageRolePermissionsModal: React.FC<Props> = ({ isOpen, onClose, onSucces
                 onChange={() => togglePermission(permission.id)}
                 disabled={isPending}
               />
-              <span className={isPending ? "opacity-75" : ""}>{permission.name}</span>
+              <span className={isPending ? "opacity-75" : ""}>{permission.translated?.name}</span>
             </Label>
           ))}
         </div>

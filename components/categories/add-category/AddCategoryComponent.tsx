@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Label from "@/components/form/Label";
 import InputField from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
@@ -12,6 +12,7 @@ import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 import { useCreateCategory } from "@/hooks/useCategory";
 import { useRouter } from "next/navigation";
+import Message from "@/components/ui/Message";
 
 interface FormState {
   name: string;
@@ -22,7 +23,7 @@ interface FormState {
 const AddCategoryComponent: React.FC = () => {
   const { messages } = useLocale();
   const router = useRouter();
-  const createCategoryMutation = useCreateCategory();
+  const { mutateAsync, isPending } = useCreateCategory();
 
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -33,21 +34,9 @@ const AddCategoryComponent: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("No file chosen");
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
-  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (!success) {
-      setForm({ name: "", description: "", priority: 0 });
-      setFile(null);
-      setFileName("No file chosen");
-      setMessage(null);
-    }
-  }, [success]);
-
-  // Handlers
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-
     setForm(prev => ({
       ...prev,
       [name]: type === "number" ? Number(value) : value,
@@ -69,7 +58,10 @@ const AddCategoryComponent: React.FC = () => {
     setMessage(null);
 
     if (!file) {
-      setMessage({ text: messages["required_fields_error"] || "Please choose an image.", type: "error" });
+      setMessage({
+        text: messages["required_fields_error"] || "Please choose an image.",
+        type: "error",
+      });
       return;
     }
 
@@ -80,19 +72,23 @@ const AddCategoryComponent: React.FC = () => {
       formData.append("priority", String(form.priority));
       formData.append("imageUrl", file);
 
-      await createCategoryMutation.mutateAsync(formData);
+      await mutateAsync(formData);
 
-      setMessage({ text: messages["created_successfully"] || "Created Successfully!", type: "success" });
-      setSuccess(true);
+      setMessage({
+        text: messages["created_successfully"] || "Created Successfully!",
+        type: "success",
+      });
 
       setTimeout(() => {
-        setMessage(null);
         router.push("/categories/list-categories");
-      }, 700);
+      }, 600);
 
-    } catch (err) {
-      console.error(err);
-      setMessage({ text: messages["created_error"] || "An error occurred while creating.", type: "error" });
+    } catch (error) {
+      console.error(error);
+      setMessage({
+        text: messages["created_error"] || "An error occurred while creating.",
+        type: "error",
+      });
     }
   };
 
@@ -104,86 +100,51 @@ const AddCategoryComponent: React.FC = () => {
       />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-8 space-y-6">
-        {message && (
-          <div className={`p-4 rounded-xl border transition-opacity duration-300 ${message.type === "success"
-            ? "border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"
-            : "border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20"
-            }`}>
-            {message.text}
-          </div>
-        )}
+        <Message message={message} />
 
         <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <InputField
+            label={messages["category_name"] || "Category Name"}
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-          {/* NAME */}
-          <div>
-            <InputField
-              label={messages["category_name"] || "Category Name"}
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder={messages["category_name_placeholder"] || "Enter category name"}
-              required
-            />
-          </div>
+          <TextArea
+            label={messages["category_description"] || "Category Description"}
+            value={form.description}
+            onChange={handleTextAreaChange}
+            rows={4}
+          />
 
-          {/* DESCRIPTION */}
-          <div>
-            <TextArea
-              label={messages["category_description"] || "Category Description"}
-              value={form.description}
-              onChange={handleTextAreaChange}
-              rows={4}
-              placeholder={messages["category_description_placeholder"] || "Enter description"}
-            />
-          </div>
-
-          {/* IMAGE + PRIORITY */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* IMAGE INPUT */}
-            <div className="space-y-1">
-              <Label htmlFor="file" className={"text-md text-gray-800 dark:text-white/90"}>
-                {messages["category_image"] || "Category Image"} <span className="text-error-500">*</span>
+            <div>
+              <Label>
+                {messages["category_image"] || "Category Image"} *
               </Label>
               <FileInput
-                id="file"
                 onChange={handleFileChange}
-                className="w-full"
                 accept="image/*"
-                placeholder={messages["choose_file"] || "Choose File"}
                 fileName={fileName}
               />
             </div>
-            {/* PRIORITY INPUT */}
-            <div className="space-y-1">
-              <InputField
-                label={messages["categoy_priority"] || "Priority"}
-                id="priority"
-                name="priority"
-                type="number"
-                min={0}
-                value={form.priority}
-                onChange={handleChange}
-              />
-            </div>
+
+            <InputField
+              label={messages["categoy_priority"] || "Priority"}
+              name="priority"
+              type="number"
+              min={0}
+              value={form.priority}
+              onChange={handleChange}
+            />
           </div>
-          {/* SUBMIT BUTTON */}
-          <div className="mt-6 flex justify-end gap-3">
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              disabled={createCategoryMutation.isPending || success}
-              className={createCategoryMutation.isPending ? "opacity-75 cursor-not-allowed flex items-center justify-center" : "text-white"}
-            >
-              {createCategoryMutation.isPending ? (
+
+          <div className="flex justify-end mt-6">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
                 <>
-                  <LoadingIcon
-                    width={16}
-                    height={16}
-                    className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
-                  />
+                  <LoadingIcon className="animate-spin mr-2" />
                   {messages["creating"] || "Creating..."}
                 </>
               ) : (

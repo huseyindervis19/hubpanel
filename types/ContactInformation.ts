@@ -30,6 +30,5 @@ export interface UpdateContactInformationData {
   latitude?: number;
   longitude?: number;
   address?: string;
-  _links: Links;
 }
 

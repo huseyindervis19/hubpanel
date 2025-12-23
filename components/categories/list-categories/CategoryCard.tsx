@@ -7,13 +7,14 @@ import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import { useLocale } from "@/context/LocaleContext";
 import { Category } from "@/types/Category";
-import { useProductsByCategoryId } from "@/hooks/useCategory";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 interface CategoryCardProps {
   category: Category;
-  openDropdownId: number | null;
-  onDropdownToggle: () => void;
-  onDropdownClose: () => void;
+  isDropdownOpen: boolean;
+  onToggleDropdown: () => void;
+  onCloseDropdown: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onViewProducts?: () => void;
@@ -21,95 +22,85 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
   category,
-  openDropdownId,
-  onDropdownToggle,
-  onDropdownClose,
+  isDropdownOpen,
+  onToggleDropdown,
+  onCloseDropdown,
   onEdit,
   onDelete,
   onViewProducts,
 }) => {
-  const isDropdownOpen = openDropdownId === category.id;
   const { locale, messages } = useLocale();
   const isRtl = locale === "ar";
 
-  const t = category.translated;
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const imageUrl = category.imageUrl;
-
-  // Get product count for this category
-  const { data: productsResponse } = useProductsByCategoryId(category.id, locale);
-  const productCount = productsResponse?.data?.length || 0;
+  const name = category.translated?.name ?? category.name;
+  const description = category.translated?.description ?? category.description;
+  const canViewCategoryProducts = useHasPermission(PERMISSIONS.VIEW_CATEGORY_PRODUCTS);
+  const canEditCategory = useHasPermission(PERMISSIONS.EDIT_CATEGORY);
+  const canDeleteCategory = useHasPermission(PERMISSIONS.DELETE_CATEGORY);
 
   return (
-    <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <Card className="group hover:shadow-lg transition border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03]">
       <CardContent className="p-0">
-        <div className="relative overflow-hidden rounded-t-2xl">
-          {imageUrl && (
+        {/* Image */}
+        {imageUrl && (
+          <div className="relative overflow-hidden rounded-t-2xl">
             <img
               src={imageUrl.startsWith("http") ? imageUrl : `${baseUrl}${imageUrl}`}
-              alt={t?.name || category.name}
-              width={400}
-              height={192}
-              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              alt={name}
+              className="w-full h-48 object-cover group-hover:scale-105 transition"
             />
-          )}
-          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 dark:bg-black/30 dark:group-hover:bg-black/20 transition-colors duration-300 rounded-t-2xl" />
-        </div>
+          </div>
+        )}
 
-        <div className="p-4 flex flex-col justify-between h-full">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-2 truncate">
-                {messages["category_name"] || "Category Name"} : {t?.name || category.name}
+        {/* Content */}
+        <div className="p-4">
+          <div className="flex justify-between items-start">
+            <div className="min-w-0">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate">
+                {messages["category_name"] || "Category"}: {name}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">
-                {messages["category_description"] || "Category Description"} : {t?.description || category.description}
-              </p>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2 truncate">
-                {messages["category_product_count"] || "Product Count"}: {productCount}
-              </p>
-              <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-2 truncate">
+              {description && (
+                <p className="text-sm text-gray-500 dark:text-gray-300 truncate">
+                  {description}
+                </p>
+              )}
+              <p className="text-sm font-medium text-purple-600 mt-2">
                 {messages["categoy_priority"] || "Priority"}: {category.priority}
               </p>
             </div>
+              <div className="relative flex-shrink-0">
+                <button
+                  className="dropdown-toggle text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
+                  disabled={!canViewCategoryProducts && !canEditCategory && !canDeleteCategory} 
+                  onClick={onToggleDropdown}>
+                  <HorizontaLDots />
+                </button>
 
-            <div className="relative flex-shrink-0">
-              <button
-                className="dropdown-toggle text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
-                onClick={onDropdownToggle}
-              >
-                <HorizontaLDots />
-              </button>
-
-              <Dropdown
-                isOpen={isDropdownOpen}
-                onClose={onDropdownClose}
-                className={`w-28 origin-top-left ${isRtl ? "right-auto left-0" : "right-0 left-auto"} ${isRtl ? "rtl" : ""}`}
-                style={{ maxWidth: "calc(100vw - 1rem)", minWidth: "max-content" }}
-              >
-                {onViewProducts && (
-                  <DropdownItem
-                    onItemClick={onViewProducts}
-                  >
-                    {messages["categoy_view_products"] || "View Products"}
-                  </DropdownItem>
-                )}
-                {onEdit && (
-                  <DropdownItem
-                    onItemClick={onEdit}
-                  >
-                    {messages["edit"] || "Edit"}
-                  </DropdownItem>
-                )}
-                {onDelete && (
-                  <DropdownItem
-                    onItemClick={onDelete}
-                  >
-                    {messages["delete"] || "Delete"}
-                  </DropdownItem>
-                )}
-              </Dropdown>
-            </div>
+                <Dropdown
+                  isOpen={isDropdownOpen}
+                  onClose={onCloseDropdown}
+                  className={`w-28 origin-top-left ${isRtl ? "right-auto left-0" : "right-0 left-auto"} ${isRtl ? "rtl" : ""} `}
+                  style={{ maxWidth: "calc(100vw - 1rem)", minWidth: "max-content" }}
+                >
+                  {onViewProducts && canViewCategoryProducts && (
+                    <DropdownItem onItemClick={onViewProducts}>
+                      {messages["categoy_view_products"] || "View Products"}
+                    </DropdownItem>
+                  )}
+                  {onEdit && canEditCategory && (
+                    <DropdownItem onItemClick={onEdit}>
+                      {messages["edit"] || "Edit"}
+                    </DropdownItem>
+                  )}
+                  {onDelete && canDeleteCategory && (
+                    <DropdownItem onItemClick={onDelete}>
+                      {messages["delete"] || "Delete"}
+                    </DropdownItem>
+                  )}
+                </Dropdown>
+              </div>
           </div>
         </div>
       </CardContent>

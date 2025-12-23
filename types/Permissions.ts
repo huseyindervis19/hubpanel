@@ -1,4 +1,24 @@
 export const PERMISSIONS = {
+  // Dashboard
+  VIEW_DASHBOARD: "/dashboard",
+
+  // Product Categories
+  VIEW_CATEGORIES: "/categories",
+  ADD_CATEGORY: "/category/create",
+  EDIT_CATEGORY: "/category/update",
+  DELETE_CATEGORY: "/category/delete",
+  VIEW_CATEGORY_PRODUCTS: "/category/products",
+
+  // Products
+  VIEW_PRODUCTS: "/products",
+  ADD_PRODUCT: "/product/create",
+  EDIT_PRODUCT: "/product/update",
+  DELETE_PRODUCT: "/product/delete",
+
+  // Contact Requests
+  VIEW_CONTACT_REQUESTS: "/contact-requests",
+  EDIT_CONTACT_REQUEST: "/contact-requests/update",
+
   // Languages
   VIEW_LANGUAGES: "/languages",
   ADD_LANGUAGE: "/language/create",
@@ -7,6 +27,10 @@ export const PERMISSIONS = {
 
   VIEW_LANGUAGE_KEYS: "view/language-keys",
   EDIT_LANGUAGE_KEYS: "edit/language-keys",
+
+  // Profile
+  VIEW_PROFILE: "/profile",
+  EDIT_PROFILE: "/profile/update",
 
   // Users
   VIEW_USERS: "/users",
@@ -21,39 +45,24 @@ export const PERMISSIONS = {
   DELETE_ROLE: "/roles/delete",
   MANAGE_ROLE_PERMISSIONS: "/role/permissions",
 
-  VIEW_PERMISSIONS: "view-permissions",
-  ADD_PERMISSION: "add-permission",
-  EDIT_PERMISSION: "edit-permission",
-  DELETE_PERMISSION: "delete-permission",
+  VIEW_PERMISSIONS: "/permissions",
 
-  // Products
-  VIEW_PRODUCTS: "/products",
-  ADD_PRODUCT: "/product/create",
-  EDIT_PRODUCT: "/product/update",
-  DELETE_PRODUCT: "/product/delete",
-
-  // Product Categories
-  VIEW_CATEGORIES: "/categories",
-  ADD_CATEGORY: "/category/create",
-  EDIT_CATEGORY: "/category/update",
-  DELETE_CATEGORY: "/category/delete",
-
-  // Dashboard
-  VIEW_DASHBOARD: "view-dashboard",
-
-  // Profile
-  VIEW_PROFILE: "view-profile",
-  EDIT_PROFILE: "edit-profile",
-
-  // About Us
+  // Settings
   VIEW_ABOUT_US: "/about-us",
   EDIT_ABOUT_US: "/about-us/update",
-  DELETE_ABOUT_US: "/about-us/delete",
 
-  // Contact Requests
-  VIEW_CONTACT_REQUESTS: "/contact-requests",
-  UPDATE_CONTACT_REQUEST: "/contact-requests/update",
-  DELETE_CONTACT_REQUEST: "/contact-requests/delete",
+  VIEW_CONTACT_INFORMATION: "/contact-information",
+  EDIT_CONTACT_INFORMATION: "/contact-information/update",
+
+  VIEW_HOME_SLIDER: "/home-slider",
+  ADD_HOME_SLIDER: "/home-slider/create",
+  EDIT_HOME_SLIDER: "/home-slider/update",
+  DELETE_HOME_SLIDER: "/home-slider/delete",
+
+  VIEW_SOCIAL_LINKS: "/social-links",
+  ADD_SOCIAL_LINKS: "/social-links/create",
+  EDIT_SOCIAL_LINKS: "/social-links/update",
+  DELETE_SOCIAL_LINKS: "/social-links/delete",
 } as const;
 
 export type PermissionKey = keyof typeof PERMISSIONS;

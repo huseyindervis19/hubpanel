@@ -19,7 +19,7 @@ import { useLocale } from "@/context/LocaleContext";
 import { useHasPermission } from "@/hooks/useAuth";
 import { PERMISSIONS } from "@/types/Permissions";
 
-type SubItem = Exclude<NavItem["subItems"], undefined>[number]; // Utility type for a single sub-item
+type SubItem = Exclude<NavItem["subItems"], undefined>[number];
 
 type NavItem = {
   name: string;
@@ -30,24 +30,24 @@ type NavItem = {
 
 const getNavItems = (
   messages: Record<string, string>,
-  canViewProducts: boolean,
-  canAddProduct: boolean,
+  canViewDashboard: boolean,
   canViewCategories: boolean,
   canAddCategory: boolean,
-  canViewAboutUs: boolean = true, // temporary: default to true
-  canViewContactRequests: boolean = true // temporary: default to true
+  canViewProducts: boolean,
+  canAddProduct: boolean,
+  canViewContactRequests: boolean
 ): NavItem[] => {
-  const navItems: NavItem[] = [
-    {
+  const navItems: NavItem[] = [];
+
+  if (canViewDashboard) {
+    navItems.push({
       icon: <DashboardIcon />,
       name: messages["dashboard"] || "Dashboard",
       path: "/",
-    },
-  ];
+    });
+  }
 
-  // 1. Products Categories
   if (canViewCategories || canAddCategory) {
-    // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
     const categorySubItems: SubItem[] = [
       canViewCategories && { name: messages["products_categories"] || "Products Categories", path: "/categories/list-categories" },
       canAddCategory && { name: messages["add_product_categories"] || "Add Categories", path: "/categories/add-category" },
@@ -62,9 +62,7 @@ const getNavItems = (
     }
   }
 
-  // 2. Products
   if (canViewProducts || canAddProduct) {
-    // FIX: Define type as an array of SubItem[] to avoid 'possibly undefined' error
     const productSubItems: SubItem[] = [
       canViewProducts && { name: messages["products_list"] || "List Product", path: "/products/list-products" },
       canAddProduct && { name: messages["add_product"] || "Add Product", path: "/products/add-product" },
@@ -79,32 +77,45 @@ const getNavItems = (
     }
   }
 
-  navItems.push({
-    icon: <EnvelopeIcon />,
-    name: messages["contact_requests"] || "Contact Requests",
-    path: "/contact-requests",
-  });
+  if (canViewContactRequests) {
+    navItems.push({
+      icon: <EnvelopeIcon />,
+      name: messages["contact_requests"] || "Contact Requests",
+      path: "/contact-requests",
+    });
+  }
 
   return navItems;
 };
+
 const getOtherItems = (
   messages: Record<string, string>,
-  canViewUsers: boolean,
   canViewRoles: boolean,
+  canViewPermissions: boolean,
   canViewLanguages: boolean,
-  canViewLanguageKeys: boolean
+  canViewLanguageKeys: boolean,
+  canViewUsers: boolean,
+  canViewProfile: boolean,
+  canViewHomeSlider: boolean,
+  canViewAboutUs: boolean,
+  canViewContactInfo: boolean,
+  canViewSocialLinks: boolean
 ): NavItem[] => {
   const items: NavItem[] = [];
 
-  if (canViewRoles) {
-    items.push({
-      icon: <LockIcon />,
-      name: messages["roles_permissions"] || "Roles && Permissions",
-      subItems: [
-        { name: messages["permissions"] || "Permissions", path: "/permissions" },
-        { name: messages["roles"] || "Roles", path: "/roles" },
-      ],
-    });
+  if (canViewRoles || canViewPermissions) {
+    const roleSubItems: SubItem[] = [
+      canViewPermissions && { name: messages["permissions"] || "Permissions", path: "/permissions" },
+      canViewRoles && { name: messages["roles"] || "Roles", path: "/roles" },
+    ].filter(Boolean) as SubItem[];
+
+    if (roleSubItems.length > 0) {
+      items.push({
+        icon: <LockIcon />,
+        name: messages["roles_permissions"] || "Roles && Permissions",
+        subItems: roleSubItems,
+      });
+    }
   }
 
   // if (canViewLanguages || canViewLanguageKeys) {
@@ -115,7 +126,7 @@ const getOtherItems = (
 
   //   if (languageSubItems.length > 0) {
   //     items.push({
-  //       icon: <LanguageIcon />,
+  //       icon: <LockIcon />,
   //       name: messages["languages"] || "Languages",
   //       subItems: languageSubItems,
   //     });
@@ -130,23 +141,28 @@ const getOtherItems = (
     });
   }
 
-  items.push({
-    icon: <UserCircleIcon />,
-    name: messages["profile"] || "User Profile",
-    path: "/profile",
-  });
+  if (canViewProfile) {
+    items.push({
+      icon: <UserCircleIcon />,
+      name: messages["profile"] || "User Profile",
+      path: "/profile",
+    });
+  }
 
-  items.push({
-    icon: <EnvelopeIcon />,
-    name: messages["setting"] || "Setting",
-    subItems: [
-      { name: messages["home_slider"] || "Home Slider", path: "/setting/home-slider" },
-      { name: messages["about_us"] || "About Us", path: "/setting/about-us" },
-      { name: messages["contact_informations"] || "Contact Information", path: "/setting/contact-information" },
-      { name: messages["social_links"] || "Social Links", path: "/setting/social-links" },
+  const settingSubItems: SubItem[] = [
+    canViewHomeSlider && { name: messages["home_slider"] || "Home Slider", path: "/setting/home-slider" },
+    canViewAboutUs && { name: messages["about_us"] || "About Us", path: "/setting/about-us" },
+    canViewContactInfo && { name: messages["contact_informations"] || "Contact Information", path: "/setting/contact-information" },
+    canViewSocialLinks && { name: messages["social_links"] || "Social Links", path: "/setting/social-links" },
+  ].filter(Boolean) as SubItem[];
 
-    ],
-  });
+  if (settingSubItems.length > 0) {
+    items.push({
+      icon: <EnvelopeIcon />,
+      name: messages["setting"] || "Setting",
+      subItems: settingSubItems,
+    });
+  }
 
   return items;
 };
@@ -157,34 +173,51 @@ const AppSidebar: React.FC = () => {
   const { locale, messages } = useLocale();
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const canViewUsers = useHasPermission(PERMISSIONS.VIEW_USERS);
-  const canViewProducts = useHasPermission(PERMISSIONS.VIEW_PRODUCTS);
-  const canAddProduct = useHasPermission(PERMISSIONS.ADD_PRODUCT);
+  const canViewDashboard = useHasPermission(PERMISSIONS.VIEW_DASHBOARD);
   const canViewCategories = useHasPermission(PERMISSIONS.VIEW_CATEGORIES);
   const canAddCategory = useHasPermission(PERMISSIONS.ADD_CATEGORY);
+  const canViewProducts = useHasPermission(PERMISSIONS.VIEW_PRODUCTS);
+  const canAddProduct = useHasPermission(PERMISSIONS.ADD_PRODUCT);
+  const canViewContactRequests = useHasPermission(PERMISSIONS.VIEW_CONTACT_REQUESTS);
   const canViewRoles = useHasPermission(PERMISSIONS.VIEW_ROLES);
+  const canViewPermissions = useHasPermission(PERMISSIONS.VIEW_PERMISSIONS);
   const canViewLanguages = useHasPermission(PERMISSIONS.VIEW_LANGUAGES);
   const canViewLanguageKeys = useHasPermission(PERMISSIONS.VIEW_LANGUAGE_KEYS);
-  // Temporary: removed permission checks for About Us and Contact Requests
-  // const canViewAboutUs = useHasPermission(PERMISSIONS.VIEW_ABOUT_US);
-  // const canViewContactRequests = useHasPermission(PERMISSIONS.VIEW_CONTACT_REQUESTS);
+  const canViewUsers = useHasPermission(PERMISSIONS.VIEW_USERS);
+  const canViewProfile = useHasPermission(PERMISSIONS.VIEW_PROFILE);
+  const canViewHomeSlider = useHasPermission(PERMISSIONS.VIEW_HOME_SLIDER);
+  const canViewAboutUs = useHasPermission(PERMISSIONS.VIEW_ABOUT_US);
+  const canViewContactInfo = useHasPermission(PERMISSIONS.VIEW_CONTACT_INFORMATION);
+  const canViewSocialLinks = useHasPermission(PERMISSIONS.VIEW_SOCIAL_LINKS);
 
   const navItems = useMemo(
     () => getNavItems(
       messages as Record<string, string>,
-      canViewProducts,
-      canAddProduct,
+      canViewDashboard,
       canViewCategories,
       canAddCategory,
-      true, // canViewAboutUs - temporary: always true
-      true  // canViewContactRequests - temporary: always true
+      canViewProducts,
+      canAddProduct,
+      canViewContactRequests
     ),
-    [messages, canViewProducts, canAddProduct, canViewCategories, canAddCategory]
+    [messages, canViewDashboard, canViewCategories, canAddCategory, canViewProducts, canAddProduct, canViewContactRequests]
   );
 
   const othersItems = useMemo(
-    () => getOtherItems(messages as Record<string, string>, canViewUsers, canViewRoles, canViewLanguages, canViewLanguageKeys),
-    [messages, canViewUsers, canViewRoles, canViewLanguages, canViewLanguageKeys]
+    () => getOtherItems(
+      messages as Record<string, string>,
+      canViewRoles,
+      canViewPermissions,
+      canViewLanguages,
+      canViewLanguageKeys,
+      canViewUsers,
+      canViewProfile,
+      canViewHomeSlider,
+      canViewAboutUs,
+      canViewContactInfo,
+      canViewSocialLinks
+    ),
+    [messages, canViewRoles, canViewPermissions, canViewLanguages, canViewLanguageKeys, canViewUsers, canViewProfile, canViewHomeSlider, canViewAboutUs, canViewContactInfo, canViewSocialLinks]
   );
 
   const [openSubmenu, setOpenSubmenu] = useState<{ type: "main" | "others"; index: number } | null>(null);
@@ -302,7 +335,6 @@ const AppSidebar: React.FC = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Logo */}
       <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -343,7 +375,6 @@ const AppSidebar: React.FC = () => {
         </Link>
       </div>
 
-      {/* Navigation */}
       <div className="flex flex-col overflow-y-auto no-scrollbar">
         <nav className="mb-6 space-y-8">
           <section>

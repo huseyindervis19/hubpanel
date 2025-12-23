@@ -1,14 +1,14 @@
-export interface Links {
-  self: string;
-  edit: string;
-  delete: string;
+import { ApiLinks } from "./ApiResponse";
+
+export interface Translated {
+  name: string;
 }
 
 export interface Permission {
   id: number;
-  name: string;      
+  translated?: Translated;   
   endpoint: string;       
   createdAt: string;
   updatedAt: string;
-  _links?: Links; 
+  _links?: ApiLinks;
 }

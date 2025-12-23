@@ -10,6 +10,8 @@ import EditModal from "./FormModals/EditModal";
 import DeleteModal from "./FormModals/DeleteModal";
 import { HomeSlider } from "@/types/HomeSlider";
 import Button from "@/components/ui/button/Button";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 const SliderComponent: React.FC = () => {
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
@@ -18,6 +20,8 @@ const SliderComponent: React.FC = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  const canAddSlider = useHasPermission(PERMISSIONS.ADD_HOME_SLIDER);
+
   const { messages, locale } = useLocale();
   const { data: homeSlider, isLoading, error, refetch } = useHomeSlider(locale);
   const slider = homeSlider?.data || [];
@@ -25,15 +29,17 @@ const SliderComponent: React.FC = () => {
     <>
       <div className="mb-5 flex items-center justify-between lg:mb-7">
         <TitleComponent title={messages["home_slider"] || "Home Slider"} />
+        {canAddSlider && (
         <Button className="h-9 px-4 text-sm" onClick={() => setAddModalOpen(true)}>
           {messages["create"] || "Create"}
         </Button>
+        )}
       </div>
 
       {isLoading && <div className="p-6">{messages["loading"] || "Loading..."}</div>}
       {error && <div className="p-6 text-red-600">{messages["error"] || "Failed to load sliders"}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {slider.map((s) => (
           <HomeSliderCard
             key={s.id}

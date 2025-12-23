@@ -5,6 +5,7 @@ import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import InputField from "@/components/form/input/InputField";
 import TextArea from "@/components/form/input/TextArea";
+import Label from "@/components/form/Label";
 import Form from "@/components/form/Form";
 import Checkbox from "@/components/form/input/Checkbox";
 import Select from "@/components/form/Select";
@@ -13,7 +14,8 @@ import { Product } from "@/types/Product";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
 import { useUpdateProduct } from "@/hooks/useProduct";
-import { useAllCategories } from "@/hooks/useCategory";
+import { useCategories } from "@/hooks/useCategory";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -43,10 +45,10 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     isActive: false,
     isFeatured: false,
   });
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  const { data: categoriesResponse, isLoading: categoriesLoading } = useAllCategories(locale);
-  const categories = categoriesResponse?.data || [];
+  const { data: categoriesResponse, isLoading: categoriesLoading } = useCategories(locale);
+  const categories = categoriesResponse || [];
   const updateProductMutation = useUpdateProduct();
 
   const isPending = updateProductMutation.isPending;
@@ -65,12 +67,13 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
       setForm({
         name: product.translated?.name || "",
         description: product.translated?.description || "",
-        category_id: product.categoryId.toString(),
+        category_id: product.categoryId?.toString() ?? "",
         stockQuantity: product.stockQuantity,
         priority: product.priority,
         isActive: product.isActive,
         isFeatured: product.isFeatured,
       });
+      setMessage(null);
     }
   }, [product, categoriesLoading]);
 
@@ -84,6 +87,14 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
 
     setMessage(null);
 
+    if (!form.category_id) {
+      setMessage({
+        text: messages["category_name_required"] || "Category is required",
+        type: "error",
+      });
+      return;
+    }
+
     const payload = {
       name: form.name.trim(),
       description: form.description.trim() || undefined,
@@ -95,15 +106,18 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     };
 
     try {
-      await updateProductMutation.mutateAsync({ id: product.id, data: payload, lang: locale });
-      setMessage(messages["updated_successfully"] || "Product updated successfully!");
+      await updateProductMutation.mutateAsync({ id: product.id, payload, lang: locale });
+      setMessage({ text: messages["updated_successfully"] || "Product updated successfully!", type: "success" });
       setTimeout(() => {
         onClose();
         onSuccess();
       }, 800);
     } catch (err: any) {
       console.error(err);
-      setMessage(err?.response?.data?.message || messages["update_error"] || "An error occurred while updating.");
+      setMessage({
+        text: err?.response?.data?.message || messages["update_error"] || "An error occurred while updating.",
+        type: "error"
+      });
     }
   };
 
@@ -111,79 +125,78 @@ const EditProductModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, product
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] p-8 lg:p-10">
       <Form onSubmit={handleSubmit}>
         <TitleComponent title={messages["edit_product"] || "Edit Product"} className="mb-6 text-center" />
-        {message && (
-          <p className={`p-4 rounded-xl transition-opacity duration-300 border ${message.includes("Error") ? "border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20" : "border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20"}`}>
-            {message}
-          </p>
-        )}
+
+        <Message message={message} />
 
         <div className="space-y-6 pt-2">
-          <div>
-            <Select
-              label={messages["product_category_name"] || "Category Name"}
-              value={form.category_id}
-              onChange={(value) => handleChange("category_id", value)}
-              options={categoryOptions}
-              placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")}
-              disabled={categoriesLoading || isPending}
-              required
-            />
-          </div>
-          <div>
-            <InputField
-              label={messages["product_name"] || "Product Name"}
-              type="text"
-              value={form.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              placeholder={messages["product_name_placeholder"] || "Enter product name"}
-              required
-              disabled={isPending}
-            />
-          </div>
-          <div>
-            <TextArea
-              label={messages["product_description"] || "Product Description"}
-              value={form.description}
-              onChange={(value) => handleChange("description", value)}
-              placeholder={messages["product_description_placeholder"] || "Enter product description"}
-              rows={4}
-              disabled={isPending}
-            />
-          </div>
-          <div>
-            <InputField
-              label={messages["product_stock_quantity"] || "Stock Quantity"}
-              type="number"
-              value={form.stockQuantity.toString()}
-              onChange={(e) => handleChange("stockQuantity", Number(e.target.value))}
-              placeholder={messages["product_stock_quantity_placeholder"] || "Enter available stock"}
-              min={0}
-              required
-              disabled={isPending}
-            />
-          </div>
-          <div>
-            <InputField
-              label={messages["product_priority"] || "Priority"}
-              type="number"
-              value={form.priority.toString()}
-              onChange={(e) => handleChange("priority", Number(e.target.value))}
-              placeholder={messages["priority_placeholder"] || "Enter product priority"}
-              min={0}
-              required
-              disabled={isPending}
-            />
-          </div>
+          <Select
+            label={messages["product_category_name"] || "Category Name"}
+            value={form.category_id}
+            onChange={(value) => handleChange("category_id", value)}
+            options={categoryOptions}
+            placeholder={categoriesLoading ? (messages["loading"] || "Loading...") : (messages["product_category_name_placeholder"] || "Select Category")}
+            disabled={categoriesLoading || isPending}
+            required
+          />
+          <InputField
+            label={messages["product_name"] || "Product Name"}
+            type="text"
+            value={form.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+            placeholder={messages["product_name_placeholder"] || "Enter product name"}
+            required
+            disabled={isPending}
+          />
+          <Label className="text-md text-gray-800 dark:text-white/90">{messages["product_description"]|| "Product Description"}</Label>
+          <TextArea
+            value={form.description}
+            onChange={(value) => handleChange("description", value)}
+            rows={4}
+            disabled={isPending}
+          />
+          <InputField
+            label={messages["product_stock_quantity"] || "Stock Quantity"}
+            type="number"
+            value={form.stockQuantity.toString()}
+            onChange={(e) => handleChange("stockQuantity", Number(e.target.value))}
+            min={0}
+            required
+            disabled={isPending}
+          />
+          <InputField
+            label={messages["product_priority"] || "Priority"}
+            type="number"
+            value={form.priority.toString()}
+            onChange={(e) => handleChange("priority", Number(e.target.value))}
+            min={0}
+            required
+            disabled={isPending}
+          />
           <div className="flex gap-6">
-            <Checkbox label={messages["product_is_active"] || "Active"} checked={form.isActive} onChange={(checked) => handleChange("isActive", checked)} disabled={isPending} />
-            <Checkbox label={messages["product_is_featured"] || "Featured"} checked={form.isFeatured} onChange={(checked) => handleChange("isFeatured", checked)} disabled={isPending} />
+            <Checkbox
+              label={messages["product_is_active"] || "Active"}
+              checked={form.isActive}
+              onChange={(checked) => handleChange("isActive", checked)}
+              disabled={isPending}
+            />
+            <Checkbox
+              label={messages["product_is_featured"] || "Featured"}
+              checked={form.isFeatured}
+              onChange={(checked) => handleChange("isFeatured", checked)}
+              disabled={isPending}
+            />
           </div>
         </div>
 
         <div className="flex items-center justify-end w-full gap-3 mt-8">
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>{messages["cancel"] || "Cancel"}</Button>
           <Button size="sm" type="submit" disabled={isPending} className="text-white">
-            {isPending ? <><LoadingIcon width={16} height={16} className="animate-spin -ml-1 mr-3" />{messages["updating"] || "Updating..."}</> : messages["update"] || "Update"}
+            {isPending ? (
+              <>
+                <LoadingIcon width={16} height={16} className="animate-spin -ml-1 mr-3" />
+                {messages["updating"] || "Updating..."}
+              </>
+            ) : messages["update"] || "Update"}
           </Button>
         </div>
       </Form>

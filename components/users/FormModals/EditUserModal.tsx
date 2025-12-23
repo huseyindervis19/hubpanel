@@ -15,6 +15,7 @@ import { User } from "@/types/User";
 import { useUpdateUser } from "@/hooks/useUsers";
 import { LoadingIcon } from "@/icons";
 import { useLocale } from "@/context/LocaleContext";
+import Message from "@/components/ui/Message";
 
 interface Props {
   isOpen: boolean;
@@ -24,7 +25,7 @@ interface Props {
 }
 
 const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) => {
-  const { messages } = useLocale();
+  const { messages, locale } = useLocale();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -33,12 +34,11 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     status: "active" as "active" | "inactive",
   });
 
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  const { roles = [], isLoading: rolesLoading } = useRoles();
+  const { data:roles = [], isLoading: rolesLoading } = useRoles(locale);
   const { languages = [], isLoading: langsLoading } = useLanguages();
   const updateUser = useUpdateUser();
-
   const isPending = updateUser.isPending;
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
         email: user.email || "",
         roleIds: initialRoleIds,
         languageId: user.language?.id || user.languageId,
-        status: (user.status === "active" || user.status === "inactive" ? user.status : "active"),
+        status: user.status === "active" || user.status === "inactive" ? user.status : "active",
       });
       setMessage(null);
     }
@@ -76,9 +76,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
 
     const initialRoleIds = user.userRoles?.map((ur) => ur.role.id) || [];
     const roleIdsChanged = !arraysEqual(form.roleIds, initialRoleIds);
-
     const languageIdChanged = form.languageId !== (user.language?.id || user.languageId);
-
     const usernameChanged = form.username.trim() !== (user.username || "");
     const emailChanged = form.email.trim() !== (user.email || "");
     const statusChanged = form.status !== (user.status || "active");
@@ -99,7 +97,7 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     if (!user || !user.id) return;
 
     if (form.roleIds.length === 0) {
-      setMessage(messages["select_at_least_one_role"] || "Please select at least one role.");
+      setMessage({ text: messages["select_at_least_one_role"] || "Please select at least one role.", type: "error" });
       return;
     }
 
@@ -116,60 +114,33 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
     try {
       await updateUser.mutateAsync({ id: user.id, data: payload });
 
-      setMessage(messages["updated_successfully"] || "Updated successfully!");
+      setMessage({ text: messages["updated_successfully"] || "Updated successfully!", type: "success" });
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       onClose();
       onSuccess();
-
     } catch (err) {
       console.error(err);
-      setMessage(messages["updated_error"] || "An error occurred while updating.");
+      setMessage({ text: messages["updated_error"] || "An error occurred while updating.", type: "error" });
     }
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-[600px] p-8 lg:p-10 mx-4 sm:mx-auto">
       <Form onSubmit={handleSubmit}>
-        <TitleComponent
-          title={messages["edit_user"] || "Edit User"}
-          className="mb-6 text-center"
-        />
+        <TitleComponent title={messages["edit_user"] || "Edit User"} className="mb-6 text-center" />
 
-        {message && (
-          <p
-            className={`mb-4 text-center font-medium ${message.includes("Error") ? "p-4 rounded-xl border border-error-200 bg-error-50 text-error-700 dark:border-error-700 dark:bg-error-900/20 transition-opacity duration-300" : "p-4 rounded-xl border border-success-200 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 transition-opacity duration-300"
-              }`}
-          >
-            {message}
-          </p>
-        )}
+        <Message message={message} />
 
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Label>{messages["user_name"] || "Name"}</Label>
-              <InputField
-                type="text"
-                value={form.username}
-                onChange={(e) => handleChange("username", e.target.value)}
-                placeholder={messages["user_name_placeholder"] || "enter user name"}
-                required
-              />
+              <InputField type="text" value={form.username} onChange={(e) => handleChange("username", e.target.value)} placeholder={messages["user_name_placeholder"] || "enter user name"} required />
             </div>
             <div className="flex-1">
               <Label>{messages["user_email"] || "Email"}</Label>
-              <InputField
-                type="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                placeholder={messages["email_placeholder"] || "Enter email"}
-                required
-              />
+              <InputField type="email" value={form.email} onChange={(e) => handleChange("email", e.target.value)} placeholder={messages["email_placeholder"] || "Enter email"} required />
             </div>
           </div>
 
@@ -179,15 +150,12 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
               <MultiSelect
                 options={roles.map((role) => ({
                   value: role.id.toString(),
-                  text: role.name,
-                  label: role.name,
+                  text: role.translated?.name ?? messages["unnamed_role"] ?? "Unnamed role",
+                  label: role.translated?.name ?? messages["unnamed_role"] ?? "Unnamed role",
                 }))}
                 defaultSelected={form.roleIds.map((id) => id.toString())}
-                onChange={(selected) => handleChange(
-                  "roleIds",
-                  selected.map((v) => parseInt(v))
-                )}
-                placeholder={rolesLoading ? (messages["loading"] || "Loading ...") : (messages["select_roles"] || "Select Role")}
+                onChange={(selected) => handleChange("roleIds", selected.map((v) => parseInt(v)))}
+                placeholder={rolesLoading ? messages["loading"] || "Loading ..." : messages["select_roles"] || "Select Role"}
                 disabled={rolesLoading || isPending}
               />
             </div>
@@ -197,11 +165,8 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
               <Select
                 value={form.languageId?.toString() || ""}
                 onChange={(value) => handleChange("languageId", parseInt(value))}
-                options={languages.map((l) => ({
-                  value: String(l.id),
-                  label: l.name,
-                }))}
-                placeholder={langsLoading ? (messages["loading"] || "Loading...") : (messages["select_language"] || "Select Language")}
+                options={languages.map((l) => ({ value: String(l.id), label: l.name }))}
+                placeholder={langsLoading ? messages["loading"] || "Loading..." : messages["select_language"] || "Select Language"}
                 disabled={langsLoading || isPending}
                 required
               />
@@ -230,23 +195,13 @@ const EditUserModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, user }) =>
           <Button size="sm" variant="outline" onClick={onClose} disabled={isPending}>
             {messages["cancel"] || "Cancel"}
           </Button>
-          <Button
-            size="sm"
-            type="submit"
-            disabled={isPending || !isModified || isFormInvalid}
-          >
+          <Button size="sm" type="submit" disabled={isPending || !isModified || isFormInvalid}>
             {isPending ? (
               <>
-                <LoadingIcon
-                  width={16}
-                  height={16}
-                  className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0"
-                />
+                <LoadingIcon width={16} height={16} className="animate-spin -ml-1 mr-3 !text-white !opacity-100 dark:!invert-0" />
                 {messages["updating"] || "Updating..."}
               </>
-            ) : (
-              messages["update"] || "Update"
-            )}
+            ) : messages["update"] || "Update"}
           </Button>
         </div>
       </Form>

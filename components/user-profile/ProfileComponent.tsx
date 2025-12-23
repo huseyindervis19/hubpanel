@@ -8,6 +8,8 @@ import EditUserModal from "@/components/users/FormModals/EditUserModal";
 import TitleComponent from "../ui/TitleComponent";
 import LoadingComponent from "../ui/LoadingComponent";
 import { useLocale } from "@/context/LocaleContext";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 const ProfileComponent = () => {
   const { messages } = useLocale();
@@ -16,6 +18,8 @@ const ProfileComponent = () => {
 
   if (isLoading) { <LoadingComponent title="." /> }
   if (!currentUser) return <p>{messages["user_not_found"] || "User not found"}</p>;
+
+  const canUpdateProfile = useHasPermission(PERMISSIONS.EDIT_PROFILE);
 
   return (
     <>
@@ -26,12 +30,14 @@ const ProfileComponent = () => {
         <UserInfoCard user={currentUser} onEdit={() => setEditModalOpen(true)} />
       </div>
 
+      {canUpdateProfile && (
       <EditUserModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         onSuccess={() => refetch()}
         user={currentUser}
       />
+      )}
     </>
   );
 }

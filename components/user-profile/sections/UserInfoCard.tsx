@@ -4,6 +4,8 @@ import React, { useMemo } from "react";
 import { PencilIcon } from "@/icons";
 import TitleComponent from "@/components/ui/TitleComponent";
 import { useLocale } from "@/context/LocaleContext";
+import { useHasPermission } from "@/hooks/useAuth";
+import { PERMISSIONS } from "@/types/Permissions";
 
 type Props = {
   user: {
@@ -17,6 +19,8 @@ type Props = {
 
 const UserInfoCard = ({ user, onEdit }: Props) => {
   const { messages } = useLocale();
+  const canUpdateProfile = useHasPermission(PERMISSIONS.EDIT_PROFILE);
+
   const RolesDisplay = useMemo(() => {
     if (!user.userRoles || user.userRoles.length === 0) {
       return <p className="text-sm font-medium text-gray-800 dark:text-white/90">-</p>;
@@ -68,14 +72,15 @@ const UserInfoCard = ({ user, onEdit }: Props) => {
             ))}
           </div>
         </div>
-
-        <button
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:w-auto"
-          onClick={onEdit}
-        >
-          <PencilIcon />
-          {messages["edit"] || "Edit"}
-        </button>
+        {canUpdateProfile && (
+          <button
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:w-auto"
+            onClick={onEdit}
+          >
+            <PencilIcon />
+            {messages["edit"] || "Edit"}
+          </button>
+        )}
       </div>
     </div>
   );

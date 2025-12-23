@@ -3,67 +3,65 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { Category } from "@/types/Category";
 import { Product } from "@/types/Product";
 
+export const categoryService = {
+  getAll: async (lang: string): Promise<ApiResponse<Category[]>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Category[]>>(
+      "/categories",
+      { params: { lang } }
+    );
+    return data;
+  },
 
-// fetch categories by language ID
-export const fetchAllCategories = async (lang: string): Promise<ApiResponse<Category[]>> => {
-  const response = await axiosInstance.get<ApiResponse<Category[]>>(`/categories?lang=${lang}`);
-  return response.data;
-};
+  getById: async (id: number, lang: string): Promise<ApiResponse<Category>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Category>>(
+      `/categories/${id}`,
+      { params: { lang } }
+    );
+    return data;
+  },
 
+  create: async (formData: FormData): Promise<Category> => {
+    const { data } = await axiosInstance.post<Category>(
+      "/categories",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return data;
+  },
 
-export const createCategory = async (formData: FormData): Promise<Category> => {
-  const response = await axiosInstance.post<Category>("/categories", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-};
+  update: async (
+    id: number,
+    payload: FormData | Partial<Category>,
+    lang?: string
+  ): Promise<Category> => {
+    const isFormData = payload instanceof FormData;
 
+    const { data } = await axiosInstance.patch<ApiResponse<Category>>(
+      `/categories/${id}`,
+      payload,
+      {
+        params: lang ? { lang } : undefined,
+        headers: isFormData
+          ? { "Content-Type": "multipart/form-data" }
+          : undefined,
+      }
+    );
 
-export const updateCategory = async (
-  id: number,
-  data: FormData | Partial<Category>,
-  lang: string
-): Promise<Category> => {
-  const isFormData = data instanceof FormData;
-  
-  const response = await axiosInstance.patch<ApiResponse<Category>>(
-    `/categories/${id}`,
-    data,
-    {
-      params: { lang },
-      headers: isFormData ? {
-        "Content-Type": "multipart/form-data",
-      } : undefined
-    }
-  );
+    return data.data;
+  },
 
-  return response.data.data;
-};
+  remove: async (id: number): Promise<void> => {
+    await axiosInstance.delete(`/categories/${id}`);
+  },
 
-export const deleteCategory = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/categories/${id}`);
-};
-
-// fetch products by category ID
-export const productsByCategoryId = async (
-  categoryId: number,
-  lang: string
-): Promise<ApiResponse<Product[]>> => {
-  const response = await axiosInstance.get<ApiResponse<Product[]>>(
-    `/categories/${categoryId}/products?lang=${lang}`
-  );
-  return response.data;
-};
-
-// fetch category by ID
-export const fetchCategoryById = async (
-  id: number,
-  lang: string
-): Promise<ApiResponse<Category>> => {
-  const response = await axiosInstance.get<ApiResponse<Category>>(
-    `/categories/${id}?lang=${lang}`
-  );
-  return response.data;
+  getProducts: async (
+    categoryId: number,
+    lang: string
+  ): Promise<ApiResponse<Product[]>> => {
+    const { data } = await axiosInstance.get<ApiResponse<Product[]>>(
+      `/categories/${categoryId}/products`,
+      { params: { lang } }
+    );
+    return data;
+  },
 };

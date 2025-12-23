@@ -11,14 +11,14 @@ import { useLocale } from "@/context/LocaleContext";
 
 
 const PermissionsComponent = () => {
-  const { messages } = useLocale();
-  const { permissions = [], isLoading, refetch } = usePermissions();
+  const { messages, locale } = useLocale();
+  const { data: permissions = [], isLoading, refetch } = usePermissions(locale);
   const [searchTerm, setSearchTerm] = useState("");
-
+  
   const filteredPermissions = useMemo(() => {
     return permissions.filter(
       (p) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.translated?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.endpoint.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [permissions, searchTerm]);
@@ -58,7 +58,6 @@ const PermissionsComponent = () => {
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   <Th> {messages["permission_name"] || "Name"} </Th>
-                  <Th> {messages["permission_endpoint"] || "Endpoint"} </Th>
                   <Th> {messages["permission_date"] || "Created At"} </Th>
                 </TableRow>
               </TableHeader>
@@ -70,8 +69,7 @@ const PermissionsComponent = () => {
                       key={permission.id}
                       className="hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
                     >
-                      <Td>{permission.name}</Td>
-                      <Td>{permission.endpoint}</Td>
+                      <Td>{permission.translated?.name}</Td>
                       <Td> {new Date(permission.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</Td>
                     </TableRow>
                   ))

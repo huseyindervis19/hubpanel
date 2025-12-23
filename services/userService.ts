@@ -1,9 +1,12 @@
 import axiosInstance from "@/lib/axios";
 import { User } from "@/types/User";
+import { ApiResponse } from "@/types/ApiResponse";
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await axiosInstance.get<{ data: User[] }>("/users");
-  return response.data.data;
+export const getUsers = async (lang: string): Promise<ApiResponse<User[]>> => {
+  const { data } = await axiosInstance.get<ApiResponse<User[]>>("/users", {
+    params: { lang },
+  });
+  return data;
 };
 
 export const getUserById = async (id: number): Promise<User> => {

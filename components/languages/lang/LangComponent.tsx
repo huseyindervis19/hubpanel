@@ -57,7 +57,7 @@ const LanguagesComponent = () => {
     <>
       {/* Header + Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 lg:mb-7">
-        <TitleComponent title="Languages" />
+        <TitleComponent title={messages["languages"] || "Languages"} />
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
