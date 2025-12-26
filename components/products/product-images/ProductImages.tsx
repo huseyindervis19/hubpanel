@@ -100,8 +100,8 @@ const ProductImages: React.FC<Props> = ({
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
+      <div className="mb-5 flex items-center justify-between lg:mb-7">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           {messages["product_images"] || "Product Images"}
           {productName && ` — ${productName}`}
         </h3>

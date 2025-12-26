@@ -10,11 +10,11 @@ export default function ProductImagesPage() {
   const productName = searchParams?.get("name") || "";
 
   return (
-    <div className="p-6">
+    <section className="space-y-6">
       <ProductImages 
         productId={productId}
         productName={productName}
       />
-    </div>
+    </section>
   );
 }

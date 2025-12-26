@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, Variants } from "framer-motion";
+import { ChevronDownIcon } from "@/icons";
 
 interface Option {
   value: string;
@@ -97,7 +98,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               ${disabled
                   ? "bg-gray-100 border-gray-300 dark:bg-gray-800 dark:border-gray-700 opacity-70"
                   : "bg-white border-gray-300 focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300"
-              }`}
+                }`}
             >
               {/* Selected tags */}
               <div className="flex flex-wrap gap-1 flex-1 overflow-hidden">
@@ -128,22 +129,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
               {/* Dropdown arrow */}
               <div className="flex items-center pl-2">
-                <svg
-                  className={`stroke-current transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4.79175 7.39551L10.0001 12.6038L15.2084 7.39551"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <ChevronDownIcon />
               </div>
             </div>
           </div>
@@ -154,29 +140,27 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             animate={isOpen ? "visible" : "hidden"}
             variants={dropdownVariants}
             style={{ originY: 0 }}
-            className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-b-lg shadow-sm top-[100%] -mt-px max-h-60 dark:bg-gray-900 border border-gray-300 dark:border-gray-700"
+            className="absolute z-40 w-full max-h-60 overflow-y-auto bg-white shadow-sm top-[100%] -mt-px rounded-b-lg rounded-t-none border border-gray-300 dark:bg-gray-900 dark:border-gray-700"
           >
-            <div className="flex flex-col">
-              {options.length > 0 ? (
-                options.map((option, index) => {
-                  const isSelected = selectedOptions.includes(option.value);
-                  return (
-                    <div key={option.value}>
-                      <div
-                        className={`w-full cursor-pointer hover:bg-primary/5 px-3 py-2 ${isSelected ? "bg-primary/10 dark:bg-primary/20" : ""}`}
-                        onClick={() => handleSelect(option.value)}
-                      >
-                        {option.text}
-                      </div>
+            {options.length > 0 ? (
+              options.map((option, index) => {
+                const isSelected = selectedOptions.includes(option.value);
+                return (
+                  <div key={option.value}>
+                    <div
+                      className={`cursor-pointer px-3 py-2 hover:bg-primary/5 ${isSelected ? "border-b border-gray-200 dark:border-gray-800" : ""}`}
+                      onClick={() => handleSelect(option.value)}
+                    >
+                      <span className="text-gray-800 dark:text-white/90">{option.text}</span>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="p-3 text-sm text-gray-500 dark:text-gray-400 text-center">
-                  No options available.
-                </div>
-              )}
-            </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="p-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                No options available.
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
