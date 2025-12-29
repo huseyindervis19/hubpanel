@@ -1,13 +1,16 @@
-import { Outfit } from 'next/font/google';
 import './globals.css';
-
+import localFont from 'next/font/local';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { ClientProviders } from '@/providers/ClientProviders';
 import type { Metadata } from 'next';
 
-const outfit = Outfit({
-  subsets: ['latin'],
+const geist = localFont({
+  src: [
+    { path: '../public/geist/static/Geist-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../public/geist/static/Geist-Bold.ttf', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-geist',
 });
 
 export const metadata: Metadata = {
@@ -25,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="at">
-      <body className={`${outfit.className} dark:bg-gray-900 antialiased`}>
+      <body className={`${geist.variable} dark:bg-gray-900 antialiased`}>
         <ClientProviders>
           <ThemeProvider>
             <SidebarProvider>{children}</SidebarProvider>

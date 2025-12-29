@@ -59,7 +59,7 @@ const AddRoleModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
     };
 
     try {
-      await createRole.mutateAsync({ payload });
+      await createRole.mutateAsync({ payload , lang: locale });
 
       setMessage({
         text: messages["created_successfully"] || "Created Successfully!",
